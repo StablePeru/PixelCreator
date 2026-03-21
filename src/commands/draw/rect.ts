@@ -1,7 +1,7 @@
 import { Flags } from '@oclif/core';
 import { BaseCommand } from '../base-command.js';
 import { getProjectPath, readCanvasJSON, readLayerFrame, writeLayerFrame } from '../../io/project-io.js';
-import { drawRect } from '../../core/drawing-engine.js';
+import { drawRect, drawThickRect } from '../../core/drawing-engine.js';
 import { hexToRGBA } from '../../types/common.js';
 import { formatOutput, makeResult } from '../../utils/output-formatter.js';
 
@@ -19,6 +19,7 @@ export default class DrawRect extends BaseCommand {
     layer: Flags.string({ char: 'l', description: 'Layer ID (defaults to first layer)' }),
     frame: Flags.string({ char: 'f', description: 'Frame ID (defaults to first frame)' }),
     canvas: Flags.string({ char: 'c', description: 'Canvas name', required: true }),
+    thickness: Flags.integer({ description: 'Outline thickness in pixels', default: 1 }),
   };
 
   async run(): Promise<void> {
@@ -33,7 +34,11 @@ export default class DrawRect extends BaseCommand {
 
     const color = hexToRGBA(flags.color);
     const buffer = readLayerFrame(projectPath, flags.canvas, layerId, frameId);
-    drawRect(buffer, flags.x, flags.y, flags.width, flags.height, color, flags.fill);
+    if (!flags.fill && flags.thickness > 1) {
+      drawThickRect(buffer, flags.x, flags.y, flags.width, flags.height, color, false, flags.thickness);
+    } else {
+      drawRect(buffer, flags.x, flags.y, flags.width, flags.height, color, flags.fill);
+    }
     writeLayerFrame(projectPath, flags.canvas, layerId, frameId, buffer);
 
     const fillLabel = flags.fill ? 'filled' : 'outline';

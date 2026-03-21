@@ -4,9 +4,9 @@ CLI-first professional pixel art tool for game development.
 
 ## Features
 
-- **115 commands** across 14 topics — full pixel art workflow from the terminal
+- **121 commands** across 14 topics — full pixel art workflow from the terminal
 - **Directory-based .pxc project format** — git-friendly, human-readable
-- **Drawing primitives** — pixel, line, rect, circle, ellipse, fill, gradient, outline
+- **Drawing primitives** — pixel, line, rect, circle, ellipse, polygon, bezier, fill, gradient, outline, stamp, pattern fill, thickness
 - **Layer system** — blend modes (multiply, screen, overlay...), transforms, color effects
 - **Animation** — frame timeline, tags, GIF/APNG/spritesheet export, onion skin
 - **Tileset & tilemap** — tile deduplication, tilemap rendering, Tiled editor export
@@ -31,7 +31,7 @@ pxc export:png player
 |-------|-------------|
 | `animation` | Timeline, tags, onion skin, animation export |
 | `canvas` | Create, resize, crop, flip, rotate, scale, clone |
-| `draw` | Pixel, line, rect, circle, ellipse, fill, gradient, outline |
+| `draw` | Pixel, line, rect, circle, ellipse, polygon, bezier, gradient, stamp, pattern fill |
 | `export` | PNG, GIF, APNG, spritesheet, sequence, batch, layers |
 | `frame` | Add, duplicate, remove, reorder frames |
 | `import` | PNG, GIF, spritesheet import |

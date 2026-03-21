@@ -15,12 +15,12 @@
 - **CLI Framework**: Oclif v4 with topic:command pattern (e.g., `draw:pixel`)
 - **Binary**: `pxc` — all commands under `src/commands/{topic}/{command}.ts`
 
-### Command Topics (14 topics, 115 commands)
+### Command Topics (14 topics, 121 commands)
 | Topic | # | Commands |
 |-------|---|----------|
 | `animation` | 8 | create-tag, edit-tag, export, list-tags, onion-skin, preview, remove-tag, set-timing |
 | `canvas` | 13 | clone, create, crop, delete, extract, flip, info, list, rename, resize, rotate, scale, stats |
-| `draw` | 10 | circle, ellipse, fill, gradient, line, outline, pixel, rect, replace-color, sample |
+| `draw` | 16 | bezier, circle, ellipse, fill, gradient, line, outline, pattern-fill, pixel, polygon, polyline, radial-gradient, rect, replace-color, sample, stamp |
 | `export` | 9 | apng, batch, gif, layers, png, profile, run, sequence, spritesheet |
 | `frame` | 5 | add, duplicate, list, remove, reorder |
 | `import` | 3 | gif, png, spritesheet |
@@ -35,7 +35,7 @@
 
 ### Core Engines (`src/core/` — 12 engines)
 - `animation-engine.ts` — frame sequence resolution, timing, onion skin compositing
-- `drawing-engine.ts` — pixel, line, rect, circle, ellipse, fill, gradient, outline, content bounds
+- `drawing-engine.ts` — pixel, line, rect, circle, ellipse, fill, gradient, outline, polygon, polyline, bezier, radial gradient, pattern fill, stamp, thickness
 - `frame-renderer.ts` — multi-layer flatten with blend modes for export paths
 - `layer-engine.ts` — alpha compositing, blend modes (normal, multiply, screen, overlay, darken, lighten), merge, resize
 - `palette-engine.ts` — color sorting (hue/luminance/saturation), ramp generation, HSL conversion
@@ -57,6 +57,7 @@
 ### Utilities (`src/utils/`)
 - `output-formatter.ts` — `formatOutput`/`makeResult`/`makeErrorResult` for JSON/text/silent output
 - `id-generator.ts` — `generateId(prefix)` (timestamp+random), `generateSequentialId(prefix, index)`
+- `point-parser.ts` — `parsePoint`, `parsePoints`, `parseRect` for CLI coordinate parsing
 
 ### Types (`src/types/`)
 - `common.ts` — RGBA, Point, Size, Rect, OutputFormat, CommandResult, color utilities
@@ -111,5 +112,5 @@ exports/                        — export output directory
 - **Node**: >= 20.0.0
 - **Package manager**: pnpm
 
-## Current Status: v0.11.0 — Milestone 11 Complete
-115 commands across 14 topics, 12 core engines, ~66 test suites. See CHANGELOG.md for milestone details.
+## Current Status: v0.12.0 — Milestone 12 Complete
+121 commands across 14 topics, 12 core engines, ~69 test suites. See CHANGELOG.md for milestone details.

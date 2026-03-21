@@ -4,6 +4,47 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [0.12.0] - 2026-03-21
+
+### Added — Milestone 12: Advanced Drawing Primitives
+
+#### New Utility Module
+- `point-parser.ts` — `parsePoint`, `parsePoints`, `parseRect` for CLI coordinate parsing
+
+#### Core Engine Enhancements (9 new functions, 2 modified)
+- `drawStamp(buffer, x, y, color, size, shape)` — circle/square brush stamp
+- `drawThickLine(buffer, x1, y1, x2, y2, color, thickness)` — Bresenham + stamp
+- `drawThickRect(buffer, x, y, w, h, color, fill, thickness)` — thick outline via thick lines
+- `drawPolyline(buffer, points, color, thickness)` — connected line segments
+- `drawPolygon(buffer, points, color, fill, thickness)` — scan-line fill + closed outline
+- `drawBezierQuadratic(buffer, start, control, end, color, thickness, segments)` — quadratic curve
+- `drawBezierCubic(buffer, start, cp1, cp2, end, color, thickness, segments)` — cubic curve
+- `drawRadialGradient(buffer, cx, cy, radius, colorStart, colorEnd, region)` — radial gradient
+- `drawPatternFill(buffer, pattern, region, offsetX, offsetY)` — tiled pattern fill
+- Modified `drawCircle` — optional `thickness` parameter for thick outlines (annular ring)
+- Modified `drawEllipse` — optional `thickness` parameter for thick outlines
+
+#### New Draw Commands (6)
+- `draw:polygon` — Draw closed polygon with `--points`, `--fill`, `--thickness`
+- `draw:polyline` — Draw open polyline with `--points`, `--thickness`
+- `draw:bezier` — Draw bezier curve (quadratic with `--cp1`, cubic with `--cp1 --cp2`)
+- `draw:radial-gradient` — Draw radial gradient with `--cx`, `--cy`, `--radius`, `--from`, `--to`
+- `draw:pattern-fill` — Fill region with repeating pattern (`--pattern` or `--pattern-layer`)
+- `draw:stamp` — Stamp brush shape (`--shape circle|square`, `--size`)
+
+#### Modified Commands (4)
+- `draw:line` — Added `--thickness` flag (default 1, backward compatible)
+- `draw:rect` — Added `--thickness` flag for outline mode
+- `draw:circle` — Added `--thickness` flag for outline mode
+- `draw:ellipse` — Added `--thickness` flag for outline mode
+
+#### Test Coverage
+- Unit tests: point-parser (8), drawing-engine-advanced (51)
+- Integration tests: draw-advanced (14)
+- Total: 65 new tests, 0 breaking changes
+
+**Total: 6 new commands, 4 modified commands, 9 new core functions, 65 new tests**
+
 ## [0.11.0] - 2026-03-21
 
 ### Added — Milestone 11: Selection & Clipboard

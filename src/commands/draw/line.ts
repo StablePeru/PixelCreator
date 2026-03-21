@@ -1,7 +1,7 @@
 import { Flags } from '@oclif/core';
 import { BaseCommand } from '../base-command.js';
 import { getProjectPath, readCanvasJSON, readLayerFrame, writeLayerFrame } from '../../io/project-io.js';
-import { drawLine } from '../../core/drawing-engine.js';
+import { drawLine, drawThickLine } from '../../core/drawing-engine.js';
 import { hexToRGBA } from '../../types/common.js';
 import { formatOutput, makeResult } from '../../utils/output-formatter.js';
 
@@ -18,6 +18,7 @@ export default class DrawLine extends BaseCommand {
     layer: Flags.string({ char: 'l', description: 'Layer ID (defaults to first layer)' }),
     frame: Flags.string({ char: 'f', description: 'Frame ID (defaults to first frame)' }),
     canvas: Flags.string({ char: 'c', description: 'Canvas name', required: true }),
+    thickness: Flags.integer({ description: 'Line thickness in pixels', default: 1 }),
   };
 
   async run(): Promise<void> {
@@ -32,7 +33,11 @@ export default class DrawLine extends BaseCommand {
 
     const color = hexToRGBA(flags.color);
     const buffer = readLayerFrame(projectPath, flags.canvas, layerId, frameId);
-    drawLine(buffer, flags.x1, flags.y1, flags.x2, flags.y2, color);
+    if (flags.thickness > 1) {
+      drawThickLine(buffer, flags.x1, flags.y1, flags.x2, flags.y2, color, flags.thickness);
+    } else {
+      drawLine(buffer, flags.x1, flags.y1, flags.x2, flags.y2, color);
+    }
     writeLayerFrame(projectPath, flags.canvas, layerId, frameId, buffer);
 
     const result = makeResult('draw:line', { x1: flags.x1, y1: flags.y1, x2: flags.x2, y2: flags.y2, color: flags.color, canvas: flags.canvas, layer: layerId, frame: frameId }, { from: { x: flags.x1, y: flags.y1 }, to: { x: flags.x2, y: flags.y2 }, color: flags.color }, startTime);

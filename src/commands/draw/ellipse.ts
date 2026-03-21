@@ -19,6 +19,7 @@ export default class DrawEllipse extends BaseCommand {
     layer: Flags.string({ char: 'l', description: 'Layer ID (defaults to first layer)' }),
     frame: Flags.string({ char: 'f', description: 'Frame ID (defaults to first frame)' }),
     canvas: Flags.string({ char: 'c', description: 'Canvas name', required: true }),
+    thickness: Flags.integer({ description: 'Outline thickness in pixels', default: 1 }),
   };
 
   async run(): Promise<void> {
@@ -33,7 +34,7 @@ export default class DrawEllipse extends BaseCommand {
 
     const color = hexToRGBA(flags.color);
     const buffer = readLayerFrame(projectPath, flags.canvas, layerId, frameId);
-    drawEllipse(buffer, flags.cx, flags.cy, flags.rx, flags.ry, color, flags.fill);
+    drawEllipse(buffer, flags.cx, flags.cy, flags.rx, flags.ry, color, flags.fill, flags.thickness);
     writeLayerFrame(projectPath, flags.canvas, layerId, frameId, buffer);
 
     const fillLabel = flags.fill ? 'filled' : 'outline';
