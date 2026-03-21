@@ -121,5 +121,5 @@ exports/                        — export output directory
 - **Node**: >= 20.0.0
 - **Package manager**: pnpm
 
-## Current Status: v1.1.0 — Plugin System
-167 commands across 15 topics, 15 core engines + 2 plugin modules, 86 test suites, 863 tests (0 failures). CI/CD via GitHub Actions. See CHANGELOG.md for milestone details.
+## Current Status: v1.2.0 — Performance & Scale
+168 commands across 15 topics, 15 core engines + 4 infrastructure modules, 89 test suites, 885 tests (0 failures). Buffer pool, composite cache, optimized pixel ops. CI/CD via GitHub Actions.

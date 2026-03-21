@@ -43,6 +43,44 @@ export class PixelBuffer {
     this.data[idx + 3] = color.a;
   }
 
+  getPixelU32(x: number, y: number): number {
+    const idx = (y * this.width + x) * 4;
+    return this.data[idx] | (this.data[idx + 1] << 8) | (this.data[idx + 2] << 16) | (this.data[idx + 3] << 24);
+  }
+
+  setPixelU32(x: number, y: number, value: number): void {
+    if (x < 0 || x >= this.width || y < 0 || y >= this.height) return;
+    const idx = (y * this.width + x) * 4;
+    this.data[idx] = value & 0xFF;
+    this.data[idx + 1] = (value >> 8) & 0xFF;
+    this.data[idx + 2] = (value >> 16) & 0xFF;
+    this.data[idx + 3] = (value >> 24) & 0xFF;
+  }
+
+  copyFrom(
+    source: PixelBuffer,
+    srcX: number, srcY: number,
+    dstX: number, dstY: number,
+    width: number, height: number,
+  ): void {
+    for (let y = 0; y < height; y++) {
+      const sy = srcY + y;
+      const dy = dstY + y;
+      if (sy < 0 || sy >= source.height || dy < 0 || dy >= this.height) continue;
+      const srcStart = (sy * source.width + Math.max(0, srcX)) * 4;
+      const dstStart = (dy * this.width + Math.max(0, dstX)) * 4;
+      const effectiveX = Math.max(0, srcX);
+      const effectiveW = Math.min(width, source.width - effectiveX, this.width - Math.max(0, dstX));
+      if (effectiveW <= 0) continue;
+      source.data.copy(this.data, dstStart, srcStart, srcStart + effectiveW * 4);
+    }
+  }
+
+  equals(other: PixelBuffer): boolean {
+    if (this.width !== other.width || this.height !== other.height) return false;
+    return this.data.equals(other.data);
+  }
+
   clone(): PixelBuffer {
     return new PixelBuffer(this.width, this.height, Buffer.from(this.data));
   }

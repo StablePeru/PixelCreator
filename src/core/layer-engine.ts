@@ -158,10 +158,13 @@ export function flattenLayerTree(
     }
 
     // Composite onto result
-    compositeLayerOnto(result, layerBuffer, layer.info.blendMode, layer.info.isGroup ? layer.info.opacity : layer.info.opacity, width, height);
+    compositeLayerOnto(result, layerBuffer, layer.info.blendMode, layer.info.opacity, width, height);
 
-    // Track previous composited state for clipping
-    prevBuffer = result.clone();
+    // Only clone prevBuffer if the next layer uses clipping (optimization)
+    const nextIdx = children.indexOf(layer) + 1;
+    if (nextIdx < children.length && children[nextIdx].info.clipping) {
+      prevBuffer = result.clone();
+    }
   }
 
   return result;

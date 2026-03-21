@@ -4,6 +4,17 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [1.2.0] - 2026-03-21
+
+### Added — Milestone 22: Performance & Scale
+
+- `buffer-pool.ts` — PixelBuffer pool with acquire/release, reuse stats
+- `composite-cache.ts` — LRU cache for composites with hit/miss tracking
+- PixelBuffer: `getPixelU32/setPixelU32` (packed 32-bit), `copyFrom` (bulk memcpy), `equals`
+- `flattenLayerTree` optimized: only clone prevBuffer when needed for clipping
+- `project:benchmark` — Canvas performance benchmarks
+- 22 new tests, 885 total, 0 failures
+
 ## [1.1.0] - 2026-03-21
 
 ### Added — Milestone 21: Plugin System
