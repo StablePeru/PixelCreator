@@ -15,17 +15,17 @@
 - **CLI Framework**: Oclif v4 with topic:command pattern (e.g., `draw:pixel`)
 - **Binary**: `pxc` — all commands under `src/commands/{topic}/{command}.ts`
 
-### Command Topics (14 topics, 121 commands)
+### Command Topics (14 topics, 129 commands)
 | Topic | # | Commands |
 |-------|---|----------|
 | `animation` | 8 | create-tag, edit-tag, export, list-tags, onion-skin, preview, remove-tag, set-timing |
 | `canvas` | 13 | clone, create, crop, delete, extract, flip, info, list, rename, resize, rotate, scale, stats |
 | `draw` | 16 | bezier, circle, ellipse, fill, gradient, line, outline, pattern-fill, pixel, polygon, polyline, radial-gradient, rect, replace-color, sample, stamp |
-| `export` | 9 | apng, batch, gif, layers, png, profile, run, sequence, spritesheet |
+| `export` | 13 | 9slice, apng, batch, css, gif, layers, palette-image, png, profile, run, sequence, spritesheet, svg |
 | `frame` | 5 | add, duplicate, list, remove, reorder |
-| `import` | 3 | gif, png, spritesheet |
+| `import` | 5 | ase, gif, palette-image, png, spritesheet |
 | `layer` | 18 | add, blend, brightness, contrast, desaturate, dither, duplicate, edit, flip, hue-shift, invert, list, merge, merge-visible, posterize, remove, reorder, rotate |
-| `palette` | 8 | constraints, create, edit, extract, info, list, ramp, sort |
+| `palette` | 10 | constraints, create, edit, export, extract, import, info, list, ramp, sort |
 | `project` | 6 | description, info, init, settings, tags, validation |
 | `recipe` | 5 | create, delete, info, list, run |
 | `select` | 11 | all, color, copy, cut, ellipse, info, invert, move, none, paste, rect |
@@ -33,7 +33,7 @@
 | `tileset` | 12 | add-tile, create, create-tilemap, delete-tilemap, export, export-tilemap, info, list, remove-tile, render-tilemap, set-cell, tile-props |
 | `validate` | 2 | palette, size |
 
-### Core Engines (`src/core/` — 12 engines)
+### Core Engines (`src/core/` — 13 engines)
 - `animation-engine.ts` — frame sequence resolution, timing, onion skin compositing
 - `drawing-engine.ts` — pixel, line, rect, circle, ellipse, fill, gradient, outline, polygon, polyline, bezier, radial gradient, pattern fill, stamp, thickness
 - `frame-renderer.ts` — multi-layer flatten with blend modes for export paths
@@ -44,15 +44,19 @@
 - `template-engine.ts` — create template from canvas, apply template to new canvas
 - `tileset-engine.ts` — tile hashing, slicing, deduplication, tilemap rendering, Tiled export
 - `transform-engine.ts` — flip, rotate, scale, brightness, contrast, invert, desaturate, hue-shift, posterize, dither
+- `nineslice-engine.ts` — 9-slice UI sprite decomposition
 - `selection-engine.ts` — rect/ellipse/color selection, clipboard operations, mask manipulation
 - `validation-engine.ts` — size rule validation (exact, min, max, multiple-of)
 
-### I/O Layer (`src/io/` — 5 modules)
+### I/O Layer (`src/io/` — 8 modules)
 - `png-codec.ts` — PixelBuffer class, PNG read/write via pngjs
 - `project-io.ts` — project/canvas/palette/tileset/template/recipe/selection/clipboard file I/O
 - `gif-encoder.ts` — GIF89a encoding via gifenc
 - `gif-decoder.ts` — GIF frame extraction via omggif
 - `apng-encoder.ts` — APNG encoding via upng-js
+- `palette-codec.ts` — GPL, JASC-PAL, HEX palette format parsers/serializers
+- `ase-decoder.ts` — Aseprite .ase/.aseprite binary decoder
+- `svg-encoder.ts` — SVG export with pixel-as-rect rendering
 
 ### Utilities (`src/utils/`)
 - `output-formatter.ts` — `formatOutput`/`makeResult`/`makeErrorResult` for JSON/text/silent output
@@ -112,5 +116,5 @@ exports/                        — export output directory
 - **Node**: >= 20.0.0
 - **Package manager**: pnpm
 
-## Current Status: v0.12.0 — Milestone 12 Complete
-121 commands across 14 topics, 12 core engines, ~69 test suites. See CHANGELOG.md for milestone details.
+## Current Status: v0.13.0 — Milestone 13 Complete
+129 commands across 14 topics, 13 core engines, ~73 test suites. See CHANGELOG.md for milestone details.

@@ -4,7 +4,7 @@ CLI-first professional pixel art tool for game development.
 
 ## Features
 
-- **121 commands** across 14 topics — full pixel art workflow from the terminal
+- **129 commands** across 14 topics — full pixel art workflow from the terminal
 - **Directory-based .pxc project format** — git-friendly, human-readable
 - **Drawing primitives** — pixel, line, rect, circle, ellipse, polygon, bezier, fill, gradient, outline, stamp, pattern fill, thickness
 - **Layer system** — blend modes (multiply, screen, overlay...), transforms, color effects
@@ -32,11 +32,11 @@ pxc export:png player
 | `animation` | Timeline, tags, onion skin, animation export |
 | `canvas` | Create, resize, crop, flip, rotate, scale, clone |
 | `draw` | Pixel, line, rect, circle, ellipse, polygon, bezier, gradient, stamp, pattern fill |
-| `export` | PNG, GIF, APNG, spritesheet, sequence, batch, layers |
+| `export` | PNG, GIF, APNG, SVG, CSS, spritesheet, 9-slice, palette image |
 | `frame` | Add, duplicate, remove, reorder frames |
-| `import` | PNG, GIF, spritesheet import |
+| `import` | PNG, GIF, Aseprite (.ase), spritesheet, palette image |
 | `layer` | Add, edit, blend, merge, color effects, transforms |
-| `palette` | Create, edit, sort, ramp, extract, constraints |
+| `palette` | Create, edit, sort, ramp, extract, import/export (GPL/JASC/HEX) |
 | `project` | Init, info, settings, validation, tags |
 | `recipe` | Create and run automated command sequences |
 | `select` | Rect, ellipse, color selection, clipboard ops |

@@ -4,6 +4,46 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [0.13.0] - 2026-03-21
+
+### Added — Milestone 13: Interoperability
+
+#### New I/O Modules
+- `palette-codec.ts` — GPL, JASC-PAL, HEX palette format parsers/serializers + auto-detection
+- `ase-decoder.ts` — Aseprite .ase/.aseprite binary decoder (layers, frames, cels, palette, tags)
+- `svg-encoder.ts` — SVG export with pixel-as-rect rendering, grid overlay, background
+
+#### New Core Engine
+- `nineslice-engine.ts` — 9-slice decomposition with `computeNineSliceRegions`, `sliceNine`
+
+#### Palette Commands (2 new)
+- `palette:export` — Export palette to GPL, JASC-PAL, or HEX format
+- `palette:import` — Import palette from GPL, JASC-PAL, or HEX file (auto-detect, `--merge`)
+
+#### Import Commands (2 new)
+- `import:ase` — Import Aseprite file with layers, frames, tags, palette (`--flatten`, `--import-palette`)
+- `import:palette-image` — Import unique colors from PNG image as palette
+
+#### Export Commands (4 new)
+- `export:svg` — Export canvas as SVG (each pixel as rect, `--scale`, `--grid`, `--background`)
+- `export:9slice` — Export UI sprite as 9 PNG regions + JSON metadata (`--top/bottom/left/right`)
+- `export:palette-image` — Export palette as PNG swatch image (`--columns`, `--cell-size`)
+- `export:css` — Export pixel art as CSS box-shadow art (`--scale`, `--selector`)
+
+#### ASE Decoder Features
+- Supports RGBA (32-bit), Grayscale (16-bit), and Indexed (8-bit) color depths
+- Handles raw, compressed (zlib), and linked cels
+- Imports layers with visibility, opacity, and blend mode mapping
+- Imports animation tags with direction (forward/reverse/pingpong)
+- Palette import with optional color names
+
+#### Test Coverage
+- Unit tests: palette-codec (19), svg-encoder (7), nineslice-engine (9)
+- Integration tests: interop (17)
+- Total: 49 new tests, 0 breaking changes, 0 new dependencies
+
+**Total: 8 new commands, 4 new I/O/engine modules, 49 new tests**
+
 ## [0.12.0] - 2026-03-21
 
 ### Added — Milestone 12: Advanced Drawing Primitives
