@@ -1,0 +1,107 @@
+# PixelCreator — Development Guide
+
+## Build & Test
+- `pnpm build` — Compile TypeScript with tsup, generate oclif manifest
+- `pnpm dev` — Watch mode build (tsup --watch)
+- `pnpm test` — Run all tests with vitest
+- `pnpm test:coverage` — Run tests with v8 coverage report
+- `pnpm test:watch` — Watch mode for tests
+- `pnpm lint` / `pnpm lint:fix` — ESLint check / auto-fix
+- `pnpm format` — Prettier formatting
+- `pnpm pxc <command>` — Run CLI in dev mode (ts-node)
+- Run single test: `pnpm vitest run test/core/drawing-engine.test.ts`
+
+## Architecture
+- **CLI Framework**: Oclif v4 with topic:command pattern (e.g., `draw:pixel`)
+- **Binary**: `pxc` — all commands under `src/commands/{topic}/{command}.ts`
+
+### Command Topics (13 topics, 104 commands)
+| Topic | # | Commands |
+|-------|---|----------|
+| `animation` | 8 | create-tag, edit-tag, export, list-tags, onion-skin, preview, remove-tag, set-timing |
+| `canvas` | 13 | clone, create, crop, delete, extract, flip, info, list, rename, resize, rotate, scale, stats |
+| `draw` | 10 | circle, ellipse, fill, gradient, line, outline, pixel, rect, replace-color, sample |
+| `export` | 9 | apng, batch, gif, layers, png, profile, run, sequence, spritesheet |
+| `frame` | 5 | add, duplicate, list, remove, reorder |
+| `import` | 3 | gif, png, spritesheet |
+| `layer` | 18 | add, blend, brightness, contrast, desaturate, dither, duplicate, edit, flip, hue-shift, invert, list, merge, merge-visible, posterize, remove, reorder, rotate |
+| `palette` | 8 | constraints, create, edit, extract, info, list, ramp, sort |
+| `project` | 6 | description, info, init, settings, tags, validation |
+| `recipe` | 5 | create, delete, info, list, run |
+| `template` | 5 | apply, create, delete, info, list |
+| `tileset` | 12 | add-tile, create, create-tilemap, delete-tilemap, export, export-tilemap, info, list, remove-tile, render-tilemap, set-cell, tile-props |
+| `validate` | 2 | palette, size |
+
+### Core Engines (`src/core/` — 11 engines)
+- `animation-engine.ts` — frame sequence resolution, timing, onion skin compositing
+- `drawing-engine.ts` — pixel, line, rect, circle, ellipse, fill, gradient, outline, content bounds
+- `frame-renderer.ts` — multi-layer flatten with blend modes for export paths
+- `layer-engine.ts` — alpha compositing, blend modes (normal, multiply, screen, overlay, darken, lighten), merge, resize
+- `palette-engine.ts` — color sorting (hue/luminance/saturation), ramp generation, HSL conversion
+- `recipe-engine.ts` — recipe validation, variable resolution, command argument building
+- `spritesheet-engine.ts` — spritesheet layout (horizontal/vertical/grid), decompose
+- `template-engine.ts` — create template from canvas, apply template to new canvas
+- `tileset-engine.ts` — tile hashing, slicing, deduplication, tilemap rendering, Tiled export
+- `transform-engine.ts` — flip, rotate, scale, brightness, contrast, invert, desaturate, hue-shift, posterize, dither
+- `validation-engine.ts` — size rule validation (exact, min, max, multiple-of)
+
+### I/O Layer (`src/io/` — 5 modules)
+- `png-codec.ts` — PixelBuffer class, PNG read/write via pngjs
+- `project-io.ts` — project/canvas/palette/tileset/template/recipe file I/O
+- `gif-encoder.ts` — GIF89a encoding via gifenc
+- `gif-decoder.ts` — GIF frame extraction via omggif
+- `apng-encoder.ts` — APNG encoding via upng-js
+
+### Utilities (`src/utils/`)
+- `output-formatter.ts` — `formatOutput`/`makeResult`/`makeErrorResult` for JSON/text/silent output
+- `id-generator.ts` — `generateId(prefix)` (timestamp+random), `generateSequentialId(prefix, index)`
+
+### Types (`src/types/`)
+- `common.ts` — RGBA, Point, Size, Rect, OutputFormat, CommandResult, color utilities
+- `project.ts` — ProjectData, ProjectSettings, ValidationSettings, ExportProfile
+- `canvas.ts` — CanvasData, LayerInfo, FrameInfo, AnimationTag, BlendMode
+- `palette.ts` — PaletteData, PaletteColor, PaletteConstraints, PaletteRamp
+- `tileset.ts` — TilesetData, TileInfo, TilemapData, TilemapCell
+- `template.ts` — TemplateData, TemplateLayerDef
+- `recipe.ts` — RecipeData, RecipeStep
+- Ambient declarations: `gifenc.d.ts`, `omggif.d.ts`, `upng-js.d.ts`
+
+## Code Conventions
+- ESM with `.js` extensions in imports
+- All commands extend `BaseCommand` from `src/commands/base-command.ts`
+- Base flags: `--project`, `--output` (text/json/silent), `--verbose`, `--dry-run`, `--no-color`
+- All commands support `--output json` via `formatOutput`/`makeResult` pattern
+- Project path resolved via `getProjectPath(flags.project)` (auto-detect or --project flag)
+- IDs generated via `generateId(prefix)` — timestamp+random
+- Layer frame storage: one PNG per layer per frame at `canvases/{name}/layers/{layerId}/{frameId}.png`
+- Coverage tracked for `src/core/`, `src/io/`, `src/utils/` (commands excluded)
+- Test structure mirrors src: `test/core/`, `test/io/`, `test/utils/`, `test/commands/`, `test/e2e/`
+
+## Project Format (.pxc)
+Directory-based format: `{name}.pxc/` containing:
+```
+project.json                    — root manifest (ProjectData)
+palettes/
+  {name}.palette.json           — palette definition
+canvases/
+  {name}/
+    canvas.json                 — canvas metadata (CanvasData)
+    layers/
+      {layerId}/
+        {frameId}.png           — per-layer per-frame pixel data
+tilesets/
+  {name}.tileset.json           — tileset definition + tiles/ directory
+templates/
+  {name}.template.json          — template definition
+recipes/
+  {name}.recipe.json            — automation recipe
+exports/                        — export output directory
+```
+
+## Dependencies
+- **Runtime**: @oclif/core, @oclif/plugin-help, pngjs, gifenc, omggif, upng-js, zod
+- **Node**: >= 20.0.0
+- **Package manager**: pnpm
+
+## Current Status: v0.10.0 — Milestone 10 Complete
+104 commands across 13 topics, 11 core engines, ~63 test suites. See CHANGELOG.md for milestone details.
