@@ -1,6 +1,6 @@
 {
   "name": "pixelcreator",
-  "version": "0.10.0",
+  "version": "0.11.0",
   "description": "CLI-first professional pixel art tool for game development",
   "type": "module",
   "bin": {
@@ -73,6 +73,9 @@
       },
       "recipe": {
         "description": "Recipe automation"
+      },
+      "select": {
+        "description": "Selection and clipboard operations"
       }
     }
   },

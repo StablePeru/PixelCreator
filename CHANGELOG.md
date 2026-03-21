@@ -4,6 +4,41 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [0.11.0] - 2026-03-21
+
+### Added — Milestone 11: Selection & Clipboard
+
+#### New Types
+- `SelectionMask`, `SelectionShape`, `SelectionInfo`, `ClipboardData` in `src/types/selection.ts`
+
+#### Core Engine (1 new)
+- `selection-engine.ts` — `createRectSelection`, `createEllipseSelection`, `createColorSelection`, `createAllSelection`, `invertSelection`, `mergeSelections`, `getSelectionBounds`, `getSelectionPixelCount`, `clearSelection`, `extractSelection`, `pasteBuffer`, `moveSelection`, `selectionToPixelBuffer`, `pixelBufferToSelection`
+
+#### I/O Enhancements
+- Selection persistence: `readSelection`, `writeSelection`, `deleteSelection` — masks stored as grayscale PNGs in `selections/` directory
+- Clipboard persistence: `readClipboard`, `writeClipboard`, `clearClipboard` — JSON metadata + PNG content in `clipboard/` directory
+
+#### Select Commands (11 new)
+- `select:rect` — Create rectangular selection (`--add` for union)
+- `select:ellipse` — Create elliptical selection (`--add` for union)
+- `select:color` — Select by color match / magic wand (`--tolerance`, `--contiguous`)
+- `select:all` — Select entire canvas
+- `select:none` — Clear active selection (deselect)
+- `select:invert` — Invert current selection
+- `select:info` — Display selection info (bounds, pixel count, percentage)
+- `select:cut` — Cut selected pixels to clipboard
+- `select:copy` — Copy selected pixels to clipboard
+- `select:paste` — Paste clipboard onto canvas (`--x`, `--y`, `--in-place`)
+- `select:move` — Move selected pixels by offset (`--dx`, `--dy`)
+
+#### Test Coverage
+- Unit tests: selection-engine (37 tests)
+- I/O tests: selection-io (8 tests)
+- Integration tests: selection-commands (20 tests)
+- Total: 65 new tests
+
+**Total: 11 new commands, 14 core functions, 65 new tests**
+
 ## [0.10.0] - 2026-03-19
 
 ### Added — Milestone 10: Recipe Automation, Frame Sequence Export, GIF Import & Onion Skin

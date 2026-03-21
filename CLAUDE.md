@@ -15,7 +15,7 @@
 - **CLI Framework**: Oclif v4 with topic:command pattern (e.g., `draw:pixel`)
 - **Binary**: `pxc` — all commands under `src/commands/{topic}/{command}.ts`
 
-### Command Topics (13 topics, 104 commands)
+### Command Topics (14 topics, 115 commands)
 | Topic | # | Commands |
 |-------|---|----------|
 | `animation` | 8 | create-tag, edit-tag, export, list-tags, onion-skin, preview, remove-tag, set-timing |
@@ -28,11 +28,12 @@
 | `palette` | 8 | constraints, create, edit, extract, info, list, ramp, sort |
 | `project` | 6 | description, info, init, settings, tags, validation |
 | `recipe` | 5 | create, delete, info, list, run |
+| `select` | 11 | all, color, copy, cut, ellipse, info, invert, move, none, paste, rect |
 | `template` | 5 | apply, create, delete, info, list |
 | `tileset` | 12 | add-tile, create, create-tilemap, delete-tilemap, export, export-tilemap, info, list, remove-tile, render-tilemap, set-cell, tile-props |
 | `validate` | 2 | palette, size |
 
-### Core Engines (`src/core/` — 11 engines)
+### Core Engines (`src/core/` — 12 engines)
 - `animation-engine.ts` — frame sequence resolution, timing, onion skin compositing
 - `drawing-engine.ts` — pixel, line, rect, circle, ellipse, fill, gradient, outline, content bounds
 - `frame-renderer.ts` — multi-layer flatten with blend modes for export paths
@@ -43,11 +44,12 @@
 - `template-engine.ts` — create template from canvas, apply template to new canvas
 - `tileset-engine.ts` — tile hashing, slicing, deduplication, tilemap rendering, Tiled export
 - `transform-engine.ts` — flip, rotate, scale, brightness, contrast, invert, desaturate, hue-shift, posterize, dither
+- `selection-engine.ts` — rect/ellipse/color selection, clipboard operations, mask manipulation
 - `validation-engine.ts` — size rule validation (exact, min, max, multiple-of)
 
 ### I/O Layer (`src/io/` — 5 modules)
 - `png-codec.ts` — PixelBuffer class, PNG read/write via pngjs
-- `project-io.ts` — project/canvas/palette/tileset/template/recipe file I/O
+- `project-io.ts` — project/canvas/palette/tileset/template/recipe/selection/clipboard file I/O
 - `gif-encoder.ts` — GIF89a encoding via gifenc
 - `gif-decoder.ts` — GIF frame extraction via omggif
 - `apng-encoder.ts` — APNG encoding via upng-js
@@ -64,6 +66,7 @@
 - `tileset.ts` — TilesetData, TileInfo, TilemapData, TilemapCell
 - `template.ts` — TemplateData, TemplateLayerDef
 - `recipe.ts` — RecipeData, RecipeStep
+- `selection.ts` — SelectionMask, SelectionShape, SelectionInfo, ClipboardData
 - Ambient declarations: `gifenc.d.ts`, `omggif.d.ts`, `upng-js.d.ts`
 
 ## Code Conventions
@@ -95,6 +98,11 @@ templates/
   {name}.template.json          — template definition
 recipes/
   {name}.recipe.json            — automation recipe
+selections/
+  {canvasName}.selection.png    — active selection mask (grayscale)
+clipboard/
+  clipboard.json                — clipboard metadata
+  content.png                   — clipboard pixel data
 exports/                        — export output directory
 ```
 
@@ -103,5 +111,5 @@ exports/                        — export output directory
 - **Node**: >= 20.0.0
 - **Package manager**: pnpm
 
-## Current Status: v0.10.0 — Milestone 10 Complete
-104 commands across 13 topics, 11 core engines, ~63 test suites. See CHANGELOG.md for milestone details.
+## Current Status: v0.11.0 — Milestone 11 Complete
+115 commands across 14 topics, 12 core engines, ~66 test suites. See CHANGELOG.md for milestone details.

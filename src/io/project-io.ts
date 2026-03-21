@@ -6,8 +6,10 @@ import type { PaletteData } from '../types/palette.js';
 import type { TilesetData } from '../types/tileset.js';
 import type { TemplateData } from '../types/template.js';
 import type { RecipeData } from '../types/recipe.js';
+import type { SelectionMask, ClipboardData } from '../types/selection.js';
 import { PixelBuffer } from './png-codec.js';
 import { savePNG, loadPNG, createEmptyBuffer } from './png-codec.js';
+import { selectionToPixelBuffer, pixelBufferToSelection } from '../core/selection-engine.js';
 import { generateSequentialId } from '../utils/id-generator.js';
 
 export function findProjectRoot(startDir: string): string | null {
@@ -376,5 +378,79 @@ export function deleteRecipeFile(projectPath: string, recipeName: string): void 
   const filePath = path.join(projectPath, 'recipes', `${recipeName}.recipe.json`);
   if (fs.existsSync(filePath)) {
     fs.unlinkSync(filePath);
+  }
+}
+
+// Selection I/O
+
+export function getSelectionPath(projectPath: string, canvasName: string): string {
+  return path.join(projectPath, 'selections', `${canvasName}.selection.png`);
+}
+
+export function readSelection(
+  projectPath: string,
+  canvasName: string,
+): SelectionMask | null {
+  const filePath = getSelectionPath(projectPath, canvasName);
+  if (!fs.existsSync(filePath)) return null;
+  const buffer = loadPNG(filePath);
+  return pixelBufferToSelection(buffer);
+}
+
+export function writeSelection(
+  projectPath: string,
+  canvasName: string,
+  mask: SelectionMask,
+): void {
+  const filePath = getSelectionPath(projectPath, canvasName);
+  const dir = path.dirname(filePath);
+  if (!fs.existsSync(dir)) {
+    fs.mkdirSync(dir, { recursive: true });
+  }
+  savePNG(selectionToPixelBuffer(mask), filePath);
+}
+
+export function deleteSelection(projectPath: string, canvasName: string): void {
+  const filePath = getSelectionPath(projectPath, canvasName);
+  if (fs.existsSync(filePath)) {
+    fs.unlinkSync(filePath);
+  }
+}
+
+// Clipboard I/O
+
+export function getClipboardPath(projectPath: string): string {
+  return path.join(projectPath, 'clipboard');
+}
+
+export function readClipboard(
+  projectPath: string,
+): { data: ClipboardData; buffer: PixelBuffer } | null {
+  const dir = getClipboardPath(projectPath);
+  const metaPath = path.join(dir, 'clipboard.json');
+  const contentPath = path.join(dir, 'content.png');
+  if (!fs.existsSync(metaPath) || !fs.existsSync(contentPath)) return null;
+  const data: ClipboardData = JSON.parse(fs.readFileSync(metaPath, 'utf-8'));
+  const buffer = loadPNG(contentPath);
+  return { data, buffer };
+}
+
+export function writeClipboard(
+  projectPath: string,
+  data: ClipboardData,
+  buffer: PixelBuffer,
+): void {
+  const dir = getClipboardPath(projectPath);
+  if (!fs.existsSync(dir)) {
+    fs.mkdirSync(dir, { recursive: true });
+  }
+  fs.writeFileSync(path.join(dir, 'clipboard.json'), JSON.stringify(data, null, 2));
+  savePNG(buffer, path.join(dir, 'content.png'));
+}
+
+export function clearClipboard(projectPath: string): void {
+  const dir = getClipboardPath(projectPath);
+  if (fs.existsSync(dir)) {
+    fs.rmSync(dir, { recursive: true, force: true });
   }
 }
