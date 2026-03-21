@@ -15,13 +15,13 @@
 - **CLI Framework**: Oclif v4 with topic:command pattern (e.g., `draw:pixel`)
 - **Binary**: `pxc` — all commands under `src/commands/{topic}/{command}.ts`
 
-### Command Topics (14 topics, 148 commands)
+### Command Topics (14 topics, 152 commands)
 | Topic | # | Commands |
 |-------|---|----------|
 | `animation` | 12 | create-tag, cycle-palette, ease, edit-tag, export, list-tags, onion-skin, preview, remove-tag, reverse-frames, set-timing, tween |
 | `canvas` | 14 | batch-run, clone, create, crop, delete, extract, flip, info, list, rename, resize, rotate, scale, stats |
 | `draw` | 17 | batch-replace, bezier, circle, ellipse, fill, gradient, line, outline, pattern-fill, pixel, polygon, polyline, radial-gradient, rect, replace-color, sample, stamp |
-| `export` | 13 | 9slice, apng, batch, css, gif, layers, palette-image, png, profile, run, sequence, spritesheet, svg |
+| `export` | 17 | 9slice, apng, ase, atlas, batch, css, data-url, gif, ico, layers, palette-image, png, profile, run, sequence, spritesheet, svg |
 | `frame` | 8 | add, copy-to, duplicate, label, labels, list, remove, reorder |
 | `import` | 5 | ase, gif, palette-image, png, spritesheet |
 | `layer` | 23 | add, blend, brightness, clip, contrast, create-group, desaturate, dither, duplicate, edit, flip, hue-shift, invert, list, list-tree, merge, merge-visible, move-to-group, posterize, remove, reorder, rotate, ungroup |
@@ -49,7 +49,7 @@
 - `selection-engine.ts` — rect/ellipse/color selection, clipboard operations, mask manipulation
 - `validation-engine.ts` — size rule validation (exact, min, max, multiple-of)
 
-### I/O Layer (`src/io/` — 9 modules)
+### I/O Layer (`src/io/` — 10 modules)
 - `png-codec.ts` — PixelBuffer class, PNG read/write via pngjs
 - `project-io.ts` — project/canvas/palette/tileset/template/recipe/selection/clipboard file I/O
 - `gif-encoder.ts` — GIF89a encoding via gifenc
@@ -57,6 +57,7 @@
 - `apng-encoder.ts` — APNG encoding via upng-js
 - `palette-codec.ts` — GPL, JASC-PAL, HEX palette format parsers/serializers
 - `ase-decoder.ts` — Aseprite .ase/.aseprite binary decoder
+- `ase-encoder.ts` — Aseprite .ase binary encoder with zlib compression
 - `svg-encoder.ts` — SVG export with pixel-as-rect rendering
 - `snapshot-io.ts` — Canvas snapshot create/list/restore/delete
 
@@ -118,5 +119,5 @@ exports/                        — export output directory
 - **Node**: >= 20.0.0
 - **Package manager**: pnpm
 
-## Current Status: v0.17.0 — Milestone 17 Complete
-148 commands across 14 topics, 14 core engines, 80 test suites, 794 tests (0 failures). CI/CD via GitHub Actions. See CHANGELOG.md for milestone details.
+## Current Status: v0.18.0 — Milestone 18 Complete
+152 commands across 14 topics, 14 core engines, 81 test suites, 805 tests (0 failures). CI/CD via GitHub Actions. See CHANGELOG.md for milestone details.

@@ -43,6 +43,14 @@ export default class ExportSpritesheet extends BaseCommand {
       options: ['json', 'none'],
       default: 'json',
     }),
+    margin: Flags.integer({
+      description: 'Outer margin around entire sheet in pixels',
+      default: 0,
+    }),
+    padding: Flags.integer({
+      description: 'Per-frame padding in pixels (extrudes border pixels)',
+      default: 0,
+    }),
   };
 
   async run(): Promise<void> {
@@ -70,6 +78,8 @@ export default class ExportSpritesheet extends BaseCommand {
         layout: flags.layout as 'horizontal' | 'vertical' | 'grid',
         columns: flags.columns,
         spacing: flags.spacing,
+        margin: flags.margin,
+        padding: flags.padding,
       },
     );
 

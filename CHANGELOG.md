@@ -4,6 +4,28 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [0.18.0] - 2026-03-21
+
+### Added — Milestone 18: Advanced Export
+
+#### New I/O Module
+- `ase-encoder.ts` — Aseprite .ase binary encoder with layers, compressed cels (zlib), tags, palette
+
+#### Spritesheet Engine Enhancement
+- `composeSpritesheet` gains `margin` and `padding` — outer border + per-frame pixel extrusion for UV bleeding prevention
+
+#### Export Commands (4 new, 1 modified)
+- `export:ase` — Export as Aseprite .ase with layers/frames/tags/palette
+- `export:atlas` — Texture atlas for Unity/Godot/Generic with margin/padding
+- `export:ico` — ICO (Windows icon) with multiple sizes
+- `export:data-url` — Base64 data URL for web embedding
+- `export:spritesheet` — Added `--margin`, `--padding` flags
+
+#### Test Coverage
+- 11 new tests, 805 total, 0 failures
+
+**Total: 4 new commands, 1 modified, 1 new I/O module, 11 new tests**
+
 ## [0.17.0] - 2026-03-21
 
 ### Added — Milestone 17: Quality & Polish
