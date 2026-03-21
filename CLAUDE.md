@@ -15,7 +15,7 @@
 - **CLI Framework**: Oclif v4 with topic:command pattern (e.g., `draw:pixel`)
 - **Binary**: `pxc` — all commands under `src/commands/{topic}/{command}.ts`
 
-### Command Topics (14 topics, 160 commands)
+### Command Topics (14 topics, 161 commands)
 | Topic | # | Commands |
 |-------|---|----------|
 | `animation` | 12 | create-tag, cycle-palette, ease, edit-tag, export, list-tags, onion-skin, preview, remove-tag, reverse-frames, set-timing, tween |
@@ -26,7 +26,7 @@
 | `import` | 5 | ase, gif, palette-image, png, spritesheet |
 | `layer` | 23 | add, blend, brightness, clip, contrast, create-group, desaturate, dither, duplicate, edit, flip, hue-shift, invert, list, list-tree, merge, merge-visible, move-to-group, posterize, remove, reorder, rotate, ungroup |
 | `palette` | 12 | constraints, create, edit, export, extract, generate, harmony, import, info, list, ramp, sort |
-| `project` | 10 | clean, description, info, init, restore, settings, snapshot, snapshots, tags, validation, watch |
+| `project` | 11 | clean, description, info, init, restore, settings, snapshot, snapshots, tags, validation, watch |
 | `recipe` | 5 | create, delete, info, list, run |
 | `select` | 11 | all, color, copy, cut, ellipse, info, invert, move, none, paste, rect |
 | `template` | 5 | apply, create, delete, info, list |
@@ -120,5 +120,5 @@ exports/                        — export output directory
 - **Node**: >= 20.0.0
 - **Package manager**: pnpm
 
-## Current Status: v0.19.0 — Milestone 19 Complete
-160 commands across 14 topics, 15 core engines, 83 test suites, 837 tests (0 failures). CI/CD via GitHub Actions. See CHANGELOG.md for milestone details.
+## Current Status: v1.0.0 — Stable Release
+161 commands across 14 topics, 15 core engines, 83 test suites, 837 tests (0 failures). CI/CD via GitHub Actions. See CHANGELOG.md for milestone details.

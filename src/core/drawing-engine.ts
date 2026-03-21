@@ -15,8 +15,8 @@ export function drawLine(
   color: RGBA,
 ): void {
   // Bresenham's line algorithm
-  let dx = Math.abs(x2 - x1);
-  let dy = -Math.abs(y2 - y1);
+  const dx = Math.abs(x2 - x1);
+  const dy = -Math.abs(y2 - y1);
   const sx = x1 < x2 ? 1 : -1;
   const sy = y1 < y2 ? 1 : -1;
   let err = dx + dy;
@@ -512,8 +512,8 @@ export function drawThickLine(
     return;
   }
 
-  let dx = Math.abs(x2 - x1);
-  let dy = -Math.abs(y2 - y1);
+  const dx = Math.abs(x2 - x1);
+  const dy = -Math.abs(y2 - y1);
   const sx = x1 < x2 ? 1 : -1;
   const sy = y1 < y2 ? 1 : -1;
   let err = dx + dy;

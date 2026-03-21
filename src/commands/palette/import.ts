@@ -33,7 +33,7 @@ export default class PaletteImport extends BaseCommand {
     }
 
     let parsed: PaletteColorRgb[];
-    let paletteName = flags.name;
+    const paletteName = flags.name;
 
     switch (fmt) {
       case 'gpl': {

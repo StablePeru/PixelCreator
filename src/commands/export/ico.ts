@@ -40,7 +40,7 @@ export default class ExportIco extends BaseCommand {
 
     for (const size of sizes) {
       const scale = Math.max(1, Math.round(size / Math.max(canvas.width, canvas.height)));
-      let scaled = scale > 1 ? scaleBuffer(baseBuf, scale) : baseBuf;
+      const scaled = scale > 1 ? scaleBuffer(baseBuf, scale) : baseBuf;
       // If the scaled buffer doesn't match the target size, we still use it
       pngBuffers.push(encodePNG(scaled));
     }

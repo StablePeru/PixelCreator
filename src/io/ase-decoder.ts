@@ -128,7 +128,7 @@ export function decodeAse(data: Buffer): AseFile {
   const layers: AseLayer[] = [];
   const cels: AseCel[] = [];
   const tags: AseTag[] = [];
-  let palette: AseColor[] = [];
+  const palette: AseColor[] = [];
   const frameDurations: number[] = [];
 
   // Frames

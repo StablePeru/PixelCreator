@@ -4,6 +4,20 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [1.0.0] - 2026-03-21
+
+### v1.0.0 — Stable Release
+
+PixelCreator reaches its first stable release after 20 milestones.
+
+- **161 commands** across 14 topics
+- **15 core engines**, **10 I/O modules**, **14 blend modes**
+- **Layer groups** with hierarchical compositing and clipping masks
+- **Texture atlas** for Unity/Godot, Aseprite .ase import/export
+- **837 tests, 0 failures**, CI/CD via GitHub Actions
+- Fixed 9 flaky tests (timeout config), 7 ESLint errors, documentation accuracy
+- Expanded README with formats table, workflow examples, installation guide
+
 ## [0.19.0] - 2026-03-21
 
 ### Added — Milestone 19: Pixel Art Utilities
