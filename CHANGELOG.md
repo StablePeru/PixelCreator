@@ -4,6 +4,34 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [0.16.0] - 2026-03-21
+
+### Added — Milestone 16: Scripting & Workflow
+
+#### Snapshot System
+- `snapshot-io.ts` — Create, list, restore, delete canvas snapshots
+- `project:snapshot` — Save canvas state (`--description`)
+- `project:restore` — Restore canvas from snapshot (`--snapshot ID`)
+- `project:snapshots` — List all snapshots
+
+#### Batch Operations
+- `draw:batch-replace` — Find & replace color across all layers/frames (`--all-frames`, `--all-layers`, `--tolerance`)
+- `canvas:batch-run` — Execute command on each canvas (`--all`, `--canvases`, `{{canvas}}` template)
+
+#### Project Utilities
+- `project:clean` — Clean temporary data (`--snapshots`, `--clipboard`, `--selections`, `--all`)
+- `project:watch` — Watch for file changes and trigger recipe/command (`--recipe`, `--command`, `--debounce`)
+
+#### Storage
+- Snapshots stored at `{project}.pxc/snapshots/{id}/` with full canvas copy + metadata JSON
+
+#### Test Coverage
+- Unit tests: snapshot-io (9)
+- Integration tests: workflow (9)
+- Total: 18 new tests
+
+**Total: 7 new commands, 1 new I/O module, 18 new tests**
+
 ## [0.15.0] - 2026-03-21
 
 ### Added — Milestone 15: Animation v2

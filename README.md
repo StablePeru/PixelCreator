@@ -4,7 +4,7 @@ CLI-first professional pixel art tool for game development.
 
 ## Features
 
-- **141 commands** across 14 topics — full pixel art workflow from the terminal
+- **148 commands** across 14 topics — full pixel art workflow from the terminal
 - **Directory-based .pxc project format** — git-friendly, human-readable
 - **Drawing primitives** — pixel, line, rect, circle, ellipse, polygon, bezier, fill, gradient, outline, stamp, pattern fill, thickness
 - **Layer system** — 14 blend modes, layer groups, clipping masks, transforms, color effects
