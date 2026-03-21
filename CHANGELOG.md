@@ -4,6 +4,37 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [1.1.0] - 2026-03-21
+
+### Added — Milestone 21: Plugin System
+
+#### New Core Modules
+- `hook-manager.ts` — Singleton hook registry with pre:command, post:command, on:error lifecycle hooks
+- `plugin-loader.ts` — Plugin discovery (project + user level), manifest validation, install/uninstall, scaffold generator
+
+#### New Types
+- `plugin.ts` — PluginManifest, PluginInfo, HookName, HookFn, HookContext
+
+#### Plugin Commands (6 new)
+- `plugin:init` — Create plugin scaffold (manifest.json + index.js)
+- `plugin:install` — Install plugin from local directory into project
+- `plugin:list` — List all installed plugins
+- `plugin:info` — Show plugin details (commands, hooks, version)
+- `plugin:toggle` — Enable/disable plugin (marker file system)
+- `plugin:uninstall` — Remove plugin from project
+
+#### Plugin Storage
+- Project-level: `{project}.pxc/plugins/{name}/`
+- User-level: `~/.pxc/plugins/{name}/`
+- Each plugin: `manifest.json` + `index.js`
+
+#### Test Coverage
+- Unit tests: hook-manager (8), plugin-loader (10)
+- Integration tests: plugin-commands (8)
+- Total: 26 new tests, 863 total, 0 failures
+
+**Total: 6 new commands, 2 new core modules, 26 new tests**
+
 ## [1.0.0] - 2026-03-21
 
 ### v1.0.0 — Stable Release

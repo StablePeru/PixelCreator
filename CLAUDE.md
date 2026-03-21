@@ -15,7 +15,7 @@
 - **CLI Framework**: Oclif v4 with topic:command pattern (e.g., `draw:pixel`)
 - **Binary**: `pxc` — all commands under `src/commands/{topic}/{command}.ts`
 
-### Command Topics (14 topics, 161 commands)
+### Command Topics (15 topics, 167 commands)
 | Topic | # | Commands |
 |-------|---|----------|
 | `animation` | 12 | create-tag, cycle-palette, ease, edit-tag, export, list-tags, onion-skin, preview, remove-tag, reverse-frames, set-timing, tween |
@@ -31,9 +31,10 @@
 | `select` | 11 | all, color, copy, cut, ellipse, info, invert, move, none, paste, rect |
 | `template` | 5 | apply, create, delete, info, list |
 | `tileset` | 12 | add-tile, create, create-tilemap, delete-tilemap, export, export-tilemap, info, list, remove-tile, render-tilemap, set-cell, tile-props |
+| `plugin` | 6 | init, install, list, info, toggle, uninstall |
 | `validate` | 2 | palette, size |
 
-### Core Engines (`src/core/` — 15 engines)
+### Core Engines (`src/core/` — 15 engines + 2 plugin modules)
 - `animation-engine.ts` — frame sequence resolution, timing, onion skin, palette cycling, reverse
 - `color-analysis-engine.ts` — histogram, palette generation, color harmony, HSL, buffer comparison
 - `tween-engine.ts` — frame interpolation (cross-fade), easing functions
@@ -120,5 +121,5 @@ exports/                        — export output directory
 - **Node**: >= 20.0.0
 - **Package manager**: pnpm
 
-## Current Status: v1.0.0 — Stable Release
-161 commands across 14 topics, 15 core engines, 83 test suites, 837 tests (0 failures). CI/CD via GitHub Actions. See CHANGELOG.md for milestone details.
+## Current Status: v1.1.0 — Plugin System
+167 commands across 15 topics, 15 core engines + 2 plugin modules, 86 test suites, 863 tests (0 failures). CI/CD via GitHub Actions. See CHANGELOG.md for milestone details.

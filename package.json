@@ -1,6 +1,6 @@
 {
   "name": "pixelcreator",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "CLI-first professional pixel art tool for game development",
   "type": "module",
   "bin": {
@@ -76,6 +76,9 @@
       },
       "select": {
         "description": "Selection and clipboard operations"
+      },
+      "plugin": {
+        "description": "Plugin management"
       }
     }
   },
