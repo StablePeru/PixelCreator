@@ -15,24 +15,25 @@
 - **CLI Framework**: Oclif v4 with topic:command pattern (e.g., `draw:pixel`)
 - **Binary**: `pxc` — all commands under `src/commands/{topic}/{command}.ts`
 
-### Command Topics (15 topics, 167 commands)
+### Command Topics (16 topics, 170 commands)
 | Topic | # | Commands |
 |-------|---|----------|
 | `animation` | 12 | create-tag, cycle-palette, ease, edit-tag, export, list-tags, onion-skin, preview, remove-tag, reverse-frames, set-timing, tween |
 | `canvas` | 19 | batch-run, clone, color-count, compare, create, crop, delete, extract, flip, histogram, info, list, reduce-colors, rename, resize, resize-bilinear, rotate, scale, stats |
 | `draw` | 18 | batch-replace, bezier, circle, color-info, ellipse, fill, gradient, line, outline, pattern-fill, pixel, polygon, polyline, radial-gradient, rect, replace-color, sample, stamp |
-| `export` | 17 | 9slice, apng, ase, atlas, batch, css, data-url, gif, ico, layers, palette-image, png, profile, run, sequence, spritesheet, svg |
+| `export` | 18 | 9slice, apng, ase, atlas, batch, css, data-url, gif, html, ico, layers, palette-image, png, profile, run, sequence, spritesheet, svg |
 | `frame` | 8 | add, copy-to, duplicate, label, labels, list, remove, reorder |
 | `import` | 5 | ase, gif, palette-image, png, spritesheet |
 | `layer` | 23 | add, blend, brightness, clip, contrast, create-group, desaturate, dither, duplicate, edit, flip, hue-shift, invert, list, list-tree, merge, merge-visible, move-to-group, posterize, remove, reorder, rotate, ungroup |
 | `palette` | 12 | constraints, create, edit, export, extract, generate, harmony, import, info, list, ramp, sort |
-| `project` | 11 | clean, description, info, init, restore, settings, snapshot, snapshots, tags, validation, watch |
+| `plugin` | 6 | init, install, list, info, toggle, uninstall |
+| `project` | 12 | benchmark, clean, description, info, init, restore, settings, snapshot, snapshots, tags, validation, watch |
 | `recipe` | 5 | create, delete, info, list, run |
 | `select` | 11 | all, color, copy, cut, ellipse, info, invert, move, none, paste, rect |
 | `template` | 5 | apply, create, delete, info, list |
 | `tileset` | 12 | add-tile, create, create-tilemap, delete-tilemap, export, export-tilemap, info, list, remove-tile, render-tilemap, set-cell, tile-props |
-| `plugin` | 6 | init, install, list, info, toggle, uninstall |
 | `validate` | 2 | palette, size |
+| `view` | 2 | preview, web |
 
 ### Core Engines (`src/core/` — 15 engines + 2 plugin modules)
 - `animation-engine.ts` — frame sequence resolution, timing, onion skin, palette cycling, reverse
@@ -121,5 +122,5 @@ exports/                        — export output directory
 - **Node**: >= 20.0.0
 - **Package manager**: pnpm
 
-## Current Status: v1.3.0 — Visual Preview
-171 commands across 16 topics, 15 core engines + 4 infra + 2 renderers, 92 test suites, 904 tests (0 failures). Terminal ANSI preview, HTML export, web server preview. CI/CD via GitHub Actions.
+## Current Status: v1.3.0 — Final Release
+170 commands across 16 topics, 15 core engines + 4 infra + 2 renderers, 92 test suites, 904 tests (0 failures). CI/CD via GitHub Actions. See CHANGELOG.md for full history.
