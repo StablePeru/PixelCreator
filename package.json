@@ -88,6 +88,14 @@
   ],
   "author": "stabl",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/StablePeru/PixelCreator.git"
+  },
+  "homepage": "https://github.com/StablePeru/PixelCreator#readme",
+  "bugs": {
+    "url": "https://github.com/StablePeru/PixelCreator/issues"
+  },
   "dependencies": {
     "@oclif/core": "^4.9.0",
     "@oclif/plugin-help": "^6.2.38",
