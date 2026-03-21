@@ -4,6 +4,38 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [0.15.0] - 2026-03-21
+
+### Added — Milestone 15: Animation v2
+
+#### New Core Engine
+- `tween-engine.ts` — `tweenFrames` (pixel cross-fade interpolation), `applyEasing` (linear, ease-in, ease-out, ease-in-out)
+
+#### Animation Engine Enhancements
+- `generatePaletteCycleFrames` — Generate animation frames by rotating palette colors
+- `reverseFrameRange` — Reverse frame order (durations and labels) within a range
+
+#### Animation Commands (4 new)
+- `animation:tween` — Generate interpolated frames between two keyframes (`--steps`, `--layer`)
+- `animation:cycle-palette` — Generate palette cycling animation (`--indices`, `--frames`, `--duration`)
+- `animation:reverse-frames` — Reverse frame order in range (`--from/--to` or `--tag`)
+- `animation:ease` — Apply easing curve to frame durations (`--ease`, `--total-duration`)
+
+#### Frame Commands (3 new)
+- `frame:copy-to` — Copy frames between canvases (`--frame`, `--range`)
+- `frame:label` — Set or clear label on a frame (`--label`, `--clear`)
+- `frame:labels` — List all labeled frames in a canvas
+
+#### Type Changes
+- `FrameInfo` gains optional `label?: string` field (backward compatible)
+
+#### Test Coverage
+- Unit tests: tween-engine (14), animation-engine-v2 (11)
+- Integration tests: animation-v2 (11)
+- Total: 36 new tests
+
+**Total: 7 new commands, 1 new engine, 36 new tests**
+
 ## [0.14.0] - 2026-03-21
 
 ### Added — Milestone 14: Layer System v2

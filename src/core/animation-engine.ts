@@ -110,3 +110,62 @@ export function validateTagRange(tag: AnimationTag, frameCount: number): string 
   if (tag.from > tag.to) return `Tag "${tag.name}" from index ${tag.from} is greater than to index ${tag.to}`;
   return null;
 }
+
+export function generatePaletteCycleFrames(
+  buffer: PixelBuffer,
+  paletteColors: RGBA[],
+  cycleIndices: number[],
+  frameCount: number,
+): PixelBuffer[] {
+  const results: PixelBuffer[] = [];
+  const cycleColors = cycleIndices.map((i) => paletteColors[i]);
+
+  for (let frame = 0; frame < frameCount; frame++) {
+    const shifted = new PixelBuffer(buffer.width, buffer.height);
+
+    for (let y = 0; y < buffer.height; y++) {
+      for (let x = 0; x < buffer.width; x++) {
+        const pixel = buffer.getPixel(x, y);
+        if (pixel.a === 0) continue;
+
+        // Check if this pixel matches one of the cycle colors
+        let matched = false;
+        for (let ci = 0; ci < cycleColors.length; ci++) {
+          const cc = cycleColors[ci];
+          if (pixel.r === cc.r && pixel.g === cc.g && pixel.b === cc.b && pixel.a === cc.a) {
+            // Shift to next color in cycle
+            const newIdx = (ci + frame) % cycleColors.length;
+            shifted.setPixel(x, y, cycleColors[newIdx]);
+            matched = true;
+            break;
+          }
+        }
+
+        if (!matched) {
+          shifted.setPixel(x, y, pixel);
+        }
+      }
+    }
+
+    results.push(shifted);
+  }
+
+  return results;
+}
+
+export function reverseFrameRange(frames: FrameInfo[], from: number, to: number): FrameInfo[] {
+  const result = [...frames];
+  const rangeFrames = result.slice(from, to + 1).reverse();
+
+  // Preserve IDs and indices but swap durations and labels
+  for (let i = 0; i < rangeFrames.length; i++) {
+    const targetIdx = from + i;
+    result[targetIdx] = {
+      ...result[targetIdx],
+      duration: rangeFrames[i].duration,
+      label: rangeFrames[i].label,
+    };
+  }
+
+  return result;
+}

@@ -22,6 +22,7 @@ export interface FrameInfo {
   id: string;
   index: number;
   duration: number;
+  label?: string;
 }
 
 export type AnimationDirection = 'forward' | 'reverse' | 'pingpong';
