@@ -121,5 +121,5 @@ exports/                        — export output directory
 - **Node**: >= 20.0.0
 - **Package manager**: pnpm
 
-## Current Status: v1.2.0 — Performance & Scale
-168 commands across 15 topics, 15 core engines + 4 infrastructure modules, 89 test suites, 885 tests (0 failures). Buffer pool, composite cache, optimized pixel ops. CI/CD via GitHub Actions.
+## Current Status: v1.3.0 — Visual Preview
+171 commands across 16 topics, 15 core engines + 4 infra + 2 renderers, 92 test suites, 904 tests (0 failures). Terminal ANSI preview, HTML export, web server preview. CI/CD via GitHub Actions.

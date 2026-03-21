@@ -4,6 +4,18 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [1.3.0] - 2026-03-21
+
+### Added — Milestone 23: Visual Preview (TUI + Web)
+
+- `terminal-renderer.ts` — ANSI 256/truecolor pixel rendering with half-block chars (▀▄)
+- `html-renderer.ts` — Standalone HTML with embedded PNG, zoom, grid, animation playback
+- `view:preview` — Preview pixel art in terminal with ANSI colors (`--truecolor`)
+- `view:web` — Local HTTP server with browser preview (`--port`)
+- `export:html` — Export as interactive HTML (`--animated`, `--grid`, `--scale`)
+- New `view` topic registered
+- 19 new tests, 904 total, 0 failures. 0 new dependencies.
+
 ## [1.2.0] - 2026-03-21
 
 ### Added — Milestone 22: Performance & Scale
