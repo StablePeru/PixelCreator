@@ -4,6 +4,37 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [0.19.0] - 2026-03-21
+
+### Added — Milestone 19: Pixel Art Utilities
+
+#### New Core Engine
+- `color-analysis-engine.ts` — colorHistogram, topColors, generatePalette, colorHarmony, rgbToHsl/hslToRgb, compareBuffers
+
+#### Transform Engine Enhancement
+- `scaleBufferBilinear` — bilinear interpolation resize (vs existing nearest-neighbor)
+
+#### Canvas Commands (5 new)
+- `canvas:histogram` — Color histogram with top N most used colors
+- `canvas:compare` — Pixel-by-pixel comparison of two canvases with diff PNG output
+- `canvas:resize-bilinear` — Resize canvas with bilinear interpolation (`--factor` or `--width/--height`)
+- `canvas:color-count` — Count unique colors in canvas
+- `canvas:reduce-colors` — Reduce canvas to N colors via quantization
+
+#### Palette Commands (2 new)
+- `palette:generate` — Auto-generate optimal palette from canvas colors
+- `palette:harmony` — Generate color harmony palette (complementary/triadic/analogous/split-complementary)
+
+#### Draw Commands (1 new)
+- `draw:color-info` — Display RGB, HSL, hex info for any color (standalone utility)
+
+#### Test Coverage
+- Unit tests: color-analysis-engine (20)
+- Integration tests: pixel-art-utils (12)
+- Total: 32 new tests, 837 total, 0 failures
+
+**Total: 8 new commands, 1 new engine, 32 new tests**
+
 ## [0.18.0] - 2026-03-21
 
 ### Added — Milestone 18: Advanced Export

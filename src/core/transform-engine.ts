@@ -364,3 +364,42 @@ export function ditherBuffer(
 
   return result;
 }
+
+export function scaleBufferBilinear(
+  buffer: PixelBuffer,
+  newWidth: number,
+  newHeight: number,
+): PixelBuffer {
+  const result = new PixelBuffer(newWidth, newHeight);
+  const xRatio = buffer.width / newWidth;
+  const yRatio = buffer.height / newHeight;
+
+  for (let y = 0; y < newHeight; y++) {
+    for (let x = 0; x < newWidth; x++) {
+      const srcX = x * xRatio;
+      const srcY = y * yRatio;
+      const x0 = Math.floor(srcX);
+      const y0 = Math.floor(srcY);
+      const x1 = Math.min(x0 + 1, buffer.width - 1);
+      const y1 = Math.min(y0 + 1, buffer.height - 1);
+      const xFrac = srcX - x0;
+      const yFrac = srcY - y0;
+
+      const p00 = buffer.getPixel(x0, y0);
+      const p10 = buffer.getPixel(x1, y0);
+      const p01 = buffer.getPixel(x0, y1);
+      const p11 = buffer.getPixel(x1, y1);
+
+      const lerp = (a: number, b: number, t: number) => Math.round(a + (b - a) * t);
+
+      result.setPixel(x, y, {
+        r: lerp(lerp(p00.r, p10.r, xFrac), lerp(p01.r, p11.r, xFrac), yFrac),
+        g: lerp(lerp(p00.g, p10.g, xFrac), lerp(p01.g, p11.g, xFrac), yFrac),
+        b: lerp(lerp(p00.b, p10.b, xFrac), lerp(p01.b, p11.b, xFrac), yFrac),
+        a: lerp(lerp(p00.a, p10.a, xFrac), lerp(p01.a, p11.a, xFrac), yFrac),
+      });
+    }
+  }
+
+  return result;
+}

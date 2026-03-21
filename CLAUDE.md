@@ -15,17 +15,17 @@
 - **CLI Framework**: Oclif v4 with topic:command pattern (e.g., `draw:pixel`)
 - **Binary**: `pxc` — all commands under `src/commands/{topic}/{command}.ts`
 
-### Command Topics (14 topics, 152 commands)
+### Command Topics (14 topics, 160 commands)
 | Topic | # | Commands |
 |-------|---|----------|
 | `animation` | 12 | create-tag, cycle-palette, ease, edit-tag, export, list-tags, onion-skin, preview, remove-tag, reverse-frames, set-timing, tween |
-| `canvas` | 14 | batch-run, clone, create, crop, delete, extract, flip, info, list, rename, resize, rotate, scale, stats |
-| `draw` | 17 | batch-replace, bezier, circle, ellipse, fill, gradient, line, outline, pattern-fill, pixel, polygon, polyline, radial-gradient, rect, replace-color, sample, stamp |
+| `canvas` | 19 | batch-run, clone, color-count, compare, create, crop, delete, extract, flip, histogram, info, list, reduce-colors, rename, resize, resize-bilinear, rotate, scale, stats |
+| `draw` | 18 | batch-replace, bezier, circle, color-info, ellipse, fill, gradient, line, outline, pattern-fill, pixel, polygon, polyline, radial-gradient, rect, replace-color, sample, stamp |
 | `export` | 17 | 9slice, apng, ase, atlas, batch, css, data-url, gif, ico, layers, palette-image, png, profile, run, sequence, spritesheet, svg |
 | `frame` | 8 | add, copy-to, duplicate, label, labels, list, remove, reorder |
 | `import` | 5 | ase, gif, palette-image, png, spritesheet |
 | `layer` | 23 | add, blend, brightness, clip, contrast, create-group, desaturate, dither, duplicate, edit, flip, hue-shift, invert, list, list-tree, merge, merge-visible, move-to-group, posterize, remove, reorder, rotate, ungroup |
-| `palette` | 10 | constraints, create, edit, export, extract, import, info, list, ramp, sort |
+| `palette` | 12 | constraints, create, edit, export, extract, generate, harmony, import, info, list, ramp, sort |
 | `project` | 10 | clean, description, info, init, restore, settings, snapshot, snapshots, tags, validation, watch |
 | `recipe` | 5 | create, delete, info, list, run |
 | `select` | 11 | all, color, copy, cut, ellipse, info, invert, move, none, paste, rect |
@@ -33,8 +33,9 @@
 | `tileset` | 12 | add-tile, create, create-tilemap, delete-tilemap, export, export-tilemap, info, list, remove-tile, render-tilemap, set-cell, tile-props |
 | `validate` | 2 | palette, size |
 
-### Core Engines (`src/core/` — 14 engines)
+### Core Engines (`src/core/` — 15 engines)
 - `animation-engine.ts` — frame sequence resolution, timing, onion skin, palette cycling, reverse
+- `color-analysis-engine.ts` — histogram, palette generation, color harmony, HSL, buffer comparison
 - `tween-engine.ts` — frame interpolation (cross-fade), easing functions
 - `drawing-engine.ts` — pixel, line, rect, circle, ellipse, fill, gradient, outline, polygon, polyline, bezier, radial gradient, pattern fill, stamp, thickness
 - `frame-renderer.ts` — multi-layer flatten with blend modes for export paths
@@ -119,5 +120,5 @@ exports/                        — export output directory
 - **Node**: >= 20.0.0
 - **Package manager**: pnpm
 
-## Current Status: v0.18.0 — Milestone 18 Complete
-152 commands across 14 topics, 14 core engines, 81 test suites, 805 tests (0 failures). CI/CD via GitHub Actions. See CHANGELOG.md for milestone details.
+## Current Status: v0.19.0 — Milestone 19 Complete
+160 commands across 14 topics, 15 core engines, 83 test suites, 837 tests (0 failures). CI/CD via GitHub Actions. See CHANGELOG.md for milestone details.
