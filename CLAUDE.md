@@ -15,7 +15,7 @@
 - **CLI Framework**: Oclif v4 with topic:command pattern (e.g., `draw:pixel`)
 - **Binary**: `pxc` — all commands under `src/commands/{topic}/{command}.ts`
 
-### Command Topics (14 topics, 129 commands)
+### Command Topics (14 topics, 134 commands)
 | Topic | # | Commands |
 |-------|---|----------|
 | `animation` | 8 | create-tag, edit-tag, export, list-tags, onion-skin, preview, remove-tag, set-timing |
@@ -24,7 +24,7 @@
 | `export` | 13 | 9slice, apng, batch, css, gif, layers, palette-image, png, profile, run, sequence, spritesheet, svg |
 | `frame` | 5 | add, duplicate, list, remove, reorder |
 | `import` | 5 | ase, gif, palette-image, png, spritesheet |
-| `layer` | 18 | add, blend, brightness, contrast, desaturate, dither, duplicate, edit, flip, hue-shift, invert, list, merge, merge-visible, posterize, remove, reorder, rotate |
+| `layer` | 23 | add, blend, brightness, clip, contrast, create-group, desaturate, dither, duplicate, edit, flip, hue-shift, invert, list, list-tree, merge, merge-visible, move-to-group, posterize, remove, reorder, rotate, ungroup |
 | `palette` | 10 | constraints, create, edit, export, extract, import, info, list, ramp, sort |
 | `project` | 6 | description, info, init, settings, tags, validation |
 | `recipe` | 5 | create, delete, info, list, run |
@@ -37,7 +37,7 @@
 - `animation-engine.ts` — frame sequence resolution, timing, onion skin compositing
 - `drawing-engine.ts` — pixel, line, rect, circle, ellipse, fill, gradient, outline, polygon, polyline, bezier, radial gradient, pattern fill, stamp, thickness
 - `frame-renderer.ts` — multi-layer flatten with blend modes for export paths
-- `layer-engine.ts` — alpha compositing, blend modes (normal, multiply, screen, overlay, darken, lighten), merge, resize
+- `layer-engine.ts` — alpha compositing, 14 blend modes, layer groups, clipping masks, merge, resize
 - `palette-engine.ts` — color sorting (hue/luminance/saturation), ramp generation, HSL conversion
 - `recipe-engine.ts` — recipe validation, variable resolution, command argument building
 - `spritesheet-engine.ts` — spritesheet layout (horizontal/vertical/grid), decompose
@@ -116,5 +116,5 @@ exports/                        — export output directory
 - **Node**: >= 20.0.0
 - **Package manager**: pnpm
 
-## Current Status: v0.13.0 — Milestone 13 Complete
-129 commands across 14 topics, 13 core engines, ~73 test suites. See CHANGELOG.md for milestone details.
+## Current Status: v0.14.0 — Milestone 14 Complete
+134 commands across 14 topics, 13 core engines, ~75 test suites. See CHANGELOG.md for milestone details.

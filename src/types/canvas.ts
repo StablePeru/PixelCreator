@@ -1,5 +1,8 @@
 export type LayerType = 'normal' | 'reference' | 'tilemap';
-export type BlendMode = 'normal' | 'multiply' | 'screen' | 'overlay' | 'darken' | 'lighten';
+export type BlendMode =
+  | 'normal' | 'multiply' | 'screen' | 'overlay' | 'darken' | 'lighten'
+  | 'color-dodge' | 'color-burn' | 'hard-light' | 'soft-light'
+  | 'difference' | 'exclusion' | 'addition' | 'subtract';
 
 export interface LayerInfo {
   id: string;
@@ -10,6 +13,9 @@ export interface LayerInfo {
   blendMode: BlendMode;
   locked: boolean;
   order: number;
+  parentId?: string | null;
+  isGroup?: boolean;
+  clipping?: boolean;
 }
 
 export interface FrameInfo {

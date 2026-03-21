@@ -4,7 +4,11 @@ import { getProjectPath, readCanvasJSON, writeCanvasJSON } from '../../io/projec
 import { formatOutput, makeResult } from '../../utils/output-formatter.js';
 import type { BlendMode } from '../../types/canvas.js';
 
-const VALID_MODES: BlendMode[] = ['normal', 'multiply', 'screen', 'overlay', 'darken', 'lighten'];
+const VALID_MODES: BlendMode[] = [
+  'normal', 'multiply', 'screen', 'overlay', 'darken', 'lighten',
+  'color-dodge', 'color-burn', 'hard-light', 'soft-light',
+  'difference', 'exclusion', 'addition', 'subtract',
+];
 
 export default class LayerBlend extends BaseCommand {
   static description = 'Set the blend mode for a layer';
@@ -22,7 +26,7 @@ export default class LayerBlend extends BaseCommand {
     }),
     mode: Flags.string({
       char: 'm',
-      description: 'Blend mode (normal, multiply, screen, overlay, darken, lighten)',
+      description: 'Blend mode (normal, multiply, screen, overlay, darken, lighten, color-dodge, color-burn, hard-light, soft-light, difference, exclusion, addition, subtract)',
       required: true,
     }),
   };

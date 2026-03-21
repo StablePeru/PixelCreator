@@ -4,6 +4,47 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [0.14.0] - 2026-03-21
+
+### Added — Milestone 14: Layer System v2
+
+#### Blend Mode Expansion (8 new, 14 total)
+- `color-dodge` — Brightens destination (division-like curve)
+- `color-burn` — Darkens destination (inversion curve)
+- `hard-light` — Overlay with layer roles reversed
+- `soft-light` — Subtle overlay variant
+- `difference` — Absolute difference between channels
+- `exclusion` — Lower contrast difference
+- `addition` — Clamped arithmetic addition (light effects)
+- `subtract` — Clamped arithmetic subtraction
+
+#### Layer Groups
+- `layer:create-group` — Create layer folder with optional `--parent` for nesting
+- `layer:move-to-group` — Move layer into a group (or back to root)
+- `layer:ungroup` — Dissolve group, move children to parent
+- `layer:list-tree` — Display layer hierarchy as tree
+- `flattenLayerTree` — Recursive group compositing in layer-engine
+
+#### Clipping Masks
+- `layer:clip` — Enable/disable clipping mask (`--no-clip` to disable)
+- `applyClippingMask` — Clips layer to non-transparent pixels of previous layer
+- Clipping applied during layer compositing in `flattenLayers`
+
+#### Modified Commands
+- `layer:blend` — Now supports all 14 blend modes
+- `layer:add` — New flags: `--parent` (group ID), `--clipping`
+
+#### Type Changes (backward compatible)
+- `BlendMode` type expanded with 8 new values
+- `LayerInfo` gains optional fields: `parentId`, `isGroup`, `clipping` (defaults preserve backward compat)
+
+#### Test Coverage
+- Unit tests: layer-engine-advanced (19 tests — blend modes, groups, clipping)
+- Integration tests: layer-v2 (13 tests — commands, hierarchy, blend modes)
+- Total: 32 new tests, 0 breaking changes
+
+**Total: 5 new commands, 2 modified commands, 8 new blend modes, 32 new tests**
+
 ## [0.13.0] - 2026-03-21
 
 ### Added — Milestone 13: Interoperability

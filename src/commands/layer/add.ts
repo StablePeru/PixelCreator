@@ -34,6 +34,8 @@ export default class LayerAdd extends BaseCommand {
       description: 'Canvas name',
       required: true,
     }),
+    parent: Flags.string({ description: 'Parent group ID' }),
+    clipping: Flags.boolean({ description: 'Enable clipping mask', default: false }),
   };
 
   async run(): Promise<void> {
@@ -52,6 +54,13 @@ export default class LayerAdd extends BaseCommand {
     const layerId = generateSequentialId('layer', nextIndex);
     const layerType = flags.type as LayerType;
 
+    if (flags.parent) {
+      const parentLayer = canvas.layers.find((l) => l.id === flags.parent);
+      if (!parentLayer || !parentLayer.isGroup) {
+        this.error(`Parent group "${flags.parent}" not found`);
+      }
+    }
+
     canvas.layers.push({
       id: layerId,
       name: flags.name,
@@ -61,6 +70,9 @@ export default class LayerAdd extends BaseCommand {
       blendMode: 'normal',
       locked: false,
       order: canvas.layers.length,
+      parentId: flags.parent || null,
+      isGroup: false,
+      clipping: flags.clipping,
     });
 
     ensureCanvasStructure(projectPath, flags.canvas, canvas);
