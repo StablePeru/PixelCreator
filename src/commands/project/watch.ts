@@ -33,6 +33,10 @@ export default class ProjectWatch extends BaseCommand {
       throw new Error('Must provide --recipe or --command');
     }
 
+    if (flags.command && /[;&|`$()]/.test(flags.command)) {
+      throw new Error('Command contains unsafe shell characters. Use a recipe for complex operations.');
+    }
+
     const watchDir = path.join(projectPath, flags.pattern);
     if (!fs.existsSync(watchDir)) {
       throw new Error(`Watch directory not found: ${watchDir}`);
@@ -66,8 +70,9 @@ export default class ProjectWatch extends BaseCommand {
           });
           console.log(`[${timestamp}] Command completed`);
         }
-      } catch (err: any) {
-        console.error(`[${timestamp}] Error: ${err.stderr?.split('\n')[0] || 'Unknown error'}`);
+      } catch (err: unknown) {
+        const msg = err instanceof Error ? err.message : 'Unknown error';
+        console.error(`[${timestamp}] Error: ${msg}`);
       }
       running = false;
     };

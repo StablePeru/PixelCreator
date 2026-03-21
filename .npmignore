@@ -1,0 +1,15 @@
+test/
+src/
+.github/
+.editorconfig
+.prettierrc
+tsconfig.json
+tsup.config.ts
+vitest.config.ts
+eslint.config.js
+coverage/
+*.tsbuildinfo
+CLAUDE.md
+tmp/
+.DS_Store
+pnpm-config.json

@@ -20,7 +20,13 @@ export default class LayerListTree extends BaseCommand {
 
     const canvas = readCanvasJSON(projectPath, flags.canvas);
 
-    const buildTree = (layers: LayerInfo[], parentId: string | null, depth: number): any[] => {
+    interface TreeNode {
+      id: string; name: string; type: string; visible: boolean;
+      opacity: number; blendMode: string; clipping: boolean; depth: number;
+      children?: TreeNode[];
+    }
+
+    const buildTree = (layers: LayerInfo[], parentId: string | null, depth: number): TreeNode[] => {
       const children = getChildLayers(layers, parentId)
         .sort((a, b) => a.order - b.order);
       return children.map((layer) => ({
@@ -41,7 +47,7 @@ export default class LayerListTree extends BaseCommand {
     const result = makeResult('layer:list-tree', { canvas: flags.canvas }, { tree, layerCount: canvas.layers.length }, startTime);
     const format = this.getOutputFormat(flags);
     formatOutput(format, result, () => {
-      const printLayer = (node: any, indent: string) => {
+      const printLayer = (node: TreeNode, indent: string) => {
         const icon = node.type === 'group' ? '[G]' : node.clipping ? '[C]' : '   ';
         const vis = node.visible ? ' ' : 'H';
         console.log(`${indent}${icon} ${vis} ${node.name} (${node.id}) blend:${node.blendMode} opacity:${node.opacity}`);

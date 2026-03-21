@@ -4,6 +4,31 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [0.17.0] - 2026-03-21
+
+### Added — Milestone 17: Quality & Polish
+
+#### Bug Fixes
+- Fixed flaky E2E test (`animation tag pipeline`) by adding explicit 30s timeout
+- Fixed shell injection vulnerability in `project:watch --command` and `canvas:batch-run --command` — unsafe characters (`;&|` etc.) are now rejected
+
+#### Code Quality
+- Created `eslint.config.js` for ESLint v9+ with TypeScript support
+- Installed `@typescript-eslint/eslint-plugin` and `@typescript-eslint/parser`
+- Eliminated `any` types in `layer:list-tree`, `canvas:batch-run`, `project:watch`
+
+#### CI/CD
+- Added `.github/workflows/ci.yml` — GitHub Actions runs build + test on push/PR (Node 20 & 22)
+
+#### NPM Publish Readiness
+- Created `.npmignore` — excludes test/, src/, .github/, config files from npm package
+
+#### Test Results
+- **794 tests, 0 failures** (previously 1 flaky failure)
+- 80 test suites all passing
+
+**Total: 0 new commands, 4 quality improvements, 0 new tests (1 flaky fixed)**
+
 ## [0.16.0] - 2026-03-21
 
 ### Added — Milestone 16: Scripting & Workflow

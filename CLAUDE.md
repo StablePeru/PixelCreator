@@ -118,5 +118,5 @@ exports/                        — export output directory
 - **Node**: >= 20.0.0
 - **Package manager**: pnpm
 
-## Current Status: v0.16.0 — Milestone 16 Complete
-148 commands across 14 topics, 14 core engines, ~80 test suites. See CHANGELOG.md for milestone details.
+## Current Status: v0.17.0 — Milestone 17 Complete
+148 commands across 14 topics, 14 core engines, 80 test suites, 794 tests (0 failures). CI/CD via GitHub Actions. See CHANGELOG.md for milestone details.

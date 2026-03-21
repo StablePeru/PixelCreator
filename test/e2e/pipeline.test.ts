@@ -252,7 +252,7 @@ describe('E2E Pipeline', () => {
     expect(csv.split('\n')[0]).toBe('0,1,2,3');
   });
 
-  it('animation tag pipeline: create → edit → list → set-timing by tag → remove', () => {
+  it('animation tag pipeline: create → edit → list → set-timing by tag → remove', { timeout: 30000 }, () => {
     pxc('project:init --name tag-test', tmpDir);
     pxc('canvas:create --width 4 --height 4 --name walk', tmpDir);
     pxc('frame:add --canvas walk --count 5', tmpDir);

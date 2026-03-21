@@ -29,6 +29,10 @@ export default class CanvasBatchRun extends BaseCommand {
     const project = readProjectJSON(projectPath);
     let canvasNames: string[];
 
+    if (/[;&|`$()]/.test(flags.command)) {
+      throw new Error('Command contains unsafe shell characters. Use a recipe for complex operations.');
+    }
+
     if (flags.all) {
       canvasNames = project.canvases;
     } else if (flags.canvases) {
@@ -47,8 +51,9 @@ export default class CanvasBatchRun extends BaseCommand {
           timeout: 30000,
         });
         results.push({ canvas: canvasName, success: true, output: output.trim() });
-      } catch (err: any) {
-        results.push({ canvas: canvasName, success: false, error: err.stderr?.split('\n')[0] || 'Unknown error' });
+      } catch (err: unknown) {
+        const msg = err instanceof Error ? err.message : 'Unknown error';
+        results.push({ canvas: canvasName, success: false, error: msg });
       }
     }
 
