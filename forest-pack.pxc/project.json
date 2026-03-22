@@ -1,0 +1,40 @@
+{
+  "version": "1.0.0",
+  "name": "forest-pack",
+  "description": "",
+  "created": "2026-03-21T22:40:53.957Z",
+  "modified": "2026-03-22T00:58:33.833Z",
+  "settings": {
+    "defaultTileSize": {
+      "width": 16,
+      "height": 16
+    },
+    "defaultPalette": null,
+    "pixelPerfect": true
+  },
+  "palettes": [
+    "forest-colors",
+    "test-m5"
+  ],
+  "canvases": [
+    "ranger",
+    "spirit",
+    "pine-tree",
+    "oak-tree",
+    "bush",
+    "rock",
+    "flower",
+    "mushroom",
+    "day-forest",
+    "night-forest"
+  ],
+  "tilesets": [],
+  "templates": [],
+  "recipes": [],
+  "tags": {},
+  "validation": {
+    "paletteEnforcement": "warn",
+    "sizeRules": []
+  },
+  "exportProfiles": {}
+}

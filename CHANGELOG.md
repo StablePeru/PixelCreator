@@ -4,6 +4,141 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [2.0.0-beta.4] - 2026-03-22
+
+### Major — PixelCreator Studio (Web GUI) + Monorepo
+
+Complete rewrite as pnpm workspace monorepo with 3 packages:
+- `@pixelcreator/core` — shared engines, I/O, types
+- `@pixelcreator/cli` — 175 CLI commands across 18 topics
+- `@pixelcreator/studio` — web-based GUI with real-time preview
+
+### Added — Milestones 24-39 (v2.0 development)
+
+**M0: Release Engineering**
+- Git tags for v1.1.0, v1.2.0, v1.3.0
+- GitHub Actions release workflow (`.github/workflows/release.yml`)
+- Release script (`scripts/release.sh`)
+- CI hardened with lint step
+
+**M1: Monorepo + Core Extraction**
+- pnpm workspace with `packages/core/`, `packages/cli/`, `packages/studio/`
+- Barrel export `@pixelcreator/core` with all engines, I/O, types, utils
+- 850+ import rewrites in 170 command files
+- All 904 existing tests passing after migration
+
+**M2: API Server Foundation**
+- Hono REST API server in `packages/studio/`
+- 50+ REST endpoints for project, canvas, draw, palette, layer, frame, animation, selection, clipboard, transform, export, import, tileset, dataset, agent
+- WebSocket server for real-time file change notifications
+- File watcher with debounce on `.pxc` project directory
+- `pxc studio:serve` CLI command
+
+**M3: Live Canvas Preview MVP**
+- React SPA with Vite (dark theme, `#1a1a2e`)
+- Canvas renderer with HTML5 Canvas API, `image-rendering: pixelated`
+- Zoom (1x-32x scroll wheel), pan (shift+drag), pixel grid
+- Checkerboard transparency background
+- WebSocket auto-reconnect with exponential backoff
+- Sidebar with canvas list, TopBar with project info
+
+**M4: Palette & Color Picker**
+- Palette panel with swatch grid, foreground/background selection
+- HSL/RGB color picker with hex input
+- Color history (last 16 colors)
+- Color harmony display (complementary, triadic, analogous, split-complementary)
+- Palette CRUD API (create, update colors, sort, ramp, delete)
+- Eyedropper (canvas pixel sampling)
+
+**M5: Interactive Drawing Tools**
+- 6 tools: Pencil (B), Line (L), Rect (R), Circle (C), Fill (G), Eraser (E)
+- Tool preview overlay during drag
+- Keyboard shortcuts for all tools
+- ToolBar component with options (fill toggle, thickness slider)
+
+**M6: Undo/Redo & History**
+- Buffer-level undo via `PixelBuffer.clone()` before each operation
+- In-memory history stack (50 entries max)
+- `Ctrl+Z` undo, `Ctrl+Shift+Z` redo
+- History API endpoints (undo, redo, status)
+- `withHistory()` helper wraps all draw operations
+
+**M7: Layer Management UI**
+- Layer panel with thumbnails, visibility toggle, lock toggle
+- Blend mode dropdown (14 modes), opacity slider
+- Layer CRUD API (add, edit, delete, duplicate, reorder)
+- Active layer tracking — drawing targets selected layer
+- Layer thumbnail PNG endpoint
+
+**M8: Animation Timeline**
+- Timeline component with frame thumbnails
+- Playback controls (play/pause/stop/step, FPS slider, loop)
+- Animation tag bars visualization
+- Onion skin toggle
+- Frame CRUD API (add, delete, duplicate, timing)
+- Animation tag CRUD API
+
+**M9: Selection & Transform**
+- Selection tools: Marquee Rect (M), Magic Wand (W), Move (V)
+- Selection API (rect, ellipse, color, all, none, invert)
+- Clipboard API (copy, cut, paste)
+- Transform API (flip H/V, rotate 90/180/270, brightness, contrast, invert, desaturate, hue-shift)
+- Transform panel with quick action buttons
+
+**M10: Advanced Drawing Tools**
+- Polygon (P), Gradient (D), Bezier (N) tools
+- API endpoints: polygon, gradient, radial-gradient, bezier, outline, stamp
+- 12 total drawing tools
+
+**M11: Export & Import UI**
+- Export dialog (PNG, GIF, APNG, spritesheet, SVG) with format-specific options
+- Import dialog with drag-and-drop (PNG, GIF)
+- Export API with Content-Disposition download headers
+- Import API with multipart file upload
+
+**M12: Tileset & Tilemap Editor**
+- Tileset creation from canvas (auto-slice + deduplication)
+- Tilemap editor with click-to-place grid
+- Tileset/tilemap CRUD API (9 endpoints)
+- Tileset image and tilemap render as PNG
+
+**M13: Agent Integration Panel**
+- AgentBridge with command logging middleware
+- Agent panel (bottom-right) with real-time command log
+- Color-coded entries by topic, auto-scroll
+- Command palette (`Ctrl+Shift+P`) with search + execute
+
+**M14: AI Training Dataset System**
+- Like/Dislike feedback with reason + 6 tags
+- Snapshot capture at time of rating
+- Dataset API (rate, list, stats, export, delete)
+- JSONL export with base64 PNG images for AI fine-tuning
+- CSV export summary
+- Dataset browser dialog with filters and stats
+- 4 CLI commands: `dataset:rate`, `dataset:list`, `dataset:export`, `dataset:stats`
+
+**M15: Theme & UX Polish**
+- 4 themes: Dark, Light, High Contrast, Aseprite Classic
+- Theme persistence via localStorage
+- Status bar with contextual info
+- Keyboard shortcut reference (`Ctrl+K`)
+- Global CSS transitions
+
+**M16: Performance Optimization**
+- Batch draw endpoint (`POST /api/draw/batch`)
+- Server-side frame cache (LRU with ETag)
+- Client-side request batching (pencil/eraser)
+- Single history entry for batch operations
+
+### Stats
+- 175 commands across 18 topics
+- 19 core engines + 12 I/O modules
+- 50+ REST API endpoints + WebSocket
+- React SPA with 25+ components, 12 drawing tools
+- 112 test files, 1020 tests (0 failures)
+
+---
+
 ## [1.3.0] - 2026-03-21
 
 ### Added — Milestone 23: Visual Preview (TUI + Web)

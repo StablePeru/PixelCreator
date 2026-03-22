@@ -1,0 +1,28 @@
+{
+  "name": "oak-tree",
+  "width": 24,
+  "height": 24,
+  "created": "2026-03-21T22:42:19.833Z",
+  "modified": "2026-03-21T22:42:19.837Z",
+  "palette": null,
+  "layers": [
+    {
+      "id": "layer-001",
+      "name": "background",
+      "type": "normal",
+      "visible": true,
+      "opacity": 255,
+      "blendMode": "normal",
+      "locked": false,
+      "order": 0
+    }
+  ],
+  "frames": [
+    {
+      "id": "frame-001",
+      "index": 0,
+      "duration": 100
+    }
+  ],
+  "animationTags": []
+}

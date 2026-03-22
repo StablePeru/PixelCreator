@@ -7,14 +7,16 @@
 <p align="center">
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="MIT License"></a>
   <img src="https://img.shields.io/badge/node-%3E%3D20-brightgreen.svg" alt="Node >= 20">
-  <img src="https://img.shields.io/badge/commands-170-orange.svg" alt="170 commands">
-  <img src="https://img.shields.io/badge/tests-904%20passing-brightgreen.svg" alt="904 tests">
-  <img src="https://img.shields.io/badge/version-1.3.0-purple.svg" alt="v1.3.0">
+  <img src="https://img.shields.io/badge/commands-175-orange.svg" alt="175 commands">
+  <img src="https://img.shields.io/badge/tests-1020%20passing-brightgreen.svg" alt="1020 tests">
+  <img src="https://img.shields.io/badge/version-2.0.0--beta-purple.svg" alt="v2.0.0-beta">
+  <img src="https://img.shields.io/badge/studio-React%20GUI-blue.svg" alt="Studio GUI">
 </p>
 
 <p align="center">
-  Create, animate, and export pixel art entirely from the command line.<br>
-  Git-friendly project format. JSON output for scripting. Zero GUI required.
+  Professional pixel art tool with CLI + Web GUI for game development.<br>
+  175 commands, real-time web editor (PixelCreator Studio), AI training dataset system.<br>
+  Git-friendly project format. JSON output for scripting.
 </p>
 
 ---
@@ -169,20 +171,36 @@ myproject.pxc/
 
 ## Architecture
 
+pnpm workspace monorepo with 3 packages:
+
 ```
-src/
-  commands/     # 170 oclif commands across 16 topics
-  core/         # 15 pure-function engines (drawing, layers, animation, ...)
-  io/           # 12 I/O modules (PNG, GIF, APNG, ASE, SVG, HTML, ...)
-  types/        # TypeScript interfaces matching JSON schemas
-  utils/        # Output formatting, ID generation, point parsing
+packages/
+  core/         # @pixelcreator/core — 19 engines, 12 I/O modules, types, utils
+  cli/          # @pixelcreator/cli — 175 oclif commands across 18 topics
+  studio/       # @pixelcreator/studio — Web GUI (Hono API + React + WebSocket)
 ```
 
-- **Framework**: [oclif](https://oclif.io) v4 with topic:command pattern
+- **CLI Framework**: [oclif](https://oclif.io) v4 with topic:command pattern
+- **Studio**: [Hono](https://hono.dev) REST API + React SPA + WebSocket real-time
 - **Language**: TypeScript (strict mode, ESM)
-- **Build**: tsup (no bundling, ESM output)
-- **Tests**: vitest with 904 tests across 92 suites
+- **Build**: tsup (server) + Vite (frontend)
+- **Tests**: vitest with 1020 tests across 112 suites
 - **CI/CD**: GitHub Actions (Node 20 + 22)
+
+### PixelCreator Studio
+
+Web-based GUI launched with `pxc studio:serve`:
+- Real-time canvas preview with live updates via WebSocket
+- 12 interactive drawing tools (pencil, line, rect, circle, fill, eraser, marquee, wand, move, polygon, gradient, bezier)
+- Layer management with 14 blend modes
+- Animation timeline with playback controls
+- Color picker (HSL/RGB), palette manager, color harmony
+- Undo/redo with 50-step history
+- Export (PNG, GIF, APNG, spritesheet, SVG) and import (PNG, GIF)
+- Tileset & tilemap editor
+- AI training dataset system (Like/Dislike with JSONL export)
+- Agent activity panel + command palette (Ctrl+Shift+P)
+- 4 themes (Dark, Light, High Contrast, Aseprite)
 
 ## Development
 
@@ -190,8 +208,8 @@ src/
 git clone https://github.com/StablePeru/PixelCreator.git
 cd PixelCreator
 pnpm install
-pnpm build
-pnpm test        # 904 tests
+pnpm -r build
+pnpm -r test     # 1020 tests
 pnpm lint        # ESLint v9+
 pnpm dev         # Watch mode
 ```

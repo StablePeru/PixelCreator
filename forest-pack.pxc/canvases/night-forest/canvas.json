@@ -1,0 +1,67 @@
+{
+  "name": "night-forest",
+  "width": 128,
+  "height": 64,
+  "created": "2026-03-21T22:44:11.764Z",
+  "modified": "2026-03-21T22:44:16.373Z",
+  "palette": null,
+  "layers": [
+    {
+      "id": "layer-001",
+      "name": "background",
+      "type": "normal",
+      "visible": true,
+      "opacity": 255,
+      "blendMode": "normal",
+      "locked": false,
+      "order": 0
+    },
+    {
+      "id": "layer-002",
+      "name": "distant-trees",
+      "type": "normal",
+      "visible": true,
+      "opacity": 255,
+      "blendMode": "normal",
+      "locked": false,
+      "order": 1,
+      "parentId": null,
+      "isGroup": false,
+      "clipping": false
+    },
+    {
+      "id": "layer-003",
+      "name": "ground",
+      "type": "normal",
+      "visible": true,
+      "opacity": 255,
+      "blendMode": "normal",
+      "locked": false,
+      "order": 2,
+      "parentId": null,
+      "isGroup": false,
+      "clipping": false
+    },
+    {
+      "id": "layer-004",
+      "name": "details",
+      "type": "normal",
+      "visible": true,
+      "opacity": 255,
+      "blendMode": "normal",
+      "locked": false,
+      "order": 3,
+      "parentId": null,
+      "isGroup": false,
+      "clipping": false
+    }
+  ],
+  "frames": [
+    {
+      "id": "frame-001",
+      "index": 0,
+      "duration": 100
+    }
+  ],
+  "animationTags": []
+}

@@ -1,0 +1,62 @@
+{
+  "name": "@pixelcreator/cli",
+  "version": "2.0.0-alpha.1",
+  "description": "CLI-first professional pixel art tool for game development",
+  "type": "module",
+  "bin": {
+    "pxc": "./bin/run.js"
+  },
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "bin",
+    "dist",
+    "oclif.manifest.json"
+  ],
+  "scripts": {
+    "build": "tsup && oclif manifest",
+    "dev": "tsup --watch",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "lint": "eslint src/"
+  },
+  "oclif": {
+    "bin": "pxc",
+    "dirname": "pxc",
+    "commands": {
+      "strategy": "pattern",
+      "target": "./dist/commands"
+    },
+    "topicSeparator": ":",
+    "topics": {
+      "canvas": { "description": "Canvas creation and manipulation" },
+      "layer": { "description": "Layer management" },
+      "draw": { "description": "Drawing primitives" },
+      "palette": { "description": "Palette management" },
+      "frame": { "description": "Animation frame management" },
+      "export": { "description": "Export to various formats" },
+      "import": { "description": "Import from various formats" },
+      "project": { "description": "Project management" },
+      "validate": { "description": "Validation commands" },
+      "animation": { "description": "Animation timeline and export" },
+      "tileset": { "description": "Tileset and tilemap management" },
+      "template": { "description": "Template management" },
+      "recipe": { "description": "Recipe automation" },
+      "select": { "description": "Selection and clipboard operations" },
+      "plugin": { "description": "Plugin management" },
+      "view": { "description": "Visual preview and display" },
+      "studio": { "description": "PixelCreator Studio — web GUI" },
+      "dataset": { "description": "AI training dataset management" }
+    }
+  },
+  "dependencies": {
+    "@oclif/core": "^4.9.0",
+    "@oclif/plugin-help": "^6.2.38",
+    "@pixelcreator/core": "workspace:*",
+    "@pixelcreator/studio": "workspace:*"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "license": "MIT"
+}

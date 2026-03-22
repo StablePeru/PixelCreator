@@ -1,0 +1,24 @@
+{
+  "name": "test-m5",
+  "description": "",
+  "colors": [
+    {
+      "index": 0,
+      "hex": "#ff0000",
+      "name": null,
+      "group": null
+    },
+    {
+      "index": 1,
+      "hex": "#00ff00",
+      "name": null,
+      "group": null
+    }
+  ],
+  "constraints": {
+    "maxColors": 256,
+    "locked": false,
+    "allowAlpha": false
+  },
+  "ramps": []
+}

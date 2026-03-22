@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html><head><meta charset="utf-8"><title>ranger</title>
+<style>
+body{margin:0;background:#1a1a2e;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;font-family:monospace;color:#eee}
+canvas{image-rendering:pixelated;border:1px solid #333}
+.controls{margin:10px;display:flex;gap:10px;align-items:center}
+button{background:#333;color:#eee;border:1px solid #555;padding:5px 15px;cursor:pointer;font-family:monospace}
+</style></head><body>
+<div class="controls">
+<button onclick="togglePlay()" id="btn">Pause</button>
+<span id="info">Frame 1/4</span>
+</div>
+<canvas id="c" width="160" height="160"></canvas>
+<script>
+const frames=["data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAiUlEQVR4Ac3BoRHCQBBA0b87aQGBQSFh8AjkFQGUQaoIZQBFnETQQJARTGw89pi4EPZi1vAeXoLhuF0kDJdHK4woTkLG83pKDKwOZ8GgTAhlpBfKSI4yIVaBXqwCOYJhvV8kDPWtFUYUJ8WpwLB5Yar5JWTslrPEwL3pBIPipDgVZDTvOd86/tMHW74a03izq04AAAAASUVORK5CYII=","data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAm0lEQVR4Ac3BIQ7CMBiA0a9Nr4CYmUJC8AhkDwEcg51iHAM4RCWCAzDkBJmYYH7IQjNDxr+FpIb3iKUQbJepR3C4VIoeTSTFgNtx5/kw2+wVAs0ImzkCmzmGaEa43BK43DJEIZivU4+gOFWKHk0kTSSDYHFHVPDNIKgeT4Jz2SjeVtOJZ4AmkuEHZZvQaegzCMo2odMQ1PVV8bdehFQjEKrVJLEAAAAASUVORK5CYII=","data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAiElEQVR4Ac3BoQ3CUBCA4f8uXaECU1UJwSMq3xDAGHSKMgYwxBuABYpEkFo89pEGQ5rrS8gZvg8vwbDfVAnD6ToIE4qTMON2PiS+LHdHwaBkhDYyCm1kjpIRu8AodoE5gmG1rRKG/jIIE4qT4lRgWD8w9fyoqcvU1GUiQ3FSnAoy7q8FH0/+1xvjGBm+rzRpXwAAAABJRU5ErkJggg==","data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAm0lEQVR4Ac3BoRHCMBiA0S+5rICoQSHh8AhkhgDGoFOUMYAhIhEMQJEVXEUF9UUGejW98qeIGN4jlkKwW009guO1VAxoIikC7qe9p2e+PSgEmhE2dbRs6gjRjHCZpeUyS4hCsNhMPYL8XCoGNJE0kQyC5QNRzjeDoHy+aF2KWvGxnk08AZpIBkHRJHRqfjEIquqm6CmahE7N/3kDrkQjEOKyuC0AAAAASUVORK5CYII="];
+const durations=[167,167,167,167];
+const cv=document.getElementById('c');const ctx=cv.getContext('2d');
+ctx.imageSmoothingEnabled=false;
+let current=0;let playing=true;let timer;
+const imgs=frames.map(src=>{const i=new Image();i.src=src;return i;});
+function show(idx){ctx.clearRect(0,0,160,160);ctx.drawImage(imgs[idx],0,0,160,160);document.getElementById('info').textContent='Frame '+(idx+1)+'/'+frames.length;}
+function next(){show(current);current=(current+1)%frames.length;if(playing)timer=setTimeout(next,durations[current]||100);}
+function togglePlay(){playing=!playing;document.getElementById('btn').textContent=playing?'Pause':'Play';if(playing)next();else clearTimeout(timer);}
+imgs[0].onload=()=>next();
+</script></body></html>

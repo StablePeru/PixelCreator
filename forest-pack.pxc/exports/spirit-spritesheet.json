@@ -1,0 +1,50 @@
+{
+  "image": "spirit-spritesheet.png",
+  "size": {
+    "width": 64,
+    "height": 16
+  },
+  "frameSize": {
+    "width": 16,
+    "height": 16
+  },
+  "frames": [
+    {
+      "x": 0,
+      "y": 0,
+      "w": 16,
+      "h": 16,
+      "duration": 250
+    },
+    {
+      "x": 16,
+      "y": 0,
+      "w": 16,
+      "h": 16,
+      "duration": 250
+    },
+    {
+      "x": 32,
+      "y": 0,
+      "w": 16,
+      "h": 16,
+      "duration": 250
+    },
+    {
+      "x": 48,
+      "y": 0,
+      "w": 16,
+      "h": 16,
+      "duration": 250
+    }
+  ],
+  "animationTags": [
+    {
+      "name": "float",
+      "from": 0,
+      "to": 3,
+      "direction": "pingpong",
+      "repeat": 1
+    }
+  ]
+}

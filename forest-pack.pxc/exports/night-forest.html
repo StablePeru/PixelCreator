@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html><head><meta charset="utf-8"><title>night-forest</title>
+<style>
+body{margin:0;background:#1a1a2e;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;font-family:monospace;color:#eee}
+canvas{image-rendering:pixelated;border:1px solid #333;cursor:crosshair}
+.info{margin:10px;font-size:14px}
+</style></head><body>
+<div class="info">night-forest — 128x64 (8x zoom)</div>
+<canvas id="c" width="1024" height="512"></canvas>
+<div class="info" id="coords"></div>
+<script>
+const img=new Image();const cv=document.getElementById('c');const ctx=cv.getContext('2d');
+ctx.imageSmoothingEnabled=false;
+img.onload=()=>{ctx.drawImage(img,0,0,1024,512);};
+img.src='data:image/png;base64,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';
+
+cv.onmousemove=(e)=>{const r=cv.getBoundingClientRect();const x=Math.floor((e.clientX-r.left)/8);const y=Math.floor((e.clientY-r.top)/8);document.getElementById('coords').textContent='Pixel: ('+x+', '+y+')';};
+</script></body></html>

@@ -1,89 +1,19 @@
 {
   "name": "pixelcreator",
-  "version": "1.3.0",
+  "version": "2.0.0-alpha.1",
   "description": "CLI-first professional pixel art tool for game development",
+  "private": true,
   "type": "module",
-  "bin": {
-    "pxc": "./bin/run.js"
-  },
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
-  "files": [
-    "bin",
-    "dist",
-    "oclif.manifest.json",
-    "templates"
-  ],
   "scripts": {
-    "build": "tsup",
-    "dev": "tsup --watch",
-    "test": "vitest run",
-    "test:watch": "vitest",
-    "test:coverage": "vitest run --coverage",
-    "lint": "eslint src/",
-    "lint:fix": "eslint src/ --fix",
-    "format": "prettier --write \"src/**/*.ts\"",
-    "postbuild": "oclif manifest",
-    "pxc": "node --loader ts-node/esm bin/dev.js"
-  },
-  "oclif": {
-    "bin": "pxc",
-    "dirname": "pxc",
-    "commands": {
-      "strategy": "pattern",
-      "target": "./dist/commands"
-    },
-    "topicSeparator": ":",
-    "topics": {
-      "canvas": {
-        "description": "Canvas creation and manipulation"
-      },
-      "layer": {
-        "description": "Layer management"
-      },
-      "draw": {
-        "description": "Drawing primitives"
-      },
-      "palette": {
-        "description": "Palette management"
-      },
-      "frame": {
-        "description": "Animation frame management"
-      },
-      "export": {
-        "description": "Export to various formats"
-      },
-      "import": {
-        "description": "Import from various formats"
-      },
-      "project": {
-        "description": "Project management"
-      },
-      "validate": {
-        "description": "Validation commands"
-      },
-      "animation": {
-        "description": "Animation timeline and export"
-      },
-      "tileset": {
-        "description": "Tileset and tilemap management"
-      },
-      "template": {
-        "description": "Template management"
-      },
-      "recipe": {
-        "description": "Recipe automation"
-      },
-      "select": {
-        "description": "Selection and clipboard operations"
-      },
-      "plugin": {
-        "description": "Plugin management"
-      },
-      "view": {
-        "description": "Visual preview and display"
-      }
-    }
+    "build": "pnpm -r build",
+    "dev": "pnpm --filter @pixelcreator/cli dev",
+    "test": "pnpm -r test",
+    "test:coverage": "pnpm --filter @pixelcreator/core test:coverage",
+    "lint": "pnpm -r lint",
+    "lint:fix": "eslint packages/*/src/ --fix",
+    "format": "prettier --write \"packages/*/src/**/*.ts\"",
+    "release": "bash scripts/release.sh",
+    "pxc": "node --loader ts-node/esm packages/cli/bin/dev.js"
   },
   "engines": {
     "node": ">=20.0.0"
@@ -104,15 +34,6 @@
   "homepage": "https://github.com/StablePeru/PixelCreator#readme",
   "bugs": {
     "url": "https://github.com/StablePeru/PixelCreator/issues"
-  },
-  "dependencies": {
-    "@oclif/core": "^4.9.0",
-    "@oclif/plugin-help": "^6.2.38",
-    "gifenc": "^1.0.3",
-    "omggif": "^1.0.10",
-    "pngjs": "^7.0.0",
-    "upng-js": "^2.1.0",
-    "zod": "^4.3.6"
   },
   "devDependencies": {
     "@types/node": "^25.5.0",

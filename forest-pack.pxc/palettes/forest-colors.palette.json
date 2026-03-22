@@ -1,0 +1,108 @@
+{
+  "name": "forest-colors",
+  "description": "",
+  "colors": [
+    {
+      "index": 0,
+      "hex": "#0a1e0a",
+      "name": null,
+      "group": null
+    },
+    {
+      "index": 1,
+      "hex": "#1a3a1a",
+      "name": null,
+      "group": null
+    },
+    {
+      "index": 2,
+      "hex": "#2d5a1e",
+      "name": null,
+      "group": null
+    },
+    {
+      "index": 3,
+      "hex": "#4a8c28",
+      "name": null,
+      "group": null
+    },
+    {
+      "index": 4,
+      "hex": "#6ebe3a",
+      "name": null,
+      "group": null
+    },
+    {
+      "index": 5,
+      "hex": "#a4de6a",
+      "name": null,
+      "group": null
+    },
+    {
+      "index": 6,
+      "hex": "#3e2415",
+      "name": null,
+      "group": null
+    },
+    {
+      "index": 7,
+      "hex": "#5c3a1e",
+      "name": null,
+      "group": null
+    },
+    {
+      "index": 8,
+      "hex": "#8b6438",
+      "name": null,
+      "group": null
+    },
+    {
+      "index": 9,
+      "hex": "#6b6b6b",
+      "name": null,
+      "group": null
+    },
+    {
+      "index": 10,
+      "hex": "#9e9e9e",
+      "name": null,
+      "group": null
+    },
+    {
+      "index": 11,
+      "hex": "#c8c8c8",
+      "name": null,
+      "group": null
+    },
+    {
+      "index": 12,
+      "hex": "#e84040",
+      "name": null,
+      "group": null
+    },
+    {
+      "index": 13,
+      "hex": "#f0c040",
+      "name": null,
+      "group": null
+    },
+    {
+      "index": 14,
+      "hex": "#87ceeb",
+      "name": null,
+      "group": null
+    },
+    {
+      "index": 15,
+      "hex": "#1a1a2e",
+      "name": null,
+      "group": null
+    }
+  ],
+  "constraints": {
+    "maxColors": 256,
+    "locked": false,
+    "allowAlpha": true
+  },
+  "ramps": []
+}

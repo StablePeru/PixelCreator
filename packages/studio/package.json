@@ -1,0 +1,37 @@
+{
+  "name": "@pixelcreator/studio",
+  "version": "2.0.0-alpha.1",
+  "description": "Web-based GUI for PixelCreator — real-time pixel art preview and editor",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsup && vite build",
+    "build:server": "tsup",
+    "build:web": "vite build",
+    "start": "node dist/index.js",
+    "dev:web": "vite",
+    "test": "vitest run",
+    "lint": "eslint src/"
+  },
+  "dependencies": {
+    "@hono/node-server": "^1.19.11",
+    "@pixelcreator/core": "workspace:*",
+    "hono": "^4.12.8",
+    "react": "^19.2.4",
+    "react-dom": "^19.2.4",
+    "ws": "^8.20.0",
+    "zod": "^4.3.6"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "license": "MIT",
+  "devDependencies": {
+    "@types/react": "^19.2.14",
+    "@types/react-dom": "^19.2.3",
+    "@types/ws": "^8.18.1",
+    "@vitejs/plugin-react": "^6.0.1",
+    "vite": "^8.0.1"
+  }
+}

@@ -1,0 +1,12 @@
+export { createApp } from './server/app.js';
+export type { AppOptions } from './server/app.js';
+export { startStudio } from './server/start.js';
+export type { StudioOptions } from './server/start.js';
+export { ProjectWatcher } from './ws/watcher.js';
+export type { WatcherEvent } from './ws/watcher.js';
+export { WsBroadcaster } from './ws/handler.js';
+export type { WsMessage } from './ws/handler.js';
+export { HistoryStack } from './history/history-stack.js';
+export type { HistoryEntry } from './history/history-stack.js';
+export { readDatasetIndex, addRating, deleteRating, getDatasetStats, exportDatasetJsonl, getSnapshotBuffer } from './dataset/dataset-engine.js';
+export type { FeedbackEntry, DatasetIndex } from './dataset/dataset-engine.js';
