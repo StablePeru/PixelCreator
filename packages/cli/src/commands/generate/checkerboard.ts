@@ -25,8 +25,8 @@ export default class GenerateCheckerboard extends BaseCommand {
     const frameId = flags.frame || canvas.frames[0]?.id;
     if (!layerId || !frameId) throw new Error('Canvas has no layers or frames');
 
-    const c1 = hexToRGBA(flags.color1);
-    const c2 = hexToRGBA(flags.color2);
+    hexToRGBA(flags.color1);
+    hexToRGBA(flags.color2);
     const buffer = readLayerFrame(projectPath, flags.canvas, layerId, frameId);
 
     generateCheckerboard(buffer, { cellSize: flags['cell-size'], color1: flags.color1, color2: flags.color2 });

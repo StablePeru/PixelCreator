@@ -3,7 +3,7 @@ import * as fs from 'node:fs';
 import { Flags } from '@oclif/core';
 import { BaseCommand } from '../base-command.js';
 import { getProjectPath, readProjectJSON, writeProjectJSON, writeCanvasJSON, writeLayerFrame, writePaletteJSON, decodeAse, PixelBuffer, flattenLayers, generateSequentialId, rgbaToHex, formatOutput, makeResult } from '@pixelcreator/core';
-import type { LayerWithBuffer, CanvasData, LayerInfo, FrameInfo, PaletteData } from '@pixelcreator/core';
+import type { LayerWithBuffer, CanvasData, LayerInfo, FrameInfo, PaletteData, BlendMode } from '@pixelcreator/core';
 
 const ASE_BLEND_MAP: Record<number, string> = {
   0: 'normal',
@@ -85,7 +85,7 @@ export default class ImportAse extends BaseCommand {
               type: 'normal' as const,
               visible: layer.visible,
               opacity: layer.opacity,
-              blendMode: (ASE_BLEND_MAP[layer.blendMode] || 'normal') as any,
+              blendMode: (ASE_BLEND_MAP[layer.blendMode] || 'normal') as BlendMode,
               locked: false,
               order: li,
             },
@@ -129,7 +129,7 @@ export default class ImportAse extends BaseCommand {
         type: 'normal' as const,
         visible: true,
         opacity: flags.flatten ? 255 : (srcLayer?.opacity ?? 255),
-        blendMode: (flags.flatten ? 'normal' : (ASE_BLEND_MAP[srcLayer?.blendMode ?? 0] || 'normal')) as any,
+        blendMode: (flags.flatten ? 'normal' : (ASE_BLEND_MAP[srcLayer?.blendMode ?? 0] || 'normal')) as BlendMode,
         locked: false,
         order: order++,
       });

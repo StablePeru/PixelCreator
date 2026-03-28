@@ -93,8 +93,6 @@ export default class PaletteExtract extends BaseCommand {
       merged = true;
 
       const existingHexes = new Set(palette.colors.map((c) => c.hex));
-      let addedCount = 0;
-
       for (const hex of extractedColors) {
         if (!existingHexes.has(hex)) {
           palette.colors.push({
@@ -103,7 +101,6 @@ export default class PaletteExtract extends BaseCommand {
             name: null,
             group: null,
           });
-          addedCount++;
         }
       }
     } else {

@@ -28,8 +28,8 @@ export default class GenerateBrick extends BaseCommand {
     const frameId = flags.frame || canvas.frames[0]?.id;
     if (!layerId || !frameId) throw new Error('Canvas has no layers or frames');
 
-    const brickColor = hexToRGBA(flags['brick-color']);
-    const mortarColor = hexToRGBA(flags['mortar-color']);
+    hexToRGBA(flags['brick-color']);
+    hexToRGBA(flags['mortar-color']);
     const offset = parseFloat(flags.offset);
     const buffer = readLayerFrame(projectPath, flags.canvas, layerId, frameId);
 

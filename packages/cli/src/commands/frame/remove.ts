@@ -84,13 +84,6 @@ export default class FrameRemove extends BaseCommand {
     // Adjust animation tags
     canvas.animationTags = canvas.animationTags
       .map((tag) => {
-        let { from, to } = tag;
-        // Count removed frames before from and to
-        const removedBefore = (idx: number) => indicesToRemove.filter((i) => i < idx).length;
-        const removedInRange = indicesToRemove.filter((i) => i >= tag.from && i <= tag.to).length;
-
-        from = from - removedBefore(from);
-        to = to - removedBefore(to) - removedInRange + removedBefore(tag.from);
         // Recalculate properly
         const originalFrom = tag.from;
         const originalTo = tag.to;

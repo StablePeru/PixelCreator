@@ -97,8 +97,8 @@ export default class ExportBatch extends BaseCommand {
         savePNG(buffer, filePath);
 
         exported.push({ canvas: canvasName, file: filePath, width: buffer.width, height: buffer.height });
-      } catch (error: any) {
-        failed.push({ canvas: canvasName, error: error.message });
+      } catch (error: unknown) {
+        failed.push({ canvas: canvasName, error: (error as Error).message });
       }
     }
 

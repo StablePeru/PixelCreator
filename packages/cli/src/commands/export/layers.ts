@@ -2,7 +2,7 @@ import * as fs from 'node:fs';
 import * as path from 'node:path';
 import { Flags } from '@oclif/core';
 import { BaseCommand } from '../base-command.js';
-import { getProjectPath, readCanvasJSON, readLayerFrame, PixelBuffer, savePNG, flattenLayers, scaleBufferNearest, formatOutput, makeResult } from '@pixelcreator/core';
+import { getProjectPath, readCanvasJSON, readLayerFrame, savePNG, flattenLayers, scaleBufferNearest, formatOutput, makeResult } from '@pixelcreator/core';
 import type { LayerWithBuffer } from '@pixelcreator/core';
 
 export default class ExportLayers extends BaseCommand {

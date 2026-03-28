@@ -1,6 +1,7 @@
 import { Flags } from '@oclif/core';
 import { BaseCommand } from '../base-command.js';
-import { getProjectPath, readCanvasJSON, readLayerFrame, writeLayerFrame, formatOutput, makeResult, hexToRGBA, generateSimplexNoise, generateFbm, generateTurbulence, mapNoiseToPixels } from '@pixelcreator/core';
+import { getProjectPath, readCanvasJSON, readLayerFrame, writeLayerFrame, formatOutput, makeResult, generateSimplexNoise, generateFbm, generateTurbulence } from '@pixelcreator/core';
+import type { NoiseToPixelOptions } from '@pixelcreator/core';
 
 export default class GenerateNoise extends BaseCommand {
   static override description = 'Generate procedural noise on a canvas layer frame';
@@ -60,13 +61,13 @@ export default class GenerateNoise extends BaseCommand {
 
     switch (flags.type) {
       case 'fbm':
-        generateFbm(buffer, noiseOpts, mapping as any);
+        generateFbm(buffer, noiseOpts, mapping as NoiseToPixelOptions);
         break;
       case 'turbulence':
-        generateTurbulence(buffer, noiseOpts, mapping as any);
+        generateTurbulence(buffer, noiseOpts, mapping as NoiseToPixelOptions);
         break;
       default:
-        generateSimplexNoise(buffer, { seed: flags.seed, scale }, mapping as any);
+        generateSimplexNoise(buffer, { seed: flags.seed, scale }, mapping as NoiseToPixelOptions);
         break;
     }
     writeLayerFrame(projectPath, flags.canvas, layerId, frameId, buffer);

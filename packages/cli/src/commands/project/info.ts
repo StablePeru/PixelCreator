@@ -1,4 +1,3 @@
-import { Flags } from '@oclif/core';
 import { BaseCommand } from '../base-command.js';
 import { getProjectPath, readProjectJSON, formatOutput, makeResult } from '@pixelcreator/core';
 

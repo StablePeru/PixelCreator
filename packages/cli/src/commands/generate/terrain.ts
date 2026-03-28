@@ -1,6 +1,7 @@
 import { Flags } from '@oclif/core';
 import { BaseCommand } from '../base-command.js';
-import { getProjectPath, readCanvasJSON, readLayerFrame, writeLayerFrame, formatOutput, makeResult, hexToRGBA, generateNoiseMap, mapNoiseToPixels } from '@pixelcreator/core';
+import { getProjectPath, readCanvasJSON, readLayerFrame, writeLayerFrame, formatOutput, makeResult, generateNoiseMap, mapNoiseToPixels } from '@pixelcreator/core';
+import type { NoiseType, NoiseToPixelOptions } from '@pixelcreator/core';
 
 const TERRAIN_PRESETS = {
   island: {
@@ -67,7 +68,7 @@ export default class GenerateTerrain extends BaseCommand {
       seed: flags.seed, scale: preset.scale, octaves: preset.octaves,
       lacunarity: preset.lacunarity, persistence: preset.persistence,
     };
-    const noiseMap = generateNoiseMap(width, height, preset.noiseType as any, noiseOpts);
+    const noiseMap = generateNoiseMap(width, height, preset.noiseType as NoiseType, noiseOpts);
 
     // Apply radial falloff for island preset
     if ('radialFalloff' in preset && preset.radialFalloff) {
@@ -104,7 +105,7 @@ export default class GenerateTerrain extends BaseCommand {
       }
     }
 
-    mapNoiseToPixels(buffer, noiseMap, mapOptions as any);
+    mapNoiseToPixels(buffer, noiseMap, mapOptions as NoiseToPixelOptions);
     writeLayerFrame(projectPath, flags.canvas, layerId, frameId, buffer);
 
     const resultData = {

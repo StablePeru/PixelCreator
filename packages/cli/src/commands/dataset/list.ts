@@ -18,7 +18,7 @@ export default class DatasetList extends BaseCommand {
     const { readDatasetIndex } = await import('@pixelcreator/studio');
     const index = readDatasetIndex(projectPath);
     let entries = index.entries;
-    if (flags.rating) entries = entries.filter((e: any) => e.rating === flags.rating);
+    if (flags.rating) entries = entries.filter((e: Record<string, unknown>) => e.rating === flags.rating);
 
     const format = this.getOutputFormat(flags);
     const result = makeResult('dataset:list', { rating: flags.rating }, { count: entries.length, entries }, startTime);

@@ -1,7 +1,7 @@
 import { Flags } from '@oclif/core';
 import { BaseCommand } from '../base-command.js';
 import { getProjectPath, readCanvasJSON, PixelBuffer, savePNG, drawLine, formatOutput, makeResult } from '@pixelcreator/core';
-import type { RGBA } from '@pixelcreator/core';
+
 
 export default class CanvasSymmetryGuide extends BaseCommand {
   static override description = 'Generate a PNG with symmetry axis guide lines overlaid';

@@ -27,8 +27,8 @@ export default class GenerateGridDots extends BaseCommand {
     const frameId = flags.frame || canvas.frames[0]?.id;
     if (!layerId || !frameId) throw new Error('Canvas has no layers or frames');
 
-    const dotColor = hexToRGBA(flags.color);
-    const bgColor = flags.background ? hexToRGBA(flags.background) : undefined;
+    hexToRGBA(flags.color);
+    if (flags.background) hexToRGBA(flags.background);
     const buffer = readLayerFrame(projectPath, flags.canvas, layerId, frameId);
 
     generateGridDots(buffer, {

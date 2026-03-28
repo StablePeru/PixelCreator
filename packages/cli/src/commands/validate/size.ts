@@ -45,7 +45,7 @@ export default class ValidateSize extends BaseCommand {
         warning: 'No size rules defined.',
       };
       const cmdResult = makeResult('validate:size', { canvas: flags.canvas, all: flags.all }, resultData, startTime);
-      formatOutput(format, cmdResult, (data) => {
+      formatOutput(format, cmdResult, (_data) => {
         this.log('No size rules defined. Use project:validation --add-rule to add rules.');
       });
       return;
