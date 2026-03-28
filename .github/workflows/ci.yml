@@ -33,8 +33,22 @@ jobs:
       - name: Lint
         run: pnpm lint
 
+      - name: Type check
+        run: pnpm -r exec tsc --noEmit
+
       - name: Build
         run: pnpm build
 
       - name: Test
         run: pnpm test
+
+      - name: Coverage check
+        if: matrix.node-version == 22
+        run: |
+          pnpm --filter @pixelcreator/core test:coverage 2>&1 | tee coverage-output.txt
+          COVERAGE=$(grep "All files" coverage-output.txt | awk '{print $4}')
+          echo "Coverage: $COVERAGE%"
+          if (( $(echo "$COVERAGE < 80" | bc -l) )); then
+            echo "::error::Coverage $COVERAGE% is below 80% threshold"
+            exit 1
+          fi
