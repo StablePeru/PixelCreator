@@ -1,0 +1,13 @@
+version: '3.8'
+
+services:
+  studio:
+    build: .
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./projects:/data
+    environment:
+      - NODE_ENV=production
+      - PXC_PROJECT=/data/project.pxc
+    restart: unless-stopped

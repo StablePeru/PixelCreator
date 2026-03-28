@@ -3,7 +3,7 @@
   "name": "forest-pack",
   "description": "",
   "created": "2026-03-21T22:40:53.957Z",
-  "modified": "2026-03-22T00:58:33.833Z",
+  "modified": "2026-03-22T22:42:40.132Z",
   "settings": {
     "defaultTileSize": {
       "width": 16,
@@ -26,7 +26,8 @@
     "flower",
     "mushroom",
     "day-forest",
-    "night-forest"
+    "night-forest",
+    "player"
   ],
   "tilesets": [],
   "templates": [],

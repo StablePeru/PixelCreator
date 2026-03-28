@@ -1,0 +1,38 @@
+{
+  "name": "player",
+  "width": 16,
+  "height": 16,
+  "created": "2026-03-22T22:42:40.129Z",
+  "modified": "2026-03-22T23:08:24.587Z",
+  "palette": null,
+  "layers": [
+    {
+      "id": "layer-001",
+      "name": "background",
+      "type": "normal",
+      "visible": false,
+      "opacity": 255,
+      "blendMode": "normal",
+      "locked": true,
+      "order": 0
+    }
+  ],
+  "frames": [
+    {
+      "id": "frame-001",
+      "index": 0,
+      "duration": 100
+    },
+    {
+      "id": "frame-002",
+      "index": 1,
+      "duration": 100
+    },
+    {
+      "id": "frame-003",
+      "index": 2,
+      "duration": 100
+    }
+  ],
+  "animationTags": []
+}
