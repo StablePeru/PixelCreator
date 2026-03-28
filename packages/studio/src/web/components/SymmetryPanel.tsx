@@ -1,11 +1,20 @@
 import { useBrush, type SymmetryMode } from '../context/BrushContext';
+import {
+  SymmetryOffIcon,
+  SymmetryHIcon,
+  SymmetryVIcon,
+  SymmetryBothIcon,
+  SymmetryRadialIcon,
+} from './Icons';
 
-const MODES: Array<{ value: SymmetryMode; label: string; icon: string }> = [
-  { value: 'none', label: 'Off', icon: '\u2205' },
-  { value: 'horizontal', label: 'H-Mirror', icon: '\u2194' },
-  { value: 'vertical', label: 'V-Mirror', icon: '\u2195' },
-  { value: 'both', label: 'Both', icon: '\u271A' },
-  { value: 'radial', label: 'Radial', icon: '\u2742' },
+type IconComponent = (props: { size?: number; className?: string }) => JSX.Element;
+
+const MODES: Array<{ value: SymmetryMode; label: string; icon: IconComponent }> = [
+  { value: 'none', label: 'Off', icon: SymmetryOffIcon },
+  { value: 'horizontal', label: 'H-Mirror', icon: SymmetryHIcon },
+  { value: 'vertical', label: 'V-Mirror', icon: SymmetryVIcon },
+  { value: 'both', label: 'Both', icon: SymmetryBothIcon },
+  { value: 'radial', label: 'Radial', icon: SymmetryRadialIcon },
 ];
 
 const RADIAL_OPTIONS = [4, 6, 8, 12];
@@ -15,8 +24,6 @@ export function SymmetryPanel() {
 
   return (
     <div className="symmetry-panel">
-      <div className="symmetry-panel__header">Symmetry</div>
-
       <div className="symmetry-panel__modes">
         {MODES.map((m) => (
           <button
@@ -25,7 +32,7 @@ export function SymmetryPanel() {
             onClick={() => setSymmetry({ ...symmetry, mode: m.value })}
             title={m.label}
           >
-            <span>{m.icon}</span>
+            <m.icon size={14} />
             <span className="symmetry-panel__label">{m.label}</span>
           </button>
         ))}
@@ -37,7 +44,8 @@ export function SymmetryPanel() {
             <label className="symmetry-panel__input">
               <span>Axis X</span>
               <input
-                type="number" min={0}
+                type="number"
+                min={0}
                 value={symmetry.axisX ?? 0}
                 onChange={(e) => setSymmetry({ ...symmetry, axisX: +e.target.value })}
               />
@@ -47,7 +55,8 @@ export function SymmetryPanel() {
             <label className="symmetry-panel__input">
               <span>Axis Y</span>
               <input
-                type="number" min={0}
+                type="number"
+                min={0}
                 value={symmetry.axisY ?? 0}
                 onChange={(e) => setSymmetry({ ...symmetry, axisY: +e.target.value })}
               />
@@ -65,7 +74,9 @@ export function SymmetryPanel() {
               onChange={(e) => setSymmetry({ ...symmetry, radialSegments: +e.target.value })}
             >
               {RADIAL_OPTIONS.map((n) => (
-                <option key={n} value={n}>{n}</option>
+                <option key={n} value={n}>
+                  {n}
+                </option>
               ))}
             </select>
           </label>

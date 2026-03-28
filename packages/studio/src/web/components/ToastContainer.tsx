@@ -1,10 +1,11 @@
 import { useToast, type ToastType } from '../hooks/useToast';
+import { CheckIcon, CrossIcon, InfoIcon, WarningIcon } from './Icons';
 
-const ICONS: Record<ToastType, string> = {
-  success: '\u2714',
-  error: '\u2718',
-  info: '\u2139',
-  warning: '\u26A0',
+const ICONS: Record<ToastType, (props: { size?: number }) => JSX.Element> = {
+  success: CheckIcon,
+  error: CrossIcon,
+  info: InfoIcon,
+  warning: WarningIcon,
 };
 
 export function ToastContainer() {
@@ -14,16 +15,17 @@ export function ToastContainer() {
 
   return (
     <div className="toast-container">
-      {toasts.map((t) => (
-        <div
-          key={t.id}
-          className={`toast toast--${t.type}`}
-          onClick={() => dismiss(t.id)}
-        >
-          <span className="toast__icon">{ICONS[t.type]}</span>
-          <span className="toast__message">{t.message}</span>
-        </div>
-      ))}
+      {toasts.map((t) => {
+        const Icon = ICONS[t.type];
+        return (
+          <div key={t.id} className={`toast toast--${t.type}`} onClick={() => dismiss(t.id)}>
+            <span className="toast__icon">
+              <Icon size={14} />
+            </span>
+            <span className="toast__message">{t.message}</span>
+          </div>
+        );
+      })}
     </div>
   );
 }

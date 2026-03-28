@@ -4,6 +4,91 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [Unreleased]
+
+### Improved — Studio Panel Styling & ToolBar Polish
+
+**BrushPanel CSS (new)**
+- 2-column grid layout for brush preset buttons with active/hover states
+- Aligned slider rows: fixed-width label (48px) + flex range + monospace value (32px)
+- Pixel Perfect checkbox with proper flex layout
+- Removed duplicate "Brushes" header (CollapsiblePanel already provides it)
+
+**SymmetryPanel CSS (new)**
+- Segmented button group: 5 equal-width mode buttons with SVG icons + compact labels
+- Active mode highlighted with accent-subtle background + accent border
+- Axis X/Y number inputs with proper label alignment
+- Radial segments select with consistent layout
+- Removed duplicate "Symmetry" header
+
+**EffectsPanel CSS (new)**
+- Styled effect items with checkbox toggle, clickable name, and delete button
+- "+Add" select aligned to the right, duplicate "Effects (N)" text removed
+- Danger color on delete hover
+
+**ToolBar enhancements**
+- Symmetry button now shows SVG icon (SymmetryOff/H/V/Both/Radial) instead of plain "Sym: Off" text
+- Brush info shows shape icon + name + size instead of plain "Brush: Pixel (1px)" text
+- Added `.toolbar__info` and `.toolbar__btn--symmetry` CSS classes
+
+**TransformPanel cleanup**
+- Removed duplicate "Transform" header and its CSS rule
+
+**Palette Panel FG/BG polish**
+- Active color area now has card-style background with border-radius
+- Swap button restyled as circular icon button
+
+---
+
+### Added — Professional Studio UI Redesign
+
+**Design System Foundation**
+- CSS design tokens: spacing scale (4–32px), radius scale, typography tokens, animation timing variables
+- Google Fonts integration: Inter (UI) + JetBrains Mono (code/values) with `font-display: swap`
+- Expanded theme system: 13 → 22 CSS variables per theme (added `bg-input`, `bg-elevated`, `accent-hover`, `accent-subtle`, 3 shadow levels, `focus-ring`)
+- Accent color changed from green (#6ebe3a) to professional blue (#4fc3f7) across all themes
+
+**Custom Form Controls (CSS-only)**
+- Custom range sliders: circular thumb with accent color, hover scale effect, focus ring
+- Custom checkboxes: styled with CSS checkmark, checked animation, hover/focus states
+- Custom select dropdowns: SVG chevron arrow, hover/focus states
+- Custom text/number inputs: focus border animation with accent color
+- Unified `.btn` class with `--primary`, `--ghost`, `--danger`, `--icon` variants
+
+**SVG Icon System (30+ icons)**
+- New `Icons.tsx` component with 30+ inline SVG icons (stroke-based, `currentColor` for theme-awareness)
+- 12 tool icons: Pencil, Line, Rect, Circle, Fill, Eraser, Marquee, Wand, Move, Polygon, Gradient, Bezier
+- 18+ action icons: Undo, Redo, Export, Import, Plus, Settings, Eye/EyeOff, Lock/Unlock, Copy, Trash, Play/Pause/Stop/Step, ChevronDown/Right, Close, Check, Cross, Info, Warning, Loop, Dataset
+- 5 symmetry mode icons, 4 brush shape icons
+- Replaced all Unicode characters and HTML entities across 8 components
+
+**Collapsible Sidebar Panels**
+- New `CollapsiblePanel.tsx` wrapper component with animated chevron, `max-height` CSS transitions
+- Panel open/closed state persisted in localStorage
+- Less-used panels (Accessibility, Procedural, Game Export, Reference) collapsed by default
+- Scrollable panel container with custom thin scrollbar (webkit + Firefox)
+
+**Layout & Structure Improvements**
+- TopBar: buttons grouped logically with vertical dividers (undo/redo | actions | info)
+- ToolBar: tools grouped by category — Drawing (6) | Selection (3) | Shape (3) with separators
+- Sidebar: improved header with inline add button, border-left accent on active canvas
+- Sidebar width increased from 220px to 240px
+
+**Visual Polish & Micro-interactions**
+- Toolbar buttons: hover lift (`translateY(-1px)`), active inset shadow, focus-visible ring
+- Sidebar items: hover indent effect, active state with `accent-subtle` background + left border
+- Layer rows: active state with accent-subtle background + 3px left border accent
+- Frame thumbnails: hover lift + shadow, active glow ring
+- Dialog modals: entrance animation (scale + translateY + opacity fade)
+- Toast notifications: slide-in animation from top, color-coded left border by type
+- Canvas area: subtle inner shadow for depth
+- StatusBar: top shadow for elevation
+- Global `focus-visible` ring on all interactive elements
+
+**Component count: 41 → 43** (added `Icons.tsx`, `CollapsiblePanel.tsx`)
+
+---
+
 ## [2.0.0-beta.12] - 2026-03-28
 
 ### Added — Project Professionalization & Infrastructure

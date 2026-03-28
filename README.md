@@ -176,8 +176,8 @@ pnpm workspace monorepo with 3 packages:
 
 ```
 packages/
-  core/         # @pixelcreator/core — 19 engines, 12 I/O modules, types, utils
-  cli/          # @pixelcreator/cli — 175 oclif commands across 18 topics
+  core/         # @pixelcreator/core — 25 engines, 12 I/O modules, types, utils
+  cli/          # @pixelcreator/cli — 231 oclif commands across 23 topics
   studio/       # @pixelcreator/studio — Web GUI (Hono API + React + WebSocket)
 ```
 
@@ -185,23 +185,31 @@ packages/
 - **Studio**: [Hono](https://hono.dev) REST API + React SPA + WebSocket real-time
 - **Language**: TypeScript (strict mode, ESM)
 - **Build**: tsup (server) + Vite (frontend)
-- **Tests**: vitest with 1020 tests across 112 suites
+- **Tests**: vitest with 1331 tests across 134 suites
 - **CI/CD**: GitHub Actions (Node 20 + 22)
 
 ### PixelCreator Studio
 
 Web-based GUI launched with `pxc studio:serve`:
+- **Professional UI** with SVG icon system, Inter + JetBrains Mono fonts, CSS design tokens
 - Real-time canvas preview with live updates via WebSocket
-- 12 interactive drawing tools (pencil, line, rect, circle, fill, eraser, marquee, wand, move, polygon, gradient, bezier)
+- 12 interactive drawing tools with SVG icons (pencil, line, rect, circle, fill, eraser, marquee, wand, move, polygon, gradient, bezier)
+- Collapsible sidebar panels with persistent state (palette, layers, transform, brushes, symmetry, effects, accessibility, procedural, game export, reference)
+- Brush panel with 2-column preset grid, size/opacity/spacing sliders, pixel-perfect toggle
+- Symmetry panel with segmented icon buttons (Off/H-Mirror/V-Mirror/Both/Radial), axis controls
+- Effects panel with toggle/expand/delete per effect, "+Add" dropdown
 - Layer management with 14 blend modes
 - Animation timeline with playback controls
-- Color picker (HSL/RGB), palette manager, color harmony
+- Color picker (HSL/RGB), palette manager with card-style FG/BG display, color harmony
+- Custom-styled form controls (range sliders, checkboxes, selects)
 - Undo/redo with 50-step history
+- Micro-interactions: hover effects, dialog animations, focus-visible states
 - Export (PNG, GIF, APNG, spritesheet, SVG) and import (PNG, GIF)
 - Tileset & tilemap editor
 - AI training dataset system (Like/Dislike with JSONL export)
 - Agent activity panel + command palette (Ctrl+Shift+P)
-- 4 themes (Dark, Light, High Contrast, Aseprite)
+- Toast notification system with slide-in animations
+- 4 themes (Dark, Light, High Contrast, Aseprite) with 22 CSS variables each
 
 ## Development
 
@@ -210,7 +218,7 @@ git clone https://github.com/StablePeru/PixelCreator.git
 cd PixelCreator
 pnpm install
 pnpm -r build
-pnpm -r test     # 1020 tests
+pnpm -r test     # 1331 tests
 pnpm lint        # ESLint v9+
 pnpm dev         # Watch mode
 ```

@@ -24,7 +24,7 @@ const EFFECT_TYPES = [
 const DEFAULT_PARAMS: Record<string, Record<string, unknown>> = {
   'drop-shadow': { offsetX: 2, offsetY: 2, color: '#000000', blur: 0, opacity: 128 },
   'outer-glow': { color: '#ffffff', radius: 2, intensity: 200 },
-  'outline': { color: '#000000', thickness: 1, position: 'outside' },
+  outline: { color: '#000000', thickness: 1, position: 'outside' },
   'color-overlay': { color: '#ff0000', opacity: 128, blendMode: 'normal' },
 };
 
@@ -36,12 +36,14 @@ export function EffectsPanel({ canvasName, layerId }: EffectsPanelProps) {
   const refresh = useCallback(() => {
     if (!canvasName || !layerId) return;
     fetch(`/api/canvas/${canvasName}/layer/${layerId}/effects`)
-      .then(r => r.json())
-      .then(data => setEffects(data.effects ?? []))
+      .then((r) => r.json())
+      .then((data) => setEffects(data.effects ?? []))
       .catch(() => {});
   }, [canvasName, layerId]);
 
-  useEffect(() => { refresh(); }, [refresh]);
+  useEffect(() => {
+    refresh();
+  }, [refresh]);
 
   const addEffect = async (type: string) => {
     if (!canvasName || !layerId) return;
@@ -60,13 +62,17 @@ export function EffectsPanel({ canvasName, layerId }: EffectsPanelProps) {
 
   const removeEffect = async (effectId: string) => {
     if (!canvasName || !layerId) return;
-    await fetch(`/api/canvas/${canvasName}/layer/${layerId}/effect/${effectId}`, { method: 'DELETE' });
+    await fetch(`/api/canvas/${canvasName}/layer/${layerId}/effect/${effectId}`, {
+      method: 'DELETE',
+    });
     refresh();
   };
 
   const toggleEffect = async (effectId: string) => {
     if (!canvasName || !layerId) return;
-    await fetch(`/api/canvas/${canvasName}/layer/${layerId}/effect/${effectId}/toggle`, { method: 'PUT' });
+    await fetch(`/api/canvas/${canvasName}/layer/${layerId}/effect/${effectId}/toggle`, {
+      method: 'PUT',
+    });
     refresh();
   };
 
@@ -85,34 +91,40 @@ export function EffectsPanel({ canvasName, layerId }: EffectsPanelProps) {
   return (
     <div className="effects-panel">
       <div className="effects-panel__header">
-        <span>Effects ({effects.length})</span>
         <select
           className="effects-panel__add"
           value=""
-          onChange={(e) => { if (e.target.value) addEffect(e.target.value); e.target.value = ''; }}
+          onChange={(e) => {
+            if (e.target.value) addEffect(e.target.value);
+            e.target.value = '';
+          }}
         >
           <option value="">+ Add</option>
-          {EFFECT_TYPES.map(t => (
-            <option key={t.value} value={t.value}>{t.label}</option>
+          {EFFECT_TYPES.map((t) => (
+            <option key={t.value} value={t.value}>
+              {t.label}
+            </option>
           ))}
         </select>
       </div>
 
-      {effects.map(fx => (
+      {effects.map((fx) => (
         <div key={fx.id} className="effects-panel__item">
           <div className="effects-panel__row">
-            <input
-              type="checkbox"
-              checked={fx.enabled}
-              onChange={() => toggleEffect(fx.id)}
-            />
+            <input type="checkbox" checked={fx.enabled} onChange={() => toggleEffect(fx.id)} />
             <span
               className="effects-panel__name"
               onClick={() => setExpandedId(expandedId === fx.id ? null : fx.id)}
             >
               {fx.type}
             </span>
-            <button className="effects-panel__delete" onClick={() => removeEffect(fx.id)} title="Remove">&times;</button>
+            <button
+              className="effects-panel__delete"
+              onClick={() => removeEffect(fx.id)}
+              title="Remove"
+            >
+              &times;
+            </button>
           </div>
           {expandedId === fx.id && (
             <EffectEditor

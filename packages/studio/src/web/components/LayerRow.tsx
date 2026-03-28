@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { EyeIcon, EyeOffIcon, LockIcon, UnlockIcon, CopyIcon } from './Icons';
 
 interface LayerInfo {
   id: string;
@@ -10,10 +11,20 @@ interface LayerInfo {
 }
 
 const BLEND_MODES = [
-  'normal', 'multiply', 'screen', 'overlay',
-  'darken', 'lighten', 'color-dodge', 'color-burn',
-  'hard-light', 'soft-light', 'difference', 'exclusion',
-  'addition', 'subtract',
+  'normal',
+  'multiply',
+  'screen',
+  'overlay',
+  'darken',
+  'lighten',
+  'color-dodge',
+  'color-burn',
+  'hard-light',
+  'soft-light',
+  'difference',
+  'exclusion',
+  'addition',
+  'subtract',
 ];
 
 interface LayerRowProps {
@@ -27,7 +38,16 @@ interface LayerRowProps {
   onDuplicate: () => void;
 }
 
-export function LayerRow({ layer, active, canvasName, frameIndex, onSelect, onUpdate, onDelete, onDuplicate }: LayerRowProps) {
+export function LayerRow({
+  layer,
+  active,
+  canvasName,
+  frameIndex,
+  onSelect,
+  onUpdate,
+  onDelete,
+  onDuplicate,
+}: LayerRowProps) {
   const [showBlend, setShowBlend] = useState(false);
 
   return (
@@ -53,19 +73,25 @@ export function LayerRow({ layer, active, canvasName, frameIndex, onSelect, onUp
         {/* Visibility toggle */}
         <button
           className={`layer-row__icon ${layer.visible ? '' : 'layer-row__icon--off'}`}
-          onClick={(e) => { e.stopPropagation(); onUpdate({ visible: !layer.visible }); }}
+          onClick={(e) => {
+            e.stopPropagation();
+            onUpdate({ visible: !layer.visible });
+          }}
           title={layer.visible ? 'Hide' : 'Show'}
         >
-          {layer.visible ? '\u{1F441}' : '\u25CB'}
+          {layer.visible ? <EyeIcon size={13} /> : <EyeOffIcon size={13} />}
         </button>
 
         {/* Lock toggle */}
         <button
           className={`layer-row__icon ${layer.locked ? 'layer-row__icon--on' : ''}`}
-          onClick={(e) => { e.stopPropagation(); onUpdate({ locked: !layer.locked }); }}
+          onClick={(e) => {
+            e.stopPropagation();
+            onUpdate({ locked: !layer.locked });
+          }}
           title={layer.locked ? 'Unlock' : 'Lock'}
         >
-          {layer.locked ? '\u{1F512}' : '\u{1F513}'}
+          {layer.locked ? <LockIcon size={13} /> : <UnlockIcon size={13} />}
         </button>
 
         {/* Name */}
@@ -74,10 +100,13 @@ export function LayerRow({ layer, active, canvasName, frameIndex, onSelect, onUp
         {/* Duplicate button */}
         <button
           className="layer-row__icon"
-          onClick={(e) => { e.stopPropagation(); onDuplicate(); }}
+          onClick={(e) => {
+            e.stopPropagation();
+            onDuplicate();
+          }}
           title="Duplicate"
         >
-          +
+          <CopyIcon size={13} />
         </button>
       </div>
 
@@ -92,14 +121,19 @@ export function LayerRow({ layer, active, canvasName, frameIndex, onSelect, onUp
               onClick={(e) => e.stopPropagation()}
             >
               {BLEND_MODES.map((m) => (
-                <option key={m} value={m}>{m}</option>
+                <option key={m} value={m}>
+                  {m}
+                </option>
               ))}
             </select>
           </label>
           <label className="layer-row__control">
             <span>Opacity</span>
             <input
-              type="range" min={0} max={255} value={layer.opacity}
+              type="range"
+              min={0}
+              max={255}
+              value={layer.opacity}
               onChange={(e) => onUpdate({ opacity: +e.target.value })}
               onClick={(e) => e.stopPropagation()}
             />

@@ -89,8 +89,10 @@ pnpm workspace with 3 packages:
 
 ### Studio (`packages/studio/`)
 - **Backend**: Hono REST API (98+ endpoints) + WebSocket for real-time updates
-- **Frontend**: React SPA with Vite — canvas viewer, drawing tools, layer panel, timeline, palette picker
-- **Features**: 12 drawing tools, undo/redo, layer management, animation playback, tileset editor, export/import dialogs with live preview, AI dataset feedback, agent activity panel, AI Agent Mode (session control, approve/reject, feedback), command palette, 4 themes
+- **Frontend**: React SPA with Vite — 43 components, professional UI with SVG icon system
+- **Design System**: CSS custom properties (22 theme vars), Inter + JetBrains Mono fonts, custom form controls
+- **Features**: 12 drawing tools (SVG icons), undo/redo, layer management, animation playback, tileset editor, export/import dialogs with live preview, AI dataset feedback, agent activity panel, AI Agent Mode (session control, approve/reject, feedback), command palette, collapsible sidebar panels, toast notifications, 4 themes (dark/light/high-contrast/aseprite)
+- **Styling**: Plain CSS with BEM naming, CSS variables for theming, custom range sliders/checkboxes/selects, micro-interactions and animations, styled panels (brush grid, symmetry segmented buttons, effects list, transform actions)
 
 ### Utilities (`packages/core/src/utils/`)
 - `output-formatter.ts` — `formatOutput`/`makeResult` for JSON/text/silent output
@@ -129,4 +131,4 @@ pnpm workspace with 3 packages:
 - **Package manager**: pnpm (workspace)
 
 ## Current Status: v2.0.0-beta.12
-231 commands across 23 topics, 25 core engines, 12 I/O modules, 98+ REST API endpoints, React GUI with 12 drawing tools + brush/symmetry/guides/reference/effects/accessibility/procedural/gamedev-export/toast system + live export preview + AI Agent Mode (session control, approve/reject, real-time feedback), 134 test files, 1331 tests (0 failures), 80.87% core coverage. Monorepo with 3 packages. Docker support. Pre-commit hooks (husky + lint-staged). Claude Code integration (11 commands + 9 rules).
+231 commands across 23 topics, 25 core engines, 12 I/O modules, 98+ REST API endpoints, React GUI with 43 components + professional UI (SVG icon system, collapsible panels, custom form controls, Inter/JetBrains Mono fonts, CSS design tokens, micro-interactions) + 12 drawing tools + brush/symmetry/guides/reference/effects/accessibility/procedural/gamedev-export/toast system + live export preview + AI Agent Mode (session control, approve/reject, real-time feedback), 134 test files, 1331 tests (0 failures), 80.87% core coverage. Monorepo with 3 packages. Docker support. Pre-commit hooks (husky + lint-staged). Claude Code integration (11 commands + 9 rules).

@@ -1,25 +1,69 @@
 import { useTool } from '../context/ToolContext';
 import { useBrush } from '../context/BrushContext';
 import type { ToolName } from '../tools/types';
+import {
+  PencilIcon,
+  LineIcon,
+  RectIcon,
+  CircleIcon,
+  FillIcon,
+  EraserIcon,
+  MarqueeIcon,
+  WandIcon,
+  MoveIcon,
+  PolygonIcon,
+  GradientIcon,
+  BezierIcon,
+  SymmetryOffIcon,
+  SymmetryHIcon,
+  SymmetryVIcon,
+  SymmetryBothIcon,
+  SymmetryRadialIcon,
+  BrushPixelIcon,
+  BrushCircleIcon,
+  BrushDiamondIcon,
+  BrushSquareIcon,
+} from './Icons';
 
-const TOOLS: Array<{ name: ToolName; label: string; shortcut: string; icon: string }> = [
-  { name: 'pencil', label: 'Pencil', shortcut: 'B', icon: '/' },
-  { name: 'line', label: 'Line', shortcut: 'L', icon: '\\' },
-  { name: 'rect', label: 'Rect', shortcut: 'R', icon: '\u25A1' },
-  { name: 'circle', label: 'Circle', shortcut: 'C', icon: '\u25CB' },
-  { name: 'fill', label: 'Fill', shortcut: 'G', icon: '\u25A7' },
-  { name: 'eraser', label: 'Eraser', shortcut: 'E', icon: '\u2395' },
-  { name: 'marquee', label: 'Marquee', shortcut: 'M', icon: '\u25A2' },
-  { name: 'wand', label: 'Wand', shortcut: 'W', icon: '\u2728' },
-  { name: 'move', label: 'Move', shortcut: 'V', icon: '\u271A' },
-  { name: 'polygon', label: 'Polygon', shortcut: 'P', icon: '\u2B23' },
-  { name: 'gradient', label: 'Gradient', shortcut: 'D', icon: '\u25A4' },
-  { name: 'bezier', label: 'Bezier', shortcut: 'N', icon: '\u223F' },
+type IconComponent = (props: { size?: number; className?: string }) => JSX.Element;
+
+const TOOLS: Array<{ name: ToolName; label: string; shortcut: string; icon: IconComponent }> = [
+  { name: 'pencil', label: 'Pencil', shortcut: 'B', icon: PencilIcon },
+  { name: 'line', label: 'Line', shortcut: 'L', icon: LineIcon },
+  { name: 'rect', label: 'Rect', shortcut: 'R', icon: RectIcon },
+  { name: 'circle', label: 'Circle', shortcut: 'C', icon: CircleIcon },
+  { name: 'fill', label: 'Fill', shortcut: 'G', icon: FillIcon },
+  { name: 'eraser', label: 'Eraser', shortcut: 'E', icon: EraserIcon },
+  { name: 'marquee', label: 'Marquee', shortcut: 'M', icon: MarqueeIcon },
+  { name: 'wand', label: 'Wand', shortcut: 'W', icon: WandIcon },
+  { name: 'move', label: 'Move', shortcut: 'V', icon: MoveIcon },
+  { name: 'polygon', label: 'Polygon', shortcut: 'P', icon: PolygonIcon },
+  { name: 'gradient', label: 'Gradient', shortcut: 'D', icon: GradientIcon },
+  { name: 'bezier', label: 'Bezier', shortcut: 'N', icon: BezierIcon },
 ];
 
 const SYMMETRY_LABELS: Record<string, string> = {
-  none: 'Off', horizontal: 'H', vertical: 'V', both: 'HV', radial: 'Rad',
+  none: 'Off',
+  horizontal: 'H',
+  vertical: 'V',
+  both: 'HV',
+  radial: 'Rad',
 };
+
+const SYMMETRY_ICONS: Record<string, IconComponent> = {
+  none: SymmetryOffIcon,
+  horizontal: SymmetryHIcon,
+  vertical: SymmetryVIcon,
+  both: SymmetryBothIcon,
+  radial: SymmetryRadialIcon,
+};
+
+function BrushShapeIcon({ shape, size: iconSize }: { shape: string; size: number }) {
+  if (shape === 'circle') return <BrushCircleIcon size={iconSize} />;
+  if (shape === 'diamond') return <BrushDiamondIcon size={iconSize} />;
+  if (shape === 'square') return <BrushSquareIcon size={iconSize} />;
+  return <BrushPixelIcon size={iconSize} />;
+}
 
 export function ToolBar() {
   const { activeTool, setActiveTool, fillMode, setFillMode, thickness, setThickness } = useTool();
@@ -28,16 +72,20 @@ export function ToolBar() {
   return (
     <div className="toolbar">
       <div className="toolbar__tools">
-        {TOOLS.map((t) => (
-          <button
-            key={t.name}
-            className={`toolbar__btn ${activeTool === t.name ? 'toolbar__btn--active' : ''}`}
-            onClick={() => setActiveTool(t.name)}
-            title={`${t.label} (${t.shortcut})`}
-          >
-            <span className="toolbar__icon">{t.icon}</span>
-            <span className="toolbar__shortcut">{t.shortcut}</span>
-          </button>
+        {TOOLS.map((t, i) => (
+          <>
+            {i === 6 && <div key="sep-1" className="toolbar__separator" />}
+            {i === 9 && <div key="sep-2" className="toolbar__separator" />}
+            <button
+              key={t.name}
+              className={`toolbar__btn ${activeTool === t.name ? 'toolbar__btn--active' : ''}`}
+              onClick={() => setActiveTool(t.name)}
+              title={`${t.label} (${t.shortcut})`}
+            >
+              <t.icon size={15} className="toolbar__icon" />
+              <span className="toolbar__shortcut">{t.shortcut}</span>
+            </button>
+          </>
         ))}
       </div>
 
@@ -51,7 +99,10 @@ export function ToolBar() {
       <label className="toolbar__option" title="Line thickness">
         <span>Thick</span>
         <input
-          type="range" min={1} max={5} value={thickness}
+          type="range"
+          min={1}
+          max={5}
+          value={thickness}
           onChange={(e) => setThickness(+e.target.value)}
         />
         <span className="toolbar__value">{thickness}</span>
@@ -59,16 +110,22 @@ export function ToolBar() {
 
       <div className="toolbar__separator" />
 
-      <span className="toolbar__option" title="Active brush">
-        <span>Brush: {activeBrush.name} ({activeBrush.size}px)</span>
+      <span className="toolbar__info" title="Active brush">
+        <BrushShapeIcon shape={activeBrush.size <= 2 ? 'pixel' : activeBrush.shape} size={12} />
+        <span>{activeBrush.name}</span>
+        <span className="toolbar__value">{activeBrush.size}px</span>
       </span>
 
       <button
         className={`toolbar__btn toolbar__btn--symmetry ${symmetry.mode !== 'none' ? 'toolbar__btn--active' : ''}`}
         onClick={cycleSymmetry}
-        title={`Symmetry: ${symmetry.mode} (S to toggle)`}
+        title={`Symmetry: ${SYMMETRY_LABELS[symmetry.mode] ?? 'Off'} (S to toggle)`}
       >
-        <span>Sym: {SYMMETRY_LABELS[symmetry.mode] ?? 'Off'}</span>
+        {(() => {
+          const SymIcon = SYMMETRY_ICONS[symmetry.mode] ?? SymmetryOffIcon;
+          return <SymIcon size={14} className="toolbar__icon" />;
+        })()}
+        <span className="toolbar__shortcut">S</span>
       </button>
     </div>
   );

@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { PlusIcon } from './Icons';
 
 interface SidebarProps {
   canvases: string[];
@@ -29,7 +30,14 @@ export function Sidebar({ canvases, selected, onSelect, onNewCanvas }: SidebarPr
 
   return (
     <div className="sidebar">
-      <div className="sidebar__header">Canvases ({canvases.length})</div>
+      <div className="sidebar__header">
+        <span>Canvases ({canvases.length})</span>
+        {onNewCanvas && (
+          <button className="sidebar__add-btn" onClick={onNewCanvas} title="New Canvas">
+            <PlusIcon size={13} />
+          </button>
+        )}
+      </div>
       {canvases.map((name) => (
         <div
           key={name}
@@ -44,11 +52,6 @@ export function Sidebar({ canvases, selected, onSelect, onNewCanvas }: SidebarPr
           )}
         </div>
       ))}
-      {onNewCanvas && (
-        <button className="sidebar__add-btn" onClick={onNewCanvas} title="New Canvas">
-          + New Canvas
-        </button>
-      )}
     </div>
   );
 }
