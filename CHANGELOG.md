@@ -4,6 +4,52 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [2.0.0-beta.12] - 2026-03-28
+
+### Added — Project Professionalization & Infrastructure
+
+**Core Engines (6 new — 25 total)**
+- `brush-engine.ts` — brush masks, symmetry calculation, stroke interpolation, pixel-perfect filtering
+- `effects-engine.ts` — non-destructive layer effects: drop shadow, outer glow, outline, color overlay, box blur
+- `guide-engine.ts` — guide lines CRUD, snap-to-guide calculation, validation
+- `accessibility-engine.ts` — CVD simulation (protanopia, deuteranopia, tritanopia, achromatopsia), WCAG contrast
+- `procedural-engine.ts` — Simplex noise 2D, fBm, turbulence, checkerboard, stripes, grid-dots, brick patterns
+- `gamedev-engine.ts` — Godot .tres/.tscn, Unity sprite JSON, generic metadata export
+
+**Type Definitions (5 new)**
+- `brush.ts`, `guide.ts`, `accessibility.ts`, `procedural.ts`, `gamedev.ts`
+
+**CLI Commands (50+ new across 10 topics)**
+- brush (6), effect (10), guide (6), generate (8), gamedev (8)
+- canvas symmetry/CVD (3), draw symmetric/stroke (5), layer reference (4)
+- palette accessibility/contrast (2), project preferences (2), validate/export accessibility
+
+**Studio Routes (6 new — 22 total)**
+- brush, guide, effect, accessibility, generate, gamedev
+
+**Studio UI (13 new components)**
+- BrushPanel, SymmetryPanel, EffectsPanel, EffectEditor, AccessibilityPanel
+- GamedevExportPanel, ProceduralPanel, ReferencePanel, Minimap
+- CanvasCreateDialog, PreferencesDialog, ProjectInitDialog, ToastContainer
+
+**Infrastructure**
+- Docker support: multi-stage Dockerfile, docker-compose.yml, .dockerignore
+- Claude Code integration: 11 slash commands + 9 rule files
+- Pre-commit hooks: husky + lint-staged (ESLint + Prettier on staged files)
+- CI improvements: type-check (tsc --noEmit), coverage threshold (80%), dependabot
+- GitHub templates: bug report, feature request, PR template, SECURITY.md
+- VSCode workspace: settings, recommended extensions, debug configurations
+- CONTRIBUTING.md with development guidelines
+- .env.example with environment documentation
+
+### Fixed
+- Resolved all 27 lint warnings in CLI package (unused vars, explicit any)
+- Fixed TypeScript errors in Studio app.ts (Hono context types)
+
+### Improved
+- Core test coverage: 79.83% → 80.87% (frame-renderer 55% → 100%, palette-engine 71% → 98%)
+- Total tests: 1318 → 1331 (134 test files, 0 failures)
+
 ## [2.0.0-beta.11] - 2026-03-28
 
 ### Added — Milestone 23: Live Export Preview + AI Agent Mode

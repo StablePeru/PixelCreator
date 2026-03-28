@@ -8,8 +8,9 @@
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="MIT License"></a>
   <img src="https://img.shields.io/badge/node-%3E%3D20-brightgreen.svg" alt="Node >= 20">
   <img src="https://img.shields.io/badge/commands-231-orange.svg" alt="231 commands">
-  <img src="https://img.shields.io/badge/tests-1318%20passing-brightgreen.svg" alt="1318 tests">
-  <img src="https://img.shields.io/badge/version-2.0.0--beta-purple.svg" alt="v2.0.0-beta">
+  <img src="https://img.shields.io/badge/tests-1331%20passing-brightgreen.svg" alt="1331 tests">
+  <img src="https://img.shields.io/badge/coverage-80%25-brightgreen.svg" alt="80% coverage">
+  <img src="https://img.shields.io/badge/version-2.0.0--beta.12-purple.svg" alt="v2.0.0-beta.12">
   <img src="https://img.shields.io/badge/studio-React%20GUI-blue.svg" alt="Studio GUI">
 </p>
 
@@ -25,7 +26,7 @@
 
 - **Full workflow in the terminal** --- from `project:init` to `export:gif` in a single pipeline
 - **Git-friendly `.pxc` format** --- directory-based projects with JSON metadata + PNG layers, perfect for version control
-- **170 commands** across 16 topics --- drawing, layers, animation, tilesets, templates, recipes, selections, and more
+- **231 commands** across 23 topics --- drawing, layers, animation, tilesets, templates, recipes, selections, and more
 - **Scriptable** --- every command supports `--output json` for automation, CI/CD, and tool integration
 - **Extensible** --- plugin system with project-level and user-level plugins
 

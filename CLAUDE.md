@@ -45,7 +45,7 @@ pnpm workspace with 3 packages:
 | `studio` | 1 | Start web GUI server |
 | `template` | 5 | Create, apply, manage templates |
 | `tileset` | 12 | Tiles, tilemaps, Tiled export |
-| `validate` | 2 | Palette/size validation |
+| `validate` | 3 | Palette/size/accessibility validation |
 | `view` | 2 | Terminal preview, web preview |
 
 ### Core Engines (`packages/core/src/core/` — 25 modules)
@@ -128,5 +128,5 @@ pnpm workspace with 3 packages:
 - **Node**: >= 20.0.0
 - **Package manager**: pnpm (workspace)
 
-## Current Status: v2.0.0-beta.11
-231 commands across 23 topics, 25 core engines, 12 I/O modules, 98+ REST API endpoints, React GUI with 12 drawing tools + brush/symmetry/guides/reference/effects/accessibility/procedural/gamedev-export/toast system + live export preview + AI Agent Mode (session control, approve/reject, real-time feedback), 134 test files, 1318 tests (0 failures). Monorepo with 3 packages.
+## Current Status: v2.0.0-beta.12
+231 commands across 23 topics, 25 core engines, 12 I/O modules, 98+ REST API endpoints, React GUI with 12 drawing tools + brush/symmetry/guides/reference/effects/accessibility/procedural/gamedev-export/toast system + live export preview + AI Agent Mode (session control, approve/reject, real-time feedback), 134 test files, 1331 tests (0 failures), 80.87% core coverage. Monorepo with 3 packages. Docker support. Pre-commit hooks (husky + lint-staged). Claude Code integration (11 commands + 9 rules).
