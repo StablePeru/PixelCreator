@@ -1,7 +1,18 @@
 import { PixelBuffer } from '../io/png-codec.js';
 import type { RGBA } from '../types/common.js';
 import { hexToRGBA, colorDistance, rgbaToHex } from '../types/common.js';
-import type { PaletteData, PaletteColor } from '../types/palette.js';
+import type {
+  PaletteData,
+  PaletteColor,
+  RampInterpolation,
+  HueShiftRampConfig,
+} from '../types/palette.js';
+import {
+  generateOklchRamp as cseGenerateOklchRamp,
+  generateHslRamp as cseGenerateHslRamp,
+  generateHueShiftRampCore,
+  perceptualNearestColor,
+} from './color-space-engine.js';
 
 export type PaletteSortMode = 'hue' | 'luminance' | 'saturation' | 'index' | 'name';
 
@@ -34,7 +45,11 @@ function hexToHSL(hex: string): { h: number; s: number; l: number } {
   return { h, s, l };
 }
 
-export function sortPaletteColors(colors: PaletteColor[], mode: PaletteSortMode, reverse: boolean): PaletteColor[] {
+export function sortPaletteColors(
+  colors: PaletteColor[],
+  mode: PaletteSortMode,
+  reverse: boolean,
+): PaletteColor[] {
   const sorted = [...colors];
 
   sorted.sort((a, b) => {
@@ -126,7 +141,10 @@ export interface PaletteViolation {
   distance: number;
 }
 
-export function findNearestColor(color: RGBA, paletteColors: RGBA[]): { color: RGBA; index: number; distance: number } {
+export function findNearestColor(
+  color: RGBA,
+  paletteColors: RGBA[],
+): { color: RGBA; index: number; distance: number } {
   let bestIndex = 0;
   let bestDistance = Infinity;
 
@@ -171,4 +189,69 @@ export function validateBufferAgainstPalette(
   }
 
   return violations;
+}
+
+/**
+ * Generate an advanced color ramp using the specified interpolation mode.
+ * Wraps color-space-engine functions with a unified API.
+ */
+export function generateAdvancedRamp(
+  startHex: string,
+  endHex: string,
+  steps: number,
+  interpolation: RampInterpolation,
+): string[] {
+  switch (interpolation) {
+    case 'rgb':
+      return generateRamp(startHex, endHex, steps);
+    case 'hsl':
+      return cseGenerateHslRamp(startHex, endHex, steps);
+    case 'oklch':
+      return cseGenerateOklchRamp(startHex, endHex, steps);
+    case 'hue-shift':
+      // For two-color ramp, use OKLCH (hue-shift needs the dedicated function)
+      return cseGenerateOklchRamp(startHex, endHex, steps);
+  }
+}
+
+/**
+ * Generate a hue-shifting ramp (Stardew Valley technique).
+ * Shadows shift toward cool tones, highlights toward warm tones.
+ */
+export function generateHueShiftRamp(
+  baseHex: string,
+  steps: number,
+  config: HueShiftRampConfig,
+): string[] {
+  return generateHueShiftRampCore(baseHex, steps, config);
+}
+
+/**
+ * Apply a palette swap to a buffer: replace colors from one palette with another.
+ * Uses perceptual distance for accurate matching.
+ */
+export function applyPaletteSwap(
+  buffer: PixelBuffer,
+  fromPalette: RGBA[],
+  toPalette: RGBA[],
+): PixelBuffer {
+  const swapped = new PixelBuffer(buffer.width, buffer.height);
+
+  for (let y = 0; y < buffer.height; y++) {
+    for (let x = 0; x < buffer.width; x++) {
+      const pixel = buffer.getPixel(x, y);
+      if (pixel.a === 0) {
+        swapped.setPixel(x, y, pixel);
+        continue;
+      }
+      const nearest = perceptualNearestColor(pixel, fromPalette);
+      if (nearest.index < toPalette.length) {
+        swapped.setPixel(x, y, { ...toPalette[nearest.index], a: pixel.a });
+      } else {
+        swapped.setPixel(x, y, pixel);
+      }
+    }
+  }
+
+  return swapped;
 }

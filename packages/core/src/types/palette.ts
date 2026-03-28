@@ -11,9 +11,19 @@ export interface PaletteConstraints {
   allowAlpha: boolean;
 }
 
+export type RampInterpolation = 'rgb' | 'hsl' | 'oklch' | 'hue-shift';
+
+export interface HueShiftRampConfig {
+  hueShift: number;
+  saturationShift: number;
+  lightnessStart: number;
+  lightnessEnd: number;
+}
+
 export interface PaletteRamp {
   name: string;
   indices: number[];
+  interpolation?: RampInterpolation;
 }
 
 export interface PaletteData {

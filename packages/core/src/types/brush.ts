@@ -2,6 +2,8 @@ export type BrushShape = 'circle' | 'square' | 'diamond' | 'custom';
 
 export type SymmetryMode = 'none' | 'horizontal' | 'vertical' | 'both' | 'radial';
 
+export type DitherMode = 'none' | 'ordered-2x2' | 'ordered-4x4' | 'ordered-8x8';
+
 export interface BrushPreset {
   id: string;
   name: string;
@@ -11,6 +13,8 @@ export interface BrushPreset {
   spacing: number;
   opacity: number;
   pixelPerfect: boolean;
+  ditherMode?: DitherMode;
+  paletteLock?: boolean;
 }
 
 export interface SymmetryConfig {

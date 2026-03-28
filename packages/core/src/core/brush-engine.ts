@@ -1,6 +1,14 @@
 import { PixelBuffer } from '../io/png-codec.js';
 import type { RGBA, Point } from '../types/common.js';
-import type { BrushPreset, BrushShape, SymmetryConfig, SymmetryMode } from '../types/brush.js';
+import type {
+  BrushPreset,
+  BrushShape,
+  SymmetryConfig,
+  SymmetryMode,
+  DitherMode,
+} from '../types/brush.js';
+import { snapToPalette } from './color-space-engine.js';
+import { shouldDitherPixel } from './dither-engine.js';
 import { z } from 'zod';
 
 // --- Brush Mask Generation ---
@@ -21,7 +29,13 @@ export function createBrushMask(preset: BrushPreset): boolean[][] {
   return mask;
 }
 
-function evaluateShape(shape: BrushShape, x: number, y: number, size: number, half: number): boolean {
+function evaluateShape(
+  shape: BrushShape,
+  x: number,
+  y: number,
+  size: number,
+  half: number,
+): boolean {
   const cx = x - half;
   const cy = y - half;
   switch (shape) {
@@ -52,24 +66,44 @@ export function generateDiamondMask(size: number): boolean[][] {
 
 // --- Brush Application ---
 
+export interface BrushStampOptions {
+  opacity?: number;
+  paletteLockColors?: RGBA[];
+  ditherMode?: DitherMode;
+  ditherRatio?: number;
+}
+
 export function applyBrushStamp(
   buffer: PixelBuffer,
   x: number,
   y: number,
   color: RGBA,
   mask: boolean[][],
-  opacity: number = 255,
+  opacityOrOptions: number | BrushStampOptions = 255,
+  paletteLockColors?: RGBA[],
 ): void {
+  const opts: BrushStampOptions =
+    typeof opacityOrOptions === 'number'
+      ? { opacity: opacityOrOptions, paletteLockColors }
+      : opacityOrOptions;
+
+  const opacity = opts.opacity ?? 255;
+  const lockColors = opts.paletteLockColors ?? paletteLockColors;
+  const ditherMode = opts.ditherMode ?? 'none';
+  const ditherRatio = opts.ditherRatio ?? 1.0;
+
   const maskH = mask.length;
   const maskW = mask[0]?.length ?? 0;
   const halfW = Math.floor(maskW / 2);
   const halfH = Math.floor(maskH / 2);
 
+  const drawColor = lockColors ? snapToPalette(color, lockColors) : color;
+
   const stampColor: RGBA = {
-    r: color.r,
-    g: color.g,
-    b: color.b,
-    a: Math.round((color.a * opacity) / 255),
+    r: drawColor.r,
+    g: drawColor.g,
+    b: drawColor.b,
+    a: Math.round((drawColor.a * opacity) / 255),
   };
 
   for (let my = 0; my < maskH; my++) {
@@ -77,10 +111,16 @@ export function applyBrushStamp(
       if (mask[my][mx]) {
         const px = x - halfW + mx;
         const py = y - halfH + my;
+
+        // Skip pixel if dithering says no
+        if (ditherMode !== 'none' && !shouldDitherPixel(px, py, ditherRatio, ditherMode)) {
+          continue;
+        }
+
         if (opacity < 255) {
           blendPixel(buffer, px, py, stampColor);
         } else {
-          buffer.setPixel(px, py, color);
+          buffer.setPixel(px, py, drawColor);
         }
       }
     }
@@ -167,7 +207,8 @@ export function pixelPerfectFilter(points: Point[]): Point[] {
     const isLCorner =
       Math.abs(dxPrev) + Math.abs(dyPrev) === 1 &&
       Math.abs(dxNext) + Math.abs(dyNext) === 1 &&
-      dxPrev !== dxNext && dyPrev !== dyNext;
+      dxPrev !== dxNext &&
+      dyPrev !== dyNext;
 
     if (!isLCorner) {
       result.push(curr);
@@ -185,12 +226,11 @@ export function applyBrushStroke(
   points: Point[],
   color: RGBA,
   preset: BrushPreset,
+  paletteLockColors?: RGBA[],
 ): void {
   if (points.length === 0) return;
 
-  let strokePoints = preset.spacing > 1
-    ? interpolateStrokePoints(points, preset.spacing)
-    : points;
+  let strokePoints = preset.spacing > 1 ? interpolateStrokePoints(points, preset.spacing) : points;
 
   if (preset.pixelPerfect && preset.size === 1) {
     strokePoints = pixelPerfectFilter(strokePoints);
@@ -198,8 +238,15 @@ export function applyBrushStroke(
 
   const mask = createBrushMask(preset);
 
+  const stampOpts: BrushStampOptions = {
+    opacity: preset.opacity,
+    paletteLockColors,
+    ditherMode: preset.ditherMode ?? 'none',
+    ditherRatio: 1.0,
+  };
+
   for (const pt of strokePoints) {
-    applyBrushStamp(buffer, pt.x, pt.y, color, mask, preset.opacity);
+    applyBrushStamp(buffer, pt.x, pt.y, color, mask, stampOpts);
   }
 }
 
@@ -278,11 +325,12 @@ export function applySymmetricStroke(
   color: RGBA,
   preset: BrushPreset,
   symmetry: SymmetryConfig,
+  paletteLockColors?: RGBA[],
 ): void {
   if (points.length === 0) return;
 
   if (symmetry.mode === 'none') {
-    applyBrushStroke(buffer, points, color, preset);
+    applyBrushStroke(buffer, points, color, preset, paletteLockColors);
     return;
   }
 
@@ -290,7 +338,11 @@ export function applySymmetricStroke(
   const allStrokes: Point[][] = [];
   const firstPoint = points[0];
   const mirroredOrigins = computeSymmetryPoints(
-    firstPoint.x, firstPoint.y, symmetry, buffer.width, buffer.height,
+    firstPoint.x,
+    firstPoint.y,
+    symmetry,
+    buffer.width,
+    buffer.height,
   );
 
   for (const origin of mirroredOrigins) {
@@ -319,7 +371,7 @@ export function applySymmetricStroke(
       const firstAngle = Math.atan2(firstPoint.y - cy, firstPoint.x - cx);
       const dTheta = origAngle - firstAngle;
 
-      const rotatedPoints = points.map(p => {
+      const rotatedPoints = points.map((p) => {
         const px = p.x - cx;
         const py = p.y - cy;
         const cos = Math.cos(dTheta);
@@ -331,7 +383,7 @@ export function applySymmetricStroke(
       });
       allStrokes.push(rotatedPoints);
     } else {
-      const mirroredPoints = points.map(p => ({
+      const mirroredPoints = points.map((p) => ({
         x: origin.x + (p.x - firstPoint.x) * flipX,
         y: origin.y + (p.y - firstPoint.y) * flipY,
       }));
@@ -340,7 +392,7 @@ export function applySymmetricStroke(
   }
 
   for (const stroke of allStrokes) {
-    applyBrushStroke(buffer, stroke, color, preset);
+    applyBrushStroke(buffer, stroke, color, preset, paletteLockColors);
   }
 }
 
@@ -438,10 +490,12 @@ export const brushPresetSchema = z.object({
   spacing: z.number().min(0.1).max(10),
   opacity: z.number().int().min(0).max(255),
   pixelPerfect: z.boolean(),
+  ditherMode: z.enum(['none', 'ordered-2x2', 'ordered-4x4', 'ordered-8x8']).optional(),
+  paletteLock: z.boolean().optional(),
 });
 
 export function validateBrushPreset(preset: unknown): { valid: boolean; errors?: string[] } {
   const result = brushPresetSchema.safeParse(preset);
   if (result.success) return { valid: true };
-  return { valid: false, errors: result.error.issues.map(i => i.message) };
+  return { valid: false, errors: result.error.issues.map((i) => i.message) };
 }

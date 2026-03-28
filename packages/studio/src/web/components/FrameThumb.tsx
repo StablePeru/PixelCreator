@@ -3,13 +3,25 @@ interface FrameThumbProps {
   frameIndex: number;
   duration: number;
   active: boolean;
+  selected?: boolean;
   label?: string;
-  onClick: () => void;
+  onClick: (e: React.MouseEvent) => void;
+  onContextMenu?: (e: React.MouseEvent) => void;
 }
 
-export function FrameThumb({ canvasName, frameIndex, duration, active, label, onClick }: FrameThumbProps) {
+export function FrameThumb({
+  canvasName,
+  frameIndex,
+  duration,
+  active,
+  selected,
+  label,
+  onClick,
+  onContextMenu,
+}: FrameThumbProps) {
+  const cls = `frame-thumb${active ? ' frame-thumb--active' : ''}${selected ? ' frame-thumb--selected' : ''}`;
   return (
-    <div className={`frame-thumb ${active ? 'frame-thumb--active' : ''}`} onClick={onClick}>
+    <div className={cls} onClick={onClick} onContextMenu={onContextMenu}>
       <img
         className="frame-thumb__img"
         src={`/api/canvas/${canvasName}/frame/${frameIndex}?scale=2`}

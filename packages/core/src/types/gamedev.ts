@@ -23,7 +23,11 @@ export interface GodotSpriteFrames {
     name: string;
     speed: number;
     loop: boolean;
-    frames: Array<{ texture: string; duration: number; region: { x: number; y: number; w: number; h: number } }>;
+    frames: Array<{
+      texture: string;
+      duration: number;
+      region: { x: number; y: number; w: number; h: number };
+    }>;
   }>;
 }
 
@@ -57,4 +61,43 @@ export interface GamedevExportOptions {
   includeTileset: boolean;
   scale: number;
   outputDir: string;
+}
+
+// Animation State Machine types
+
+export interface AnimationTransition {
+  fromState: string;
+  toState: string;
+  condition: string;
+}
+
+export interface AnimationState {
+  name: string;
+  tagName: string;
+  transitions: AnimationTransition[];
+}
+
+export interface AnimationStateMachine {
+  name: string;
+  states: AnimationState[];
+  initialState: string;
+}
+
+export interface GodotAnimationTree {
+  resourceType: 'AnimationNodeStateMachine';
+  nodes: Array<{ name: string; animation: string; position: { x: number; y: number } }>;
+  transitions: Array<{ from: string; to: string; condition: string }>;
+}
+
+export interface UnityAnimatorController {
+  name: string;
+  layers: Array<{
+    name: string;
+    defaultState: string;
+    states: Array<{
+      name: string;
+      clip: string;
+      transitions: Array<{ destinationState: string; condition: string }>;
+    }>;
+  }>;
 }

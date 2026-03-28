@@ -1,8 +1,19 @@
 export type LayerType = 'normal' | 'reference' | 'tilemap';
 export type BlendMode =
-  | 'normal' | 'multiply' | 'screen' | 'overlay' | 'darken' | 'lighten'
-  | 'color-dodge' | 'color-burn' | 'hard-light' | 'soft-light'
-  | 'difference' | 'exclusion' | 'addition' | 'subtract';
+  | 'normal'
+  | 'multiply'
+  | 'screen'
+  | 'overlay'
+  | 'darken'
+  | 'lighten'
+  | 'color-dodge'
+  | 'color-burn'
+  | 'hard-light'
+  | 'soft-light'
+  | 'difference'
+  | 'exclusion'
+  | 'addition'
+  | 'subtract';
 
 export type EffectType = 'drop-shadow' | 'outer-glow' | 'outline' | 'color-overlay';
 
@@ -73,6 +84,19 @@ export interface AnimationTag {
   direction: AnimationDirection;
   repeat: number;
 }
+
+export type BatchFrameTransform =
+  | 'flip-h'
+  | 'flip-v'
+  | 'rotate-90'
+  | 'rotate-180'
+  | 'rotate-270'
+  | 'brightness'
+  | 'contrast'
+  | 'invert'
+  | 'desaturate'
+  | 'hue-shift'
+  | 'posterize';
 
 export interface CanvasData {
   name: string;

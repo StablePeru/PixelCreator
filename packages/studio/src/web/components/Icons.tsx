@@ -811,3 +811,43 @@ export function BrushPixelIcon({ size = 16, className }: IconProps) {
     </svg>
   );
 }
+
+// === Selection Tool Icons ===
+
+export function LassoIcon({ size = 16, className }: IconProps) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 16 16"
+      fill="none"
+      stroke="currentColor"
+      {...defaults}
+      className={className}
+    >
+      <path d="M4 12C2 10 2 6 5 3c3-3 7-2 8 1s-1 6-4 7c-2 1-4 0-3 2" />
+      <circle cx="5" cy="14" r="1" fill="currentColor" />
+    </svg>
+  );
+}
+
+export function PolygonSelectIcon({ size = 16, className }: IconProps) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 16 16"
+      fill="none"
+      stroke="currentColor"
+      {...defaults}
+      className={className}
+    >
+      <polygon points="3,12 2,5 8,2 14,6 12,13" strokeDasharray="2 1" />
+      <circle cx="3" cy="12" r="1.5" fill="currentColor" />
+      <circle cx="2" cy="5" r="1.5" fill="currentColor" />
+      <circle cx="8" cy="2" r="1.5" fill="currentColor" />
+      <circle cx="14" cy="6" r="1.5" fill="currentColor" />
+      <circle cx="12" cy="13" r="1.5" fill="currentColor" />
+    </svg>
+  );
+}

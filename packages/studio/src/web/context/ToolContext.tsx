@@ -1,4 +1,12 @@
-import { createContext, useContext, useState, useCallback, useMemo, useRef, type ReactNode } from 'react';
+import {
+  createContext,
+  useContext,
+  useState,
+  useCallback,
+  useMemo,
+  useRef,
+  type ReactNode,
+} from 'react';
 import type { ToolName, DrawTool, ToolCallbacks } from '../tools/types';
 import { createPencilTool } from '../tools/PencilTool';
 import { createLineTool } from '../tools/LineTool';
@@ -12,6 +20,8 @@ import { createMoveTool } from '../tools/MoveTool';
 import { createPolygonTool } from '../tools/PolygonTool';
 import { createGradientTool } from '../tools/GradientTool';
 import { createBezierTool } from '../tools/BezierTool';
+import { createLassoTool } from '../tools/LassoTool';
+import { createPolygonSelectTool } from '../tools/PolygonSelectTool';
 import { useColor } from './ColorContext';
 import { useBrush } from './BrushContext';
 
@@ -55,47 +65,68 @@ export function ToolProvider({ children, canvasName, activeLayerId }: ToolProvid
   const symmetryRef = useRef(symmetry);
   symmetryRef.current = symmetry;
 
-  const callbacks: ToolCallbacks = useMemo(() => ({
-    getColor: () => colorRef.current,
-    getCanvasName: () => canvasRef.current,
-    getFillMode: () => fillRef.current,
-    getThickness: () => thicknessRef.current,
-    getBrushPreset: () => brushRef.current,
-    getSymmetryConfig: () => symmetryRef.current,
-    sendDraw: async (endpoint, body) => {
-      const layerId = layerRef.current;
-      await fetch(`/api/draw/${endpoint}`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(layerId ? { ...body, layer: layerId } : body),
-      });
-    },
-  }), []);
+  const callbacks: ToolCallbacks = useMemo(
+    () => ({
+      getColor: () => colorRef.current,
+      getCanvasName: () => canvasRef.current,
+      getFillMode: () => fillRef.current,
+      getThickness: () => thicknessRef.current,
+      getBrushPreset: () => brushRef.current,
+      getSymmetryConfig: () => symmetryRef.current,
+      sendDraw: async (endpoint, body) => {
+        const layerId = layerRef.current;
+        await fetch(`/api/draw/${endpoint}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(layerId ? { ...body, layer: layerId } : body),
+        });
+      },
+    }),
+    [],
+  );
 
-  const tools = useMemo(() => ({
-    pencil: createPencilTool(callbacks),
-    line: createLineTool(callbacks),
-    rect: createRectTool(callbacks),
-    circle: createCircleTool(callbacks),
-    fill: createFillTool(callbacks),
-    eraser: createEraserTool(callbacks),
-    marquee: createMarqueeRectTool(callbacks),
-    wand: createMagicWandTool(callbacks),
-    move: createMoveTool(callbacks),
-    polygon: createPolygonTool(callbacks),
-    gradient: createGradientTool(callbacks),
-    bezier: createBezierTool(callbacks),
-  }), [callbacks]);
+  const tools = useMemo(
+    () => ({
+      pencil: createPencilTool(callbacks),
+      line: createLineTool(callbacks),
+      rect: createRectTool(callbacks),
+      circle: createCircleTool(callbacks),
+      fill: createFillTool(callbacks),
+      eraser: createEraserTool(callbacks),
+      marquee: createMarqueeRectTool(callbacks),
+      wand: createMagicWandTool(callbacks),
+      move: createMoveTool(callbacks),
+      polygon: createPolygonTool(callbacks),
+      gradient: createGradientTool(callbacks),
+      bezier: createBezierTool(callbacks),
+      lasso: createLassoTool(callbacks),
+      polyselect: createPolygonSelectTool(callbacks),
+    }),
+    [callbacks],
+  );
 
   const currentTool = tools[activeTool];
 
-  const setActiveTool = useCallback((tool: ToolName) => {
-    currentTool.reset();
-    setActiveToolState(tool);
-  }, [currentTool]);
+  const setActiveTool = useCallback(
+    (tool: ToolName) => {
+      currentTool.reset();
+      setActiveToolState(tool);
+    },
+    [currentTool],
+  );
 
   return (
-    <ToolCtx.Provider value={{ activeTool, fillMode, thickness, currentTool, setActiveTool, setFillMode, setThickness }}>
+    <ToolCtx.Provider
+      value={{
+        activeTool,
+        fillMode,
+        thickness,
+        currentTool,
+        setActiveTool,
+        setFillMode,
+        setThickness,
+      }}
+    >
       {children}
     </ToolCtx.Provider>
   );

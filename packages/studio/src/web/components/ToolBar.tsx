@@ -14,6 +14,8 @@ import {
   PolygonIcon,
   GradientIcon,
   BezierIcon,
+  LassoIcon,
+  PolygonSelectIcon,
   SymmetryOffIcon,
   SymmetryHIcon,
   SymmetryVIcon,
@@ -29,13 +31,15 @@ type IconComponent = (props: { size?: number; className?: string }) => JSX.Eleme
 
 const TOOLS: Array<{ name: ToolName; label: string; shortcut: string; icon: IconComponent }> = [
   { name: 'pencil', label: 'Pencil', shortcut: 'B', icon: PencilIcon },
-  { name: 'line', label: 'Line', shortcut: 'L', icon: LineIcon },
+  { name: 'line', label: 'Line', shortcut: 'I', icon: LineIcon },
   { name: 'rect', label: 'Rect', shortcut: 'R', icon: RectIcon },
   { name: 'circle', label: 'Circle', shortcut: 'C', icon: CircleIcon },
   { name: 'fill', label: 'Fill', shortcut: 'G', icon: FillIcon },
   { name: 'eraser', label: 'Eraser', shortcut: 'E', icon: EraserIcon },
   { name: 'marquee', label: 'Marquee', shortcut: 'M', icon: MarqueeIcon },
   { name: 'wand', label: 'Wand', shortcut: 'W', icon: WandIcon },
+  { name: 'lasso', label: 'Lasso', shortcut: 'L', icon: LassoIcon },
+  { name: 'polyselect', label: 'Poly Select', shortcut: 'Y', icon: PolygonSelectIcon },
   { name: 'move', label: 'Move', shortcut: 'V', icon: MoveIcon },
   { name: 'polygon', label: 'Polygon', shortcut: 'P', icon: PolygonIcon },
   { name: 'gradient', label: 'Gradient', shortcut: 'D', icon: GradientIcon },
@@ -75,7 +79,7 @@ export function ToolBar() {
         {TOOLS.map((t, i) => (
           <>
             {i === 6 && <div key="sep-1" className="toolbar__separator" />}
-            {i === 9 && <div key="sep-2" className="toolbar__separator" />}
+            {i === 11 && <div key="sep-2" className="toolbar__separator" />}
             <button
               key={t.name}
               className={`toolbar__btn ${activeTool === t.name ? 'toolbar__btn--active' : ''}`}

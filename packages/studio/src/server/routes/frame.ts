@@ -7,7 +7,10 @@ import {
   deleteLayerFrame,
   createEmptyBuffer,
   generateSequentialId,
+  batchApplyToFrames,
+  validateBatchFrameIds,
 } from '@pixelcreator/core';
+import type { BatchFrameTransform } from '@pixelcreator/core';
 
 export const frameRoutes = new Hono<{ Variables: { projectPath: string } }>();
 
@@ -37,7 +40,13 @@ frameRoutes.post('/canvas/:name/frame', async (c) => {
         const srcBuf = readLayerFrame(projectPath, canvasName, layer.id, sourceFrameId);
         writeLayerFrame(projectPath, canvasName, layer.id, frameId, srcBuf);
       } else {
-        writeLayerFrame(projectPath, canvasName, layer.id, frameId, createEmptyBuffer(canvas.width, canvas.height));
+        writeLayerFrame(
+          projectPath,
+          canvasName,
+          layer.id,
+          frameId,
+          createEmptyBuffer(canvas.width, canvas.height),
+        );
       }
     }
 
@@ -47,8 +56,12 @@ frameRoutes.post('/canvas/:name/frame', async (c) => {
 
     // Adjust animation tags
     for (const tag of canvas.animationTags) {
-      if (insertIndex <= tag.from) { tag.from++; tag.to++; }
-      else if (insertIndex <= tag.to) { tag.to++; }
+      if (insertIndex <= tag.from) {
+        tag.from++;
+        tag.to++;
+      } else if (insertIndex <= tag.to) {
+        tag.to++;
+      }
     }
 
     writeCanvasJSON(projectPath, canvasName, canvas);
@@ -80,8 +93,12 @@ frameRoutes.delete('/canvas/:name/frame/:id', (c) => {
 
     // Adjust animation tags
     for (const tag of canvas.animationTags) {
-      if (idx < tag.from) { tag.from--; tag.to--; }
-      else if (idx <= tag.to) { tag.to = Math.max(tag.from, tag.to - 1); }
+      if (idx < tag.from) {
+        tag.from--;
+        tag.to--;
+      } else if (idx <= tag.to) {
+        tag.to = Math.max(tag.from, tag.to - 1);
+      }
     }
     // Remove invalid tags
     canvas.animationTags = canvas.animationTags.filter((t) => t.from <= t.to);
@@ -105,7 +122,12 @@ frameRoutes.post('/canvas/:name/frame/:id/duplicate', (c) => {
 
     const newIndex = canvas.frames.length;
     const newId = generateSequentialId('frame', newIndex + 1);
-    const newFrame = { id: newId, index: newIndex, duration: srcFrame.duration, label: srcFrame.label };
+    const newFrame = {
+      id: newId,
+      index: newIndex,
+      duration: srcFrame.duration,
+      label: srcFrame.label,
+    };
 
     for (const layer of canvas.layers) {
       const buf = readLayerFrame(projectPath, canvasName, layer.id, frameId);
@@ -140,6 +162,133 @@ frameRoutes.put('/canvas/:name/frame/:id', async (c) => {
 
     writeCanvasJSON(projectPath, canvasName, canvas);
     return c.json(frame);
+  } catch (err) {
+    return c.json({ error: String(err) }, 500);
+  }
+});
+
+// --- Batch operations ---
+
+frameRoutes.post('/canvas/:name/frames/batch-delete', async (c) => {
+  const projectPath = c.get('projectPath');
+  const canvasName = c.req.param('name');
+  const body = await c.req.json();
+  const { frameIds } = body as { frameIds: string[] };
+
+  try {
+    const canvas = readCanvasJSON(projectPath, canvasName);
+    const validationError = validateBatchFrameIds(frameIds, canvas.frames);
+    if (validationError) return c.json({ error: validationError }, 400);
+
+    if (frameIds.length >= canvas.frames.length) {
+      return c.json({ error: 'Cannot delete all frames' }, 400);
+    }
+
+    const idsToDelete = new Set(frameIds);
+
+    // Delete pixel data
+    for (const fid of idsToDelete) {
+      for (const layer of canvas.layers) {
+        deleteLayerFrame(projectPath, canvasName, layer.id, fid);
+      }
+    }
+
+    // Get sorted indices of deleted frames for tag adjustment
+    const deletedIndices = canvas.frames
+      .filter((f) => idsToDelete.has(f.id))
+      .map((f) => f.index)
+      .sort((a, b) => a - b);
+
+    // Remove deleted frames
+    canvas.frames = canvas.frames.filter((f) => !idsToDelete.has(f.id));
+    for (let i = 0; i < canvas.frames.length; i++) canvas.frames[i].index = i;
+
+    // Adjust tags for each deleted index (from highest to lowest to avoid offset issues)
+    for (const delIdx of [...deletedIndices].reverse()) {
+      for (const tag of canvas.animationTags) {
+        if (delIdx < tag.from) {
+          tag.from--;
+          tag.to--;
+        } else if (delIdx <= tag.to) {
+          tag.to = Math.max(tag.from, tag.to - 1);
+        }
+      }
+    }
+    canvas.animationTags = canvas.animationTags.filter((t) => t.from <= t.to);
+
+    writeCanvasJSON(projectPath, canvasName, canvas);
+    return c.json({ success: true, deleted: frameIds, remainingFrames: canvas.frames.length });
+  } catch (err) {
+    return c.json({ error: String(err) }, 500);
+  }
+});
+
+frameRoutes.post('/canvas/:name/frames/batch-duration', async (c) => {
+  const projectPath = c.get('projectPath');
+  const canvasName = c.req.param('name');
+  const body = await c.req.json();
+  const { frameIds, duration } = body as { frameIds: string[]; duration: number };
+
+  try {
+    if (!duration || duration < 1) return c.json({ error: 'Duration must be >= 1' }, 400);
+
+    const canvas = readCanvasJSON(projectPath, canvasName);
+    const validationError = validateBatchFrameIds(frameIds, canvas.frames);
+    if (validationError) return c.json({ error: validationError }, 400);
+
+    const idsSet = new Set(frameIds);
+    let updated = 0;
+    for (const frame of canvas.frames) {
+      if (idsSet.has(frame.id)) {
+        frame.duration = duration;
+        updated++;
+      }
+    }
+
+    writeCanvasJSON(projectPath, canvasName, canvas);
+    return c.json({ success: true, updated });
+  } catch (err) {
+    return c.json({ error: String(err) }, 500);
+  }
+});
+
+frameRoutes.post('/canvas/:name/frames/batch-transform', async (c) => {
+  const projectPath = c.get('projectPath');
+  const canvasName = c.req.param('name');
+  const body = await c.req.json();
+  const { frameIds, transform, params, layer } = body as {
+    frameIds: string[];
+    transform: BatchFrameTransform;
+    params?: Record<string, number>;
+    layer?: string;
+  };
+
+  try {
+    const canvas = readCanvasJSON(projectPath, canvasName);
+    const validationError = validateBatchFrameIds(frameIds, canvas.frames);
+    if (validationError) return c.json({ error: validationError }, 400);
+
+    const targetLayers = layer
+      ? canvas.layers.filter((l) => l.id === layer)
+      : canvas.layers.filter((l) => l.type === 'normal');
+
+    let framesAffected = 0;
+
+    for (const lay of targetLayers) {
+      const inputFrames = frameIds.map((fid) => ({
+        frameId: fid,
+        buffer: readLayerFrame(projectPath, canvasName, lay.id, fid),
+      }));
+
+      const results = batchApplyToFrames(inputFrames, transform, params);
+
+      for (const result of results) {
+        writeLayerFrame(projectPath, canvasName, lay.id, result.frameId, result.buffer);
+        framesAffected++;
+      }
+    }
+
+    return c.json({ success: true, operation: transform, framesAffected });
   } catch (err) {
     return c.json({ error: String(err) }, 500);
   }

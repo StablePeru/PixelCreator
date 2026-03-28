@@ -241,11 +241,7 @@ export function getSelectionPixelCount(mask: SelectionMask): number {
   return count;
 }
 
-export function clearSelection(
-  buffer: PixelBuffer,
-  mask: SelectionMask,
-  clearColor?: RGBA,
-): void {
+export function clearSelection(buffer: PixelBuffer, mask: SelectionMask, clearColor?: RGBA): void {
   const color = clearColor || { r: 0, g: 0, b: 0, a: 0 };
   for (let y = 0; y < buffer.height; y++) {
     for (let x = 0; x < buffer.width; x++) {
@@ -340,4 +336,80 @@ export function pixelBufferToSelection(buffer: PixelBuffer): SelectionMask {
     }
   }
   return { width: buffer.width, height: buffer.height, data };
+}
+
+/**
+ * Rasterize a polygon to a bitmask using scanline fill (even-odd rule).
+ * For each row y, find all edge intersections, sort by x, fill between pairs.
+ */
+function rasterizePolygonToMask(
+  canvasWidth: number,
+  canvasHeight: number,
+  points: ReadonlyArray<{ x: number; y: number }>,
+): Uint8Array {
+  const data = new Uint8Array(canvasWidth * canvasHeight);
+  const n = points.length;
+
+  const minY = Math.max(0, Math.floor(Math.min(...points.map((p) => p.y))));
+  const maxY = Math.min(canvasHeight - 1, Math.ceil(Math.max(...points.map((p) => p.y))));
+
+  for (let y = minY; y <= maxY; y++) {
+    const scanY = y + 0.5;
+    const intersections: number[] = [];
+
+    for (let i = 0; i < n; i++) {
+      const j = (i + 1) % n;
+      const yi = points[i].y;
+      const yj = points[j].y;
+
+      if ((yi <= scanY && yj > scanY) || (yj <= scanY && yi > scanY)) {
+        const t = (scanY - yi) / (yj - yi);
+        intersections.push(points[i].x + t * (points[j].x - points[i].x));
+      }
+    }
+
+    intersections.sort((a, b) => a - b);
+
+    for (let k = 0; k < intersections.length - 1; k += 2) {
+      const x0 = Math.max(0, Math.ceil(intersections[k]));
+      const x1 = Math.min(canvasWidth - 1, Math.floor(intersections[k + 1]));
+      for (let x = x0; x <= x1; x++) {
+        data[y * canvasWidth + x] = 255;
+      }
+    }
+  }
+
+  return data;
+}
+
+/**
+ * Create a freehand lasso selection from a list of points.
+ * The points form a closed polygon rasterized with even-odd fill.
+ */
+export function createLassoSelection(
+  canvasWidth: number,
+  canvasHeight: number,
+  points: ReadonlyArray<{ x: number; y: number }>,
+): SelectionMask {
+  if (points.length < 3) {
+    throw new Error('Lasso selection requires at least 3 points');
+  }
+  const data = rasterizePolygonToMask(canvasWidth, canvasHeight, points);
+  return { width: canvasWidth, height: canvasHeight, data };
+}
+
+/**
+ * Create a polygon selection from a list of vertices.
+ * The vertices form a closed polygon rasterized with even-odd fill.
+ */
+export function createPolygonSelection(
+  canvasWidth: number,
+  canvasHeight: number,
+  vertices: ReadonlyArray<{ x: number; y: number }>,
+): SelectionMask {
+  if (vertices.length < 3) {
+    throw new Error('Polygon selection requires at least 3 vertices');
+  }
+  const data = rasterizePolygonToMask(canvasWidth, canvasHeight, vertices);
+  return { width: canvasWidth, height: canvasHeight, data };
 }

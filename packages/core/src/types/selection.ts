@@ -5,7 +5,7 @@ export interface SelectionMask {
   data: Uint8Array;
 }
 
-export type SelectionShape = 'rect' | 'ellipse' | 'color' | 'all';
+export type SelectionShape = 'rect' | 'ellipse' | 'color' | 'all' | 'lasso' | 'polygon';
 
 export interface SelectionInfo {
   shape: SelectionShape;

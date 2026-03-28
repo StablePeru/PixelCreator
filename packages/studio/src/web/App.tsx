@@ -35,6 +35,7 @@ import { EffectsPanel } from './components/EffectsPanel';
 import { AccessibilityPanel } from './components/AccessibilityPanel';
 import { ProceduralPanel } from './components/ProceduralPanel';
 import { GamedevExportPanel } from './components/GamedevExportPanel';
+import { StateMachinePanel } from './components/StateMachinePanel';
 import { AgentModePanel } from './components/AgentModePanel';
 import { CollapsiblePanel } from './components/CollapsiblePanel';
 import { useAgentSession } from './hooks/useAgentSession';
@@ -129,13 +130,15 @@ function AppShortcuts({
 
       const shortcuts: Record<string, ToolName> = {
         b: 'pencil',
-        l: 'line',
+        i: 'line',
         r: 'rect',
         c: 'circle',
         g: 'fill',
         e: 'eraser',
         m: 'marquee',
         w: 'wand',
+        l: 'lasso',
+        y: 'polyselect',
         v: 'move',
         p: 'polygon',
         d: 'gradient',
@@ -273,7 +276,7 @@ function AppInner() {
               />
               <div className="left-panel__scrollable">
                 <CollapsiblePanel title="Palette" count={(project?.palettes ?? []).length}>
-                  <PalettePanel palettes={project?.palettes ?? []} />
+                  <PalettePanel palettes={project?.palettes ?? []} canvasName={selectedCanvas} />
                 </CollapsiblePanel>
                 <CollapsiblePanel title="Layers" count={(metadata?.layers ?? []).length}>
                   <LayerPanel
@@ -309,6 +312,12 @@ function AppInner() {
                 </CollapsiblePanel>
                 <CollapsiblePanel title="Game Export" defaultOpen={false}>
                   <GamedevExportPanel canvasName={selectedCanvas} />
+                </CollapsiblePanel>
+                <CollapsiblePanel title="State Machine" defaultOpen={false}>
+                  <StateMachinePanel
+                    canvasName={selectedCanvas}
+                    tags={metadata?.animationTags ?? []}
+                  />
                 </CollapsiblePanel>
                 <CollapsiblePanel title="Reference" defaultOpen={false}>
                   <ReferencePanel

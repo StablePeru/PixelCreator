@@ -17,8 +17,21 @@ import {
   savePNG,
   loadPNG,
   generateSequentialId,
+  tilemapBrushPaint,
+  tilemapFloodFill,
+  tilemapErase,
+  tilemapStamp,
+  resolveAutoTilemap,
+  createDefaultBlob47Mapping,
+  createDefaultWang16Mapping,
 } from '@pixelcreator/core';
-import type { TilesetData, TilemapData, TilemapCell, LayerWithBuffer } from '@pixelcreator/core';
+import type {
+  TilesetData,
+  TilemapData,
+  TilemapCell,
+  LayerWithBuffer,
+  AutoTileConfig,
+} from '@pixelcreator/core';
 
 export const tilesetRoutes = new Hono<{ Variables: { projectPath: string } }>();
 
@@ -36,8 +49,16 @@ tilesetRoutes.get('/tileset/:name', (c) => {
 tilesetRoutes.post('/tileset', async (c) => {
   const projectPath = c.get('projectPath');
   const body = await c.req.json();
-  const { name, canvas: canvasName, tileWidth, tileHeight } = body as {
-    name: string; canvas: string; tileWidth: number; tileHeight: number;
+  const {
+    name,
+    canvas: canvasName,
+    tileWidth,
+    tileHeight,
+  } = body as {
+    name: string;
+    canvas: string;
+    tileWidth: number;
+    tileHeight: number;
   };
 
   if (!name || !canvasName || !tileWidth || !tileHeight) {
@@ -147,7 +168,10 @@ tilesetRoutes.get('/tileset/:name/image', (c) => {
     const tileset = readTilesetJSON(projectPath, name);
     const tilesDir = path.join(projectPath, 'tilesets', name, 'tiles');
     const tileBuffers = tileset.tiles.map((t) => loadPNG(path.join(tilesDir, `${t.hash}.png`)));
-    const image = composeTilesetImage(tileBuffers, tileset.tileWidth, tileset.tileHeight, { columns, spacing: 0 });
+    const image = composeTilesetImage(tileBuffers, tileset.tileWidth, tileset.tileHeight, {
+      columns,
+      spacing: 0,
+    });
     const png = encodePNG(image);
 
     return new Response(new Uint8Array(png), {
@@ -195,7 +219,11 @@ tilesetRoutes.put('/tileset/:name/tilemap/:mapName/cell', async (c) => {
   const mapName = c.req.param('mapName');
   const body = await c.req.json();
   const { x, y, tileIndex, flipH, flipV } = body as {
-    x: number; y: number; tileIndex: number; flipH?: boolean; flipV?: boolean;
+    x: number;
+    y: number;
+    tileIndex: number;
+    flipH?: boolean;
+    flipV?: boolean;
   };
 
   try {
@@ -211,6 +239,22 @@ tilesetRoutes.put('/tileset/:name/tilemap/:mapName/cell', async (c) => {
     writeTilesetJSON(projectPath, tilesetName, tileset);
 
     return c.json({ success: true, x, y, tileIndex });
+  } catch (err) {
+    return c.json({ error: String(err) }, 500);
+  }
+});
+
+tilesetRoutes.get('/tileset/:name/tilemap/:mapName', (c) => {
+  const projectPath = c.get('projectPath');
+  const tilesetName = c.req.param('name');
+  const mapName = c.req.param('mapName');
+
+  try {
+    const tileset = readTilesetJSON(projectPath, tilesetName);
+    const tilemap = tileset.tilemaps.find((t) => t.name === mapName);
+    if (!tilemap) return c.json({ error: `Tilemap "${mapName}" not found` }, 404);
+
+    return c.json(tilemap);
   } catch (err) {
     return c.json({ error: String(err) }, 500);
   }
@@ -254,6 +298,183 @@ tilesetRoutes.delete('/tileset/:name/tilemap/:mapName', (c) => {
     tileset.tilemaps.splice(idx, 1);
     writeTilesetJSON(projectPath, tilesetName, tileset);
     return c.json({ success: true, deleted: mapName });
+  } catch (err) {
+    return c.json({ error: String(err) }, 500);
+  }
+});
+
+// --- Tilemap Painting Routes ---
+
+tilesetRoutes.post('/tileset/:name/tilemap/:map/brush-paint', async (c) => {
+  const projectPath = c.get('projectPath');
+  const tilesetName = c.req.param('name');
+  const mapName = c.req.param('map');
+  const body = await c.req.json();
+  const { x, y, tileIndex, brushSize } = body as {
+    x: number;
+    y: number;
+    tileIndex: number;
+    brushSize?: number;
+  };
+
+  if (x === undefined || y === undefined || tileIndex === undefined) {
+    return c.json({ error: 'x, y, and tileIndex are required' }, 400);
+  }
+
+  try {
+    const tileset = readTilesetJSON(projectPath, tilesetName);
+    const tilemapIdx = tileset.tilemaps.findIndex((t) => t.name === mapName);
+    if (tilemapIdx === -1) return c.json({ error: `Tilemap "${mapName}" not found` }, 404);
+
+    const updatedTilemap = tilemapBrushPaint(
+      tileset.tilemaps[tilemapIdx],
+      x,
+      y,
+      brushSize ?? 1,
+      tileIndex,
+    );
+
+    const updatedTileset: TilesetData = {
+      ...tileset,
+      tilemaps: tileset.tilemaps.map((tm, i) => (i === tilemapIdx ? updatedTilemap : tm)),
+    };
+    writeTilesetJSON(projectPath, tilesetName, updatedTileset);
+
+    return c.json(updatedTilemap);
+  } catch (err) {
+    return c.json({ error: String(err) }, 500);
+  }
+});
+
+tilesetRoutes.post('/tileset/:name/tilemap/:map/flood-fill', async (c) => {
+  const projectPath = c.get('projectPath');
+  const tilesetName = c.req.param('name');
+  const mapName = c.req.param('map');
+  const body = await c.req.json();
+  const { x, y, tileIndex } = body as { x: number; y: number; tileIndex: number };
+
+  if (x === undefined || y === undefined || tileIndex === undefined) {
+    return c.json({ error: 'x, y, and tileIndex are required' }, 400);
+  }
+
+  try {
+    const tileset = readTilesetJSON(projectPath, tilesetName);
+    const tilemapIdx = tileset.tilemaps.findIndex((t) => t.name === mapName);
+    if (tilemapIdx === -1) return c.json({ error: `Tilemap "${mapName}" not found` }, 404);
+
+    const updatedTilemap = tilemapFloodFill(tileset.tilemaps[tilemapIdx], x, y, tileIndex);
+
+    const updatedTileset: TilesetData = {
+      ...tileset,
+      tilemaps: tileset.tilemaps.map((tm, i) => (i === tilemapIdx ? updatedTilemap : tm)),
+    };
+    writeTilesetJSON(projectPath, tilesetName, updatedTileset);
+
+    return c.json(updatedTilemap);
+  } catch (err) {
+    return c.json({ error: String(err) }, 500);
+  }
+});
+
+tilesetRoutes.post('/tileset/:name/tilemap/:map/erase', async (c) => {
+  const projectPath = c.get('projectPath');
+  const tilesetName = c.req.param('name');
+  const mapName = c.req.param('map');
+  const body = await c.req.json();
+  const { x, y, brushSize } = body as { x: number; y: number; brushSize?: number };
+
+  if (x === undefined || y === undefined) {
+    return c.json({ error: 'x and y are required' }, 400);
+  }
+
+  try {
+    const tileset = readTilesetJSON(projectPath, tilesetName);
+    const tilemapIdx = tileset.tilemaps.findIndex((t) => t.name === mapName);
+    if (tilemapIdx === -1) return c.json({ error: `Tilemap "${mapName}" not found` }, 404);
+
+    const updatedTilemap = tilemapErase(tileset.tilemaps[tilemapIdx], x, y, brushSize ?? 1);
+
+    const updatedTileset: TilesetData = {
+      ...tileset,
+      tilemaps: tileset.tilemaps.map((tm, i) => (i === tilemapIdx ? updatedTilemap : tm)),
+    };
+    writeTilesetJSON(projectPath, tilesetName, updatedTileset);
+
+    return c.json(updatedTilemap);
+  } catch (err) {
+    return c.json({ error: String(err) }, 500);
+  }
+});
+
+tilesetRoutes.post('/tileset/:name/tilemap/:map/stamp', async (c) => {
+  const projectPath = c.get('projectPath');
+  const tilesetName = c.req.param('name');
+  const mapName = c.req.param('map');
+  const body = await c.req.json();
+  const { x, y, pattern } = body as { x: number; y: number; pattern: number[][] };
+
+  if (x === undefined || y === undefined || !pattern) {
+    return c.json({ error: 'x, y, and pattern are required' }, 400);
+  }
+
+  if (!Array.isArray(pattern) || pattern.length === 0) {
+    return c.json({ error: 'pattern must be a non-empty 2D array' }, 400);
+  }
+
+  try {
+    const tileset = readTilesetJSON(projectPath, tilesetName);
+    const tilemapIdx = tileset.tilemaps.findIndex((t) => t.name === mapName);
+    if (tilemapIdx === -1) return c.json({ error: `Tilemap "${mapName}" not found` }, 404);
+
+    const updatedTilemap = tilemapStamp(tileset.tilemaps[tilemapIdx], x, y, pattern);
+
+    const updatedTileset: TilesetData = {
+      ...tileset,
+      tilemaps: tileset.tilemaps.map((tm, i) => (i === tilemapIdx ? updatedTilemap : tm)),
+    };
+    writeTilesetJSON(projectPath, tilesetName, updatedTileset);
+
+    return c.json(updatedTilemap);
+  } catch (err) {
+    return c.json({ error: String(err) }, 500);
+  }
+});
+
+tilesetRoutes.post('/tileset/:name/tilemap/:map/autotile', async (c) => {
+  const projectPath = c.get('projectPath');
+  const tilesetName = c.req.param('name');
+  const mapName = c.req.param('map');
+  const body = await c.req.json();
+  const { terrainId, type } = body as { terrainId: number; type?: 'wang-16' | 'blob-47' };
+
+  if (terrainId === undefined) {
+    return c.json({ error: 'terrainId is required' }, 400);
+  }
+
+  const tileType = type ?? 'blob-47';
+  const tileMapping =
+    tileType === 'blob-47' ? createDefaultBlob47Mapping() : createDefaultWang16Mapping();
+
+  try {
+    const tileset = readTilesetJSON(projectPath, tilesetName);
+    const tilemapIdx = tileset.tilemaps.findIndex((t) => t.name === mapName);
+    if (tilemapIdx === -1) return c.json({ error: `Tilemap "${mapName}" not found` }, 404);
+
+    const config: AutoTileConfig = {
+      type: tileType,
+      terrainId,
+      tileMapping,
+    };
+
+    const updatedTilemap = resolveAutoTilemap(tileset.tilemaps[tilemapIdx], [config]);
+
+    const updatedTileset: TilesetData = {
+      ...tileset,
+      tilemaps: tileset.tilemaps.map((tm, i) => (i === tilemapIdx ? updatedTilemap : tm)),
+    };
+    writeTilesetJSON(projectPath, tilesetName, updatedTileset);
+
+    return c.json(updatedTilemap);
   } catch (err) {
     return c.json({ error: String(err) }, 500);
   }

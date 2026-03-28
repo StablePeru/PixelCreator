@@ -2,16 +2,30 @@ import type { DrawTool, PreviewShape, ToolCallbacks } from './types';
 
 export function createLineTool(cb: ToolCallbacks): DrawTool {
   let active = false;
-  let startX = 0, startY = 0, endX = 0, endY = 0;
+  let startX = 0,
+    startY = 0,
+    endX = 0,
+    endY = 0;
 
   return {
     name: 'line',
     label: 'Line',
-    shortcut: 'L',
+    shortcut: 'I',
     cursor: 'crosshair',
 
-    onStart(x, y) { active = true; startX = x; startY = y; endX = x; endY = y; },
-    onMove(x, y) { if (active) { endX = x; endY = y; } },
+    onStart(x, y) {
+      active = true;
+      startX = x;
+      startY = y;
+      endX = x;
+      endY = y;
+    },
+    onMove(x, y) {
+      if (active) {
+        endX = x;
+        endY = y;
+      }
+    },
 
     async onEnd() {
       if (!active) return;
@@ -19,8 +33,13 @@ export function createLineTool(cb: ToolCallbacks): DrawTool {
       const canvas = cb.getCanvasName();
       if (!canvas) return;
       await cb.sendDraw('line', {
-        canvas, x1: startX, y1: startY, x2: endX, y2: endY,
-        color: cb.getColor(), thickness: cb.getThickness(),
+        canvas,
+        x1: startX,
+        y1: startY,
+        x2: endX,
+        y2: endY,
+        color: cb.getColor(),
+        thickness: cb.getThickness(),
       });
     },
 
@@ -29,6 +48,8 @@ export function createLineTool(cb: ToolCallbacks): DrawTool {
       return { type: 'line', color: cb.getColor(), x1: startX, y1: startY, x2: endX, y2: endY };
     },
 
-    reset() { active = false; },
+    reset() {
+      active = false;
+    },
   };
 }

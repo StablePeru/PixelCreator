@@ -1,5 +1,8 @@
+import { useState } from 'react';
 import { useBrush, type BrushPreset } from '../context/BrushContext';
 import { BrushPixelIcon, BrushCircleIcon, BrushDiamondIcon, BrushSquareIcon } from './Icons';
+
+type DitherMode = 'none' | 'ordered-2x2' | 'ordered-4x4' | 'ordered-8x8';
 
 function BrushShapeIcon({ shape, size: iconSize }: { shape: string; size: number }) {
   if (shape === 'circle') return <BrushCircleIcon size={iconSize} />;
@@ -10,6 +13,8 @@ function BrushShapeIcon({ shape, size: iconSize }: { shape: string; size: number
 
 export function BrushPanel() {
   const { presets, activeBrush, setActiveBrush, adjustBrushSize } = useBrush();
+  const [paletteLock, setPaletteLock] = useState(false);
+  const [ditherMode, setDitherMode] = useState<DitherMode>('none');
 
   return (
     <div className="brush-panel">
@@ -74,6 +79,25 @@ export function BrushPanel() {
             onChange={(e) => setActiveBrush({ ...activeBrush, pixelPerfect: e.target.checked })}
           />
           <span>Pixel Perfect</span>
+        </label>
+
+        <label className="brush-panel__checkbox">
+          <input
+            type="checkbox"
+            checked={paletteLock}
+            onChange={(e) => setPaletteLock(e.target.checked)}
+          />
+          <span>Palette Lock</span>
+        </label>
+
+        <label className="brush-panel__slider">
+          <span>Dither Mode</span>
+          <select value={ditherMode} onChange={(e) => setDitherMode(e.target.value as DitherMode)}>
+            <option value="none">None</option>
+            <option value="ordered-2x2">Ordered 2x2</option>
+            <option value="ordered-4x4">Ordered 4x4</option>
+            <option value="ordered-8x8">Ordered 8x8</option>
+          </select>
         </label>
       </div>
     </div>
