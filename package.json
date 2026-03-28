@@ -13,7 +13,8 @@
     "lint:fix": "eslint packages/*/src/ --fix",
     "format": "prettier --write \"packages/*/src/**/*.ts\"",
     "release": "bash scripts/release.sh",
-    "pxc": "node --loader ts-node/esm packages/cli/bin/dev.js"
+    "pxc": "node --loader ts-node/esm packages/cli/bin/dev.js",
+    "prepare": "husky"
   },
   "engines": {
     "node": ">=20.0.0"
@@ -35,6 +36,12 @@
   "bugs": {
     "url": "https://github.com/StablePeru/PixelCreator/issues"
   },
+  "lint-staged": {
+    "packages/*/src/**/*.{ts,tsx}": [
+      "eslint --fix",
+      "prettier --write"
+    ]
+  },
   "devDependencies": {
     "@types/node": "^25.5.0",
     "@types/pngjs": "^6.0.5",
@@ -42,6 +49,8 @@
     "@typescript-eslint/parser": "^8.57.1",
     "@vitest/coverage-v8": "^4.1.0",
     "eslint": "^10.0.3",
+    "husky": "^9.1.7",
+    "lint-staged": "^16.4.0",
     "oclif": "^4.22.92",
     "pixelmatch": "^7.1.0",
     "prettier": "^3.8.1",
