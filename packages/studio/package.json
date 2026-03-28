@@ -1,6 +1,6 @@
 {
   "name": "@pixelcreator/studio",
-  "version": "2.0.0-alpha.1",
+  "version": "2.0.0-beta.12",
   "description": "Web-based GUI for PixelCreator — real-time pixel art preview and editor",
   "type": "module",
   "main": "dist/index.js",
