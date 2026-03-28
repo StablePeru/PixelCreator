@@ -1,5 +1,6 @@
 import { useRef, useEffect, useState, useCallback } from 'react';
 import { useTool } from '../context/ToolContext';
+import { useBrush } from '../context/BrushContext';
 import type { PreviewShape } from '../tools/types';
 
 interface CanvasViewProps {
@@ -8,9 +9,10 @@ interface CanvasViewProps {
   canvasHeight: number;
   onZoomChange: (zoom: number) => void;
   onCursorChange: (pos: { x: number; y: number } | null) => void;
+  agentModeActive?: boolean;
 }
 
-export function CanvasView({ bitmap, canvasWidth, canvasHeight, onZoomChange, onCursorChange }: CanvasViewProps) {
+export function CanvasView({ bitmap, canvasWidth, canvasHeight, onZoomChange, onCursorChange, agentModeActive = false }: CanvasViewProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [zoom, setZoom] = useState(8);
@@ -21,6 +23,7 @@ export function CanvasView({ bitmap, canvasWidth, canvasHeight, onZoomChange, on
   const [preview, setPreview] = useState<PreviewShape | null>(null);
   const dragStartRef = useRef({ x: 0, y: 0, ox: 0, oy: 0 });
   const { currentTool } = useTool();
+  const { symmetry } = useBrush();
 
   function pixelCoord(e: React.MouseEvent) {
     const rect = containerRef.current?.getBoundingClientRect();
@@ -128,7 +131,43 @@ export function CanvasView({ bitmap, canvasWidth, canvasHeight, onZoomChange, on
       }
       ctx.globalAlpha = 1;
     }
-  }, [bitmap, zoom, offset, canvasWidth, canvasHeight, showGrid, preview]);
+
+    // Symmetry guide lines
+    if (symmetry && symmetry.mode !== 'none') {
+      ctx.save();
+      ctx.setLineDash([4, 4]);
+      ctx.strokeStyle = 'rgba(255, 0, 255, 0.5)';
+      ctx.lineWidth = 1;
+
+      const axisX = symmetry.axisX ?? Math.floor(canvasWidth / 2);
+      const axisY = symmetry.axisY ?? Math.floor(canvasHeight / 2);
+
+      if (symmetry.mode === 'horizontal' || symmetry.mode === 'both') {
+        const gx = x + axisX * zoom + 0.5;
+        ctx.beginPath(); ctx.moveTo(gx, y); ctx.lineTo(gx, y + h); ctx.stroke();
+      }
+      if (symmetry.mode === 'vertical' || symmetry.mode === 'both') {
+        const gy = y + axisY * zoom + 0.5;
+        ctx.beginPath(); ctx.moveTo(x, gy); ctx.lineTo(x + w, gy); ctx.stroke();
+      }
+      if (symmetry.mode === 'radial') {
+        const cx2 = symmetry.radialCenterX ?? Math.floor(canvasWidth / 2);
+        const cy2 = symmetry.radialCenterY ?? Math.floor(canvasHeight / 2);
+        const segments = symmetry.radialSegments ?? 4;
+        const centerX = x + cx2 * zoom;
+        const centerY = y + cy2 * zoom;
+        const maxR = Math.max(w, h);
+        for (let i = 0; i < segments; i++) {
+          const theta = (2 * Math.PI * i) / segments;
+          ctx.beginPath();
+          ctx.moveTo(centerX, centerY);
+          ctx.lineTo(centerX + maxR * Math.cos(theta), centerY + maxR * Math.sin(theta));
+          ctx.stroke();
+        }
+      }
+      ctx.restore();
+    }
+  }, [bitmap, zoom, offset, canvasWidth, canvasHeight, showGrid, preview, symmetry]);
 
   // Zoom
   const handleWheel = useCallback((e: React.WheelEvent) => {
@@ -207,7 +246,7 @@ export function CanvasView({ bitmap, canvasWidth, canvasHeight, onZoomChange, on
   return (
     <div
       ref={containerRef}
-      className="canvas-area"
+      className={`canvas-area ${agentModeActive ? 'canvas-area--agent-mode' : ''}`}
       onWheel={handleWheel}
       onMouseDown={handleMouseDown}
       onMouseMove={handleMouseMove}
@@ -221,6 +260,7 @@ export function CanvasView({ bitmap, canvasWidth, canvasHeight, onZoomChange, on
       ) : (
         <canvas ref={canvasRef} style={{ width: '100%', height: '100%' }} />
       )}
+      {agentModeActive && <div className="canvas-area__agent-badge">AGENT MODE</div>}
     </div>
   );
 }

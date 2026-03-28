@@ -4,6 +4,201 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [2.0.0-beta.11] - 2026-03-28
+
+### Added — Milestone 23: Live Export Preview + AI Agent Mode
+
+**Core Types**
+- New `agent.ts` — `AgentSession`, `AgentOperation`, `OperationFeedback`, `AgentSessionSummary` types for AI-assisted drawing with real-time feedback
+
+**Studio API (15 new endpoints — 98+ total)**
+- Export preview: `GET /api/export/preview/{png,gif,apng,spritesheet,svg}/:canvas` — inline Content-Disposition for in-browser preview
+- Agent session lifecycle: `POST /api/agent/session/{start,pause,resume,end}`, `GET /api/agent/session`
+- Agent operation control: `POST /api/agent/session/{approve,reject,feedback}/:operationId`
+- Agent timeline: `GET /api/agent/session/{timeline,pending}`
+- Dataset integration: `POST /api/dataset/rate-session` — convert session feedback to dataset entries
+
+**Studio Server**
+- Extended `AgentBridge` with full session management: start/pause/resume/end lifecycle, operation queue, approve/reject with Promise-based blocking, feedback attachment
+- Middleware interception: draw/transform operations are queued when session is paused, auto-approved when running
+- Session summary with approve/reject/auto counts and feedback statistics
+
+**Studio GUI (5 new components)**
+- `ExportPreview` — live preview in export dialog with debounced rendering, animated GIF/APNG support, SVG rendering, checkerboard transparency background
+- `ExportDialog` — redesigned with side-by-side layout (controls + live preview)
+- `AgentModePanel` — full Agent Mode panel: session controls, pending operation card with Approve/Reject buttons, contextual feedback input with tags, session stats
+- `AgentTimeline` — chronological timeline of agent operations with status icons, auto-scroll, feedback indicators
+- `useAgentSession` hook — React hook with WebSocket subscriptions + polling fallback for real-time session state synchronization
+
+**Studio UX**
+- `Ctrl+Shift+A` keyboard shortcut to toggle Agent Mode panel
+- Canvas "AGENT MODE" badge overlay with green glow border when session is active
+- Export dialog now shows exact output preview before downloading (all 5 formats)
+- Agent feedback captured with 6 tags (composition, colors, animation, style, detail, proportions)
+- `addSessionFeedback()` in dataset engine converts session approve/reject into ML training data
+
+**Tests (22 new — 1318 total)**
+- 7 export preview route tests (all formats + error handling)
+- 15 agent session tests (lifecycle, approve/reject, feedback, operation registration)
+
+## [2.0.0-beta.10] - 2026-03-22
+
+### Added — Milestone 22: Game Engine Export (Godot & Unity)
+
+**Core Engine**
+- New `gamedev-engine.ts` — Godot .tres (SpriteFrames, TileSet), .tscn scene, Unity sprite JSON, generic metadata
+- Frame metadata extraction, animation export, spritesheet generation
+- `exportToGameEngine` one-call full export + `writeExportFiles`
+
+**CLI (8 new — 231 total across 23 topics)**
+- New `gamedev` topic: export-godot, export-unity, export-generic, godot-spriteframes, godot-tileset, unity-spritesheet, info, preview
+
+**Studio (3 endpoints + GamedevExportPanel GUI)**
+
+**Tests (13 new — 1296 total)**
+
+## [2.0.0-beta.9] - 2026-03-22
+
+### Added — Milestone 21: Procedural Generation Engine
+
+**Core Engine**
+- New `procedural-engine.ts` — Simplex Noise 2D (pure implementation, 0 deps), fBm, Turbulence
+- 4 pattern generators: Checkerboard, Stripes (h/v/diagonal), Grid Dots, Brick
+- 3 noise-to-pixel mapping modes: Grayscale, Palette (N colors), Threshold (binary)
+- `generateNoiseMap` returns raw Float64Array for decoupled mapping
+- Seeded PRNG (mulberry32) for deterministic reproducibility
+
+**CLI (8 new — 223 total across 22 topics)**
+- New `generate` topic: `generate:noise`, `generate:checkerboard`, `generate:stripes`, `generate:grid-dots`, `generate:brick`, `generate:noise-map`, `generate:terrain`, `generate:preview`
+- Terrain presets: island (fBm + radial falloff), cave (turbulence + threshold), clouds (fBm + palette)
+
+**Studio (3 endpoints + ProceduralPanel GUI)**
+
+**Tests (28 new — 1283 total)**
+
+## [2.0.0-beta.8] - 2026-03-22
+
+### Added — Milestone 20: Color Accessibility & Advanced Color Tools
+
+**Core Engine**
+- New `accessibility-engine.ts` — CVD simulation (Brettel/Vienot matrices), WCAG contrast, palette accessibility analysis
+- 4 simulation types: protanopia, deuteranopia, tritanopia, achromatopsia
+- Types: `VisionDeficiency`, `ContrastResult`, `PaletteAccessibilityReport`
+
+**CLI (6 new — 215 total)**
+- `draw:contrast-check`, `palette:contrast`, `palette:accessibility`, `canvas:simulate-cvd`, `validate:accessibility`, `export:accessibility-report`
+
+**Studio (3 endpoints + AccessibilityPanel GUI)**
+
+**Tests (48 new — 1255 total)**
+
+## [2.0.0-beta.7] - 2026-03-22
+
+### Added — Milestone 19: Non-Destructive Layer Effects System
+
+**Core Engine**
+- New `effects-engine.ts` with 4 non-destructive layer effects computed during compositing
+- **Drop Shadow**: offset, color, blur (box blur 2-pass), opacity
+- **Outer Glow**: silhouette expansion with distance falloff, color, intensity
+- **Outline/Stroke**: edge detection with thickness, position (outside/inside/center)
+- **Color Overlay**: tint non-transparent pixels with blend mode support
+- Utility functions: `boxBlur`, `expandSilhouette`, `detectEdges`
+- Integrated into `flattenLayerTree` pipeline between clipping and compositing
+- Effects stored as `effects?: LayerEffect[]` on `LayerInfo` — fully backward compatible
+- New types: `EffectType`, `LayerEffect`, `DropShadowParams`, `OuterGlowParams`, `OutlineParams`, `ColorOverlayParams`
+
+**CLI Commands (10 new — 209 total across 21 topics)**
+- New `effect` topic: `effect:drop-shadow`, `effect:outer-glow`, `effect:outline`, `effect:color-overlay`
+- Management commands: `effect:add`, `effect:remove`, `effect:list`, `effect:toggle`, `effect:edit`, `effect:reorder`
+
+**Studio API (5 new endpoints)**
+- `GET /api/canvas/:name/layer/:id/effects` — list effects
+- `POST /api/canvas/:name/layer/:id/effect` — add effect
+- `PUT /api/canvas/:name/layer/:id/effect/:effectId` — update params
+- `DELETE /api/canvas/:name/layer/:id/effect/:effectId` — remove effect
+- `PUT /api/canvas/:name/layer/:id/effect/:effectId/toggle` — toggle enabled
+
+**Studio GUI**
+- `EffectsPanel` — collapsible panel with add/remove/toggle, expandable effect rows
+- `EffectEditor` — type-specific controls: sliders, color pickers, selects for all 4 effect types
+
+**Tests (59 new — 1207 total)**
+- 38 core tests: effects-engine (30), effects-integration (8)
+- 11 CLI tests: effect-management
+- 10 Studio tests: effect routes
+
+## [2.0.0-beta.6] - 2026-03-22
+
+### Added — Milestone 18: Studio Workflow & Guide System
+
+**Core Engine**
+- New `guide-engine.ts` with guide CRUD, snap-to-guide calculation, validation
+- New `GuideConfig`, `GuideInfo`, `StudioPreferences` types
+- Extended `flattenLayers`/`flattenLayerTree` with `includeReference` option — reference layers excluded from exports by default
+- Extended `renderFrames` to filter out reference layers
+- Added `guides` field to `CanvasData`, `referenceSource` to `LayerInfo`, `preferences` to `ProjectSettings`
+
+**CLI Commands (12 new — 199 total across 20 topics)**
+- New `guide` topic: `guide:add`, `guide:remove`, `guide:list`, `guide:clear`, `guide:move`, `guide:snap`
+- New `layer` commands: `layer:add-reference`, `layer:toggle-reference`, `layer:fit-reference`, `layer:set-reference-opacity`
+- New `project` commands: `project:preferences`, `project:preferences-list`
+
+**Studio API (11 new endpoints)**
+- Guide CRUD: `GET/POST /api/canvas/:name/guides`, `PUT/DELETE /api/canvas/:name/guides/:id`, `PUT /api/canvas/:name/guides/config`
+- Project workflow: `POST /api/project/init`, `GET/PUT /api/project/preferences`
+- Reference layers: `POST /api/canvas/:name/layer/reference`, `PUT /api/canvas/:name/layer/:id/reference`
+
+**Studio GUI (7 new components)**
+- `ToastContainer` + `useToast` hook — toast notification system (success/error/info/warning, auto-dismiss)
+- `PreferencesDialog` — grid, guides, snap, canvas defaults (Ctrl+, shortcut)
+- `ProjectInitDialog` — create projects from GUI
+- `CanvasCreateDialog` — create canvases from GUI with name, size, background
+- `ReferencePanel` — reference layer opacity, visibility controls
+- `Minimap` — canvas overview with viewport navigation
+- TopBar and Sidebar enhanced with "New Canvas" and "Preferences" buttons
+
+**Tests (53 new — 1148 total)**
+- 25 core tests: guide-engine (18), layer-engine-reference (7)
+- 20 CLI tests: guide-management (12), reference-layer (8)
+- 10 Studio tests: guide routes (8), project/reference routes (2)
+
+## [2.0.0-beta.5] - 2026-03-22
+
+### Added — Milestone 17: Symmetry Drawing & Custom Brush System
+
+**Core Engine**
+- New `brush-engine.ts` with brush mask generation (circle/square/diamond/custom), stroke interpolation, pixel-perfect filtering, symmetry point calculation (horizontal/vertical/both/radial), and symmetric stroke application
+- 8 built-in brush presets: Pixel, Round 3, Round 5, Square 2, Square 4, Diamond 3, Dither 2x2, Spray 5
+- Extended `drawing-engine.ts` with `drawWithBrush()`, `drawSymmetricPixel()`, `drawSymmetricLine()`
+- New `SymmetryConfig` and `BrushPreset` types in `brush.ts`
+- Added `symmetry` field to `CanvasData`, `brushPresets` to `ProjectSettings`
+
+**CLI Commands (12 new — 187 total across 19 topics)**
+- New `brush` topic: `brush:list`, `brush:create`, `brush:delete`, `brush:show`, `brush:import`, `brush:export`
+- New `draw` commands: `draw:stroke`, `draw:symmetric-pixel`, `draw:symmetric-line`, `draw:symmetric-fill`
+- New `canvas` commands: `canvas:symmetry`, `canvas:symmetry-guide`
+
+**Studio API (8 new endpoints)**
+- `GET/POST/DELETE /api/brush/presets` — CRUD for brush presets
+- `GET /api/brush/presets/:id/mask` — brush mask as PNG
+- `POST /api/draw/stroke` — brush stroke with optional symmetry
+- `POST /api/draw/symmetric` — symmetric pixel/line/fill
+- `GET/PUT /api/canvas/:name/symmetry` — symmetry config
+
+**Studio GUI**
+- `BrushPanel` component with preset grid, size/opacity/spacing sliders, pixel-perfect toggle
+- `SymmetryPanel` component with mode selector, axis controls, radial segments
+- `BrushContext` with state management and API persistence
+- CanvasView symmetry guide lines (dashed magenta overlay)
+- PencilTool enhanced with brush/symmetry awareness
+- ToolBar brush size indicator and symmetry quick-toggle button
+- Keyboard shortcuts: `S` (cycle symmetry), `[`/`]` (brush size)
+
+**Tests (75 new — 1095 total)**
+- 45 core tests: brush-engine (36), drawing-engine-symmetry (10)
+- 15 CLI tests: brush-management (8), draw-symmetric (9)
+- 12 Studio tests: brush routes (6), draw-symmetric routes (7)
+
 ## [2.0.0-beta.4] - 2026-03-22
 
 ### Major — PixelCreator Studio (Web GUI) + Monorepo

@@ -7,15 +7,15 @@
 <p align="center">
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="MIT License"></a>
   <img src="https://img.shields.io/badge/node-%3E%3D20-brightgreen.svg" alt="Node >= 20">
-  <img src="https://img.shields.io/badge/commands-175-orange.svg" alt="175 commands">
-  <img src="https://img.shields.io/badge/tests-1020%20passing-brightgreen.svg" alt="1020 tests">
+  <img src="https://img.shields.io/badge/commands-231-orange.svg" alt="231 commands">
+  <img src="https://img.shields.io/badge/tests-1318%20passing-brightgreen.svg" alt="1318 tests">
   <img src="https://img.shields.io/badge/version-2.0.0--beta-purple.svg" alt="v2.0.0-beta">
   <img src="https://img.shields.io/badge/studio-React%20GUI-blue.svg" alt="Studio GUI">
 </p>
 
 <p align="center">
   Professional pixel art tool with CLI + Web GUI for game development.<br>
-  175 commands, real-time web editor (PixelCreator Studio), AI training dataset system.<br>
+  231 commands, real-time web editor (PixelCreator Studio), AI Agent Mode with live feedback.<br>
   Git-friendly project format. JSON output for scripting.
 </p>
 

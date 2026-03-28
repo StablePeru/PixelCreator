@@ -6,9 +6,11 @@ import {
   getDatasetStats,
   exportDatasetJsonl,
   getSnapshotBuffer,
+  addSessionFeedback,
 } from '../../dataset/dataset-engine.js';
+import type { AgentBridge } from '../agent-bridge.js';
 
-export const datasetRoutes = new Hono<{ Variables: { projectPath: string } }>();
+export const datasetRoutes = new Hono<{ Variables: { projectPath: string; agentBridge: AgentBridge } }>();
 
 datasetRoutes.post('/dataset/rate', async (c) => {
   const projectPath = c.get('projectPath');
@@ -97,4 +99,35 @@ datasetRoutes.get('/dataset/:id/snapshot', (c) => {
   return new Response(new Uint8Array(buffer), {
     headers: { 'Content-Type': 'image/png' },
   });
+});
+
+// Convert agent session feedback into dataset entries
+datasetRoutes.post('/dataset/rate-session', (c) => {
+  const projectPath = c.get('projectPath');
+  const bridge = c.get('agentBridge');
+  const session = bridge.getSession();
+
+  if (!session) return c.json({ error: 'No session found' }, 404);
+
+  const feedbackOps = session.operations
+    .filter(op => op.feedback)
+    .map(op => ({
+      operationId: op.id,
+      command: op.command,
+      rating: op.feedback!.rating,
+      comment: op.feedback!.comment,
+      tags: op.feedback!.tags,
+      timestamp: op.timestamp,
+    }));
+
+  if (feedbackOps.length === 0) {
+    return c.json({ message: 'No feedback to save', count: 0 });
+  }
+
+  try {
+    const entries = addSessionFeedback(projectPath, session.canvas, session.id, feedbackOps);
+    return c.json({ success: true, count: entries.length, entries }, 201);
+  } catch (err) {
+    return c.json({ error: String(err) }, 500);
+  }
 });

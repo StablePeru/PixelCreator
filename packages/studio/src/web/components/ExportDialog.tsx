@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { ExportPreview } from './ExportPreview';
 
 interface ExportDialogProps {
   canvasName: string;
@@ -38,46 +39,56 @@ export function ExportDialog({ canvasName, frameCount, onClose }: ExportDialogPr
 
   return (
     <div className="dialog-overlay" onClick={onClose}>
-      <div className="dialog" onClick={(e) => e.stopPropagation()}>
+      <div className="dialog dialog--wide" onClick={(e) => e.stopPropagation()}>
         <div className="dialog__header">
           <span>Export: {canvasName}</span>
           <button className="dialog__close" onClick={onClose}>x</button>
         </div>
 
-        <div className="dialog__body">
-          <label className="dialog__field">
-            <span>Format</span>
-            <select value={format} onChange={(e) => setFormat(e.target.value as any)}>
-              {FORMATS.map((f) => <option key={f} value={f}>{f.toUpperCase()}</option>)}
-            </select>
-          </label>
-
-          {format !== 'spritesheet' && (
+        <div className="dialog__body dialog__body--split">
+          <div className="dialog__controls">
             <label className="dialog__field">
-              <span>Scale</span>
-              <select value={scale} onChange={(e) => setScale(+e.target.value)}>
-                {[1, 2, 4, 8, 16].map((s) => <option key={s} value={s}>{s}x</option>)}
+              <span>Format</span>
+              <select value={format} onChange={(e) => setFormat(e.target.value as any)}>
+                {FORMATS.map((f) => <option key={f} value={f}>{f.toUpperCase()}</option>)}
               </select>
             </label>
-          )}
 
-          {(format === 'png' || format === 'svg') && frameCount > 1 && (
-            <label className="dialog__field">
-              <span>Frame</span>
-              <select value={frame} onChange={(e) => setFrame(+e.target.value)}>
-                {Array.from({ length: frameCount }, (_, i) => (
-                  <option key={i} value={i}>Frame {i + 1}</option>
-                ))}
-              </select>
-            </label>
-          )}
+            {format !== 'spritesheet' && (
+              <label className="dialog__field">
+                <span>Scale</span>
+                <select value={scale} onChange={(e) => setScale(+e.target.value)}>
+                  {[1, 2, 4, 8, 16].map((s) => <option key={s} value={s}>{s}x</option>)}
+                </select>
+              </label>
+            )}
 
-          {format === 'spritesheet' && (
-            <label className="dialog__field">
-              <span>Columns</span>
-              <input type="number" min={1} max={32} value={columns} onChange={(e) => setColumns(+e.target.value)} />
-            </label>
-          )}
+            {(format === 'png' || format === 'svg') && frameCount > 1 && (
+              <label className="dialog__field">
+                <span>Frame</span>
+                <select value={frame} onChange={(e) => setFrame(+e.target.value)}>
+                  {Array.from({ length: frameCount }, (_, i) => (
+                    <option key={i} value={i}>Frame {i + 1}</option>
+                  ))}
+                </select>
+              </label>
+            )}
+
+            {format === 'spritesheet' && (
+              <label className="dialog__field">
+                <span>Columns</span>
+                <input type="number" min={1} max={32} value={columns} onChange={(e) => setColumns(+e.target.value)} />
+              </label>
+            )}
+          </div>
+
+          <ExportPreview
+            canvasName={canvasName}
+            format={format}
+            scale={scale}
+            frame={frame}
+            columns={columns}
+          />
         </div>
 
         <div className="dialog__footer">

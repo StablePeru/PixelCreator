@@ -5,6 +5,8 @@ import { useCanvasLive } from './hooks/useCanvasLive';
 import { useHistory } from './hooks/useHistory';
 import { ColorProvider, useColor } from './context/ColorContext';
 import { ToolProvider, useTool } from './context/ToolContext';
+import { BrushProvider, useBrush } from './context/BrushContext';
+import { ToastProvider } from './hooks/useToast';
 import { TopBar } from './components/TopBar';
 import { Sidebar } from './components/Sidebar';
 import { CanvasView } from './components/CanvasView';
@@ -21,57 +23,41 @@ import { FeedbackPanel } from './components/FeedbackPanel';
 import { DatasetBrowser } from './components/DatasetBrowser';
 import { StatusBar } from './components/StatusBar';
 import { ShortcutHelp } from './components/ShortcutHelp';
+import { BrushPanel } from './components/BrushPanel';
+import { SymmetryPanel } from './components/SymmetryPanel';
+import { ToastContainer } from './components/ToastContainer';
+import { PreferencesDialog } from './components/PreferencesDialog';
+import { ProjectInitDialog } from './components/ProjectInitDialog';
+import { CanvasCreateDialog } from './components/CanvasCreateDialog';
+import { ReferencePanel } from './components/ReferencePanel';
+import { Minimap } from './components/Minimap';
+import { EffectsPanel } from './components/EffectsPanel';
+import { AccessibilityPanel } from './components/AccessibilityPanel';
+import { ProceduralPanel } from './components/ProceduralPanel';
+import { GamedevExportPanel } from './components/GamedevExportPanel';
+import { AgentModePanel } from './components/AgentModePanel';
+import { useAgentSession } from './hooks/useAgentSession';
 import { ThemeProvider } from './theme/ThemeProvider';
 import type { ToolName } from './tools/types';
 import './styles/global.css';
 
-function AppInner() {
-  const { status: wsStatus, subscribe } = useWebSocket();
-  const { project } = useProject();
-  const [selectedCanvas, setSelectedCanvas] = useState<string | null>(null);
-  const [activeLayerId, setActiveLayerId] = useState<string | null>(null);
-  const [zoom, setZoom] = useState(8);
-  const [cursorPos, setCursorPos] = useState<{ x: number; y: number } | null>(null);
-  const [showExport, setShowExport] = useState(false);
-  const [showImport, setShowImport] = useState(false);
-  const [showCommandPalette, setShowCommandPalette] = useState(false);
-  const [showDataset, setShowDataset] = useState(false);
-  const [showShortcuts, setShowShortcuts] = useState(false);
-
-  const { metadata, frameBitmap, frameIndex, setFrameIndex } = useCanvasLive(selectedCanvas, subscribe);
-  const { canUndo, canRedo, undo, redo } = useHistory(subscribe);
+// Inner component that uses Brush/Tool contexts (must be inside providers)
+function AppShortcuts({ selectedCanvas, undo, redo }: {
+  selectedCanvas: string | null;
+  undo: () => void;
+  redo: () => void;
+}) {
   const { setActiveTool } = useTool();
   const { swap } = useColor();
+  const { cycleSymmetry, adjustBrushSize } = useBrush();
 
-  // Auto-select first layer when canvas changes
-  useEffect(() => {
-    if (metadata?.layers?.length) {
-      setActiveLayerId(metadata.layers[0].id);
-    } else {
-      setActiveLayerId(null);
-    }
-  }, [metadata?.name]);
-
-  const handleSelect = useCallback((name: string) => {
-    setSelectedCanvas(name);
-    setCursorPos(null);
-  }, []);
-
-  // Keyboard shortcuts
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
       if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement || e.target instanceof HTMLSelectElement) return;
 
-      if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
-        e.preventDefault(); setShowShortcuts((v) => !v); return;
-      }
-      if ((e.ctrlKey || e.metaKey) && e.shiftKey && (e.key === 'P' || e.key === 'p')) {
-        e.preventDefault(); setShowCommandPalette((v) => !v); return;
-      }
       if ((e.ctrlKey || e.metaKey) && e.key === 'z' && !e.shiftKey) { e.preventDefault(); undo(); return; }
       if ((e.ctrlKey || e.metaKey) && (e.key === 'Z' || e.key === 'y')) { e.preventDefault(); redo(); return; }
 
-      // Clipboard shortcuts
       if ((e.ctrlKey || e.metaKey) && e.key === 'a') {
         e.preventDefault();
         if (selectedCanvas) fetch('/api/select/all', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ canvas: selectedCanvas }) });
@@ -97,10 +83,6 @@ function AppInner() {
         if (selectedCanvas) fetch('/api/clipboard/paste', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ canvas: selectedCanvas }) });
         return;
       }
-      if (e.key === 'Delete' && selectedCanvas) {
-        // Clear selection (draw transparent)
-        return;
-      }
 
       const shortcuts: Record<string, ToolName> = {
         b: 'pencil', l: 'line', r: 'rect', c: 'circle', g: 'fill', e: 'eraser',
@@ -110,13 +92,71 @@ function AppInner() {
       const tool = shortcuts[e.key.toLowerCase()];
       if (tool) { setActiveTool(tool); return; }
       if (e.key.toLowerCase() === 'x') swap();
+      if (e.key.toLowerCase() === 's') { cycleSymmetry(); return; }
+      if (e.key === '[') { adjustBrushSize(-1); return; }
+      if (e.key === ']') { adjustBrushSize(1); return; }
     };
     window.addEventListener('keydown', handler);
     return () => window.removeEventListener('keydown', handler);
-  }, [setActiveTool, swap, undo, redo]);
+  }, [setActiveTool, swap, undo, redo, cycleSymmetry, adjustBrushSize, selectedCanvas]);
+
+  return null;
+}
+
+function AppInner() {
+  const { status: wsStatus, subscribe } = useWebSocket();
+  const { project } = useProject();
+  const [selectedCanvas, setSelectedCanvas] = useState<string | null>(null);
+  const [activeLayerId, setActiveLayerId] = useState<string | null>(null);
+  const [zoom, setZoom] = useState(8);
+  const [cursorPos, setCursorPos] = useState<{ x: number; y: number } | null>(null);
+  const [showExport, setShowExport] = useState(false);
+  const [showImport, setShowImport] = useState(false);
+  const [showCommandPalette, setShowCommandPalette] = useState(false);
+  const [showDataset, setShowDataset] = useState(false);
+  const [showShortcuts, setShowShortcuts] = useState(false);
+  const [showPreferences, setShowPreferences] = useState(false);
+  const [showCanvasCreate, setShowCanvasCreate] = useState(false);
+  const [showProjectInit, setShowProjectInit] = useState(false);
+  const [simulationDeficiency, setSimulationDeficiency] = useState<'protanopia' | 'deuteranopia' | 'tritanopia' | 'achromatopsia' | null>(null);
+  const [showAgentMode, setShowAgentMode] = useState(false);
+
+  const { metadata, frameBitmap, frameIndex, setFrameIndex } = useCanvasLive(selectedCanvas, subscribe);
+  const { canUndo, canRedo, undo, redo } = useHistory(subscribe);
+  const agentSession = useAgentSession(subscribe);
+
+  const referenceLayer = (metadata?.layers as any[])?.find((l: any) => l.type === 'reference') ?? null;
+
+  useEffect(() => {
+    if (metadata?.layers?.length) {
+      setActiveLayerId(metadata.layers[0].id);
+    } else {
+      setActiveLayerId(null);
+    }
+  }, [metadata?.name]);
+
+  const handleSelect = useCallback((name: string) => {
+    setSelectedCanvas(name);
+    setCursorPos(null);
+  }, []);
+
+  // Keyboard shortcuts for dialogs (no context needed)
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement || e.target instanceof HTMLSelectElement) return;
+      if ((e.ctrlKey || e.metaKey) && e.key === 'k') { e.preventDefault(); setShowShortcuts(v => !v); }
+      if ((e.ctrlKey || e.metaKey) && e.shiftKey && (e.key === 'P' || e.key === 'p')) { e.preventDefault(); setShowCommandPalette(v => !v); }
+      if ((e.ctrlKey || e.metaKey) && e.key === ',') { e.preventDefault(); setShowPreferences(v => !v); }
+      if ((e.ctrlKey || e.metaKey) && e.shiftKey && (e.key === 'A' || e.key === 'a')) { e.preventDefault(); setShowAgentMode(v => !v); }
+    };
+    window.addEventListener('keydown', handler);
+    return () => window.removeEventListener('keydown', handler);
+  }, []);
 
   return (
+    <BrushProvider canvasName={selectedCanvas}>
     <ToolProvider canvasName={selectedCanvas} activeLayerId={activeLayerId}>
+      <AppShortcuts selectedCanvas={selectedCanvas} undo={undo} redo={redo} />
       <div className="app">
         <TopBar
           projectName={project?.name ?? null}
@@ -132,6 +172,8 @@ function AppInner() {
           onImport={() => setShowImport(true)}
           onDataset={() => setShowDataset(true)}
           hasCanvas={!!selectedCanvas}
+          onNewCanvas={() => setShowCanvasCreate(true)}
+          onPreferences={() => setShowPreferences(true)}
         />
         <ToolBar />
         <div className="main">
@@ -140,6 +182,7 @@ function AppInner() {
               canvases={project?.canvases ?? []}
               selected={selectedCanvas}
               onSelect={handleSelect}
+              onNewCanvas={() => setShowCanvasCreate(true)}
             />
             <PalettePanel palettes={project?.palettes ?? []} />
             <LayerPanel
@@ -150,6 +193,22 @@ function AppInner() {
               onSelectLayer={setActiveLayerId}
             />
             <TransformPanel canvasName={selectedCanvas} />
+            <BrushPanel />
+            <SymmetryPanel />
+            <EffectsPanel canvasName={selectedCanvas} layerId={activeLayerId} />
+            <AccessibilityPanel
+              canvasName={selectedCanvas}
+              paletteName={metadata?.palette ?? null}
+              onSimulationChange={setSimulationDeficiency}
+              activeSimulation={simulationDeficiency}
+            />
+            <ProceduralPanel canvasName={selectedCanvas} />
+            <GamedevExportPanel canvasName={selectedCanvas} />
+            <ReferencePanel
+              canvasName={selectedCanvas}
+              referenceLayer={referenceLayer}
+              onUpdate={() => {}}
+            />
           </div>
           <div className="center-panel">
             <CanvasView
@@ -158,6 +217,7 @@ function AppInner() {
               canvasHeight={metadata?.height ?? 0}
               onZoomChange={setZoom}
               onCursorChange={setCursorPos}
+              agentModeActive={agentSession.isActive}
             />
             <Timeline
               canvasName={selectedCanvas}
@@ -187,7 +247,7 @@ function AppInner() {
       {showImport && (
         <ImportDialog
           onClose={() => setShowImport(false)}
-          onImported={() => { /* project refresh happens via WS */ }}
+          onImported={() => {}}
         />
       )}
       <CommandPalette
@@ -199,6 +259,34 @@ function AppInner() {
       <FeedbackPanel canvasName={selectedCanvas} frameIndex={metadata?.frames?.[0]?.index ?? 0} />
       <DatasetBrowser open={showDataset} onClose={() => setShowDataset(false)} />
       <ShortcutHelp open={showShortcuts} onClose={() => setShowShortcuts(false)} />
+      <PreferencesDialog open={showPreferences} onClose={() => setShowPreferences(false)} />
+      <CanvasCreateDialog
+        open={showCanvasCreate}
+        onClose={() => setShowCanvasCreate(false)}
+        onCreated={(name) => setSelectedCanvas(name)}
+      />
+      <ProjectInitDialog
+        open={showProjectInit}
+        onClose={() => setShowProjectInit(false)}
+        onCreated={() => {}}
+      />
+      <AgentModePanel
+        session={agentSession.session}
+        isActive={agentSession.isActive}
+        isPaused={agentSession.isPaused}
+        pendingOperation={agentSession.pendingOperation}
+        canvasName={selectedCanvas}
+        onStart={agentSession.start}
+        onPause={agentSession.pause}
+        onResume={agentSession.resume}
+        onEnd={agentSession.end}
+        onApprove={agentSession.approve}
+        onReject={agentSession.reject}
+        onSendFeedback={agentSession.sendFeedback}
+        onClose={() => setShowAgentMode(false)}
+        visible={showAgentMode}
+      />
+      <ToastContainer />
       <StatusBar
         canvasName={selectedCanvas}
         canvasSize={metadata ? { w: metadata.width, h: metadata.height } : null}
@@ -209,15 +297,18 @@ function AppInner() {
         zoom={zoom}
       />
     </ToolProvider>
+    </BrushProvider>
   );
 }
 
 export function App() {
   return (
     <ThemeProvider>
-      <ColorProvider>
-        <AppInner />
-      </ColorProvider>
+      <ToastProvider>
+        <ColorProvider>
+          <AppInner />
+        </ColorProvider>
+      </ToastProvider>
     </ThemeProvider>
   );
 }

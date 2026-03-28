@@ -177,3 +177,64 @@ export function getSnapshotBuffer(projectPath: string, entryId: string): Buffer 
   if (!fs.existsSync(snapPath)) return null;
   return fs.readFileSync(snapPath);
 }
+
+export interface SessionFeedbackEntry {
+  operationId: string;
+  command: string;
+  rating: 'approve' | 'reject';
+  comment?: string;
+  tags?: string[];
+  timestamp: number;
+}
+
+export function addSessionFeedback(
+  projectPath: string,
+  canvasName: string,
+  sessionId: string,
+  feedbackEntries: SessionFeedbackEntry[],
+): FeedbackEntry[] {
+  const canvas = readCanvasJSON(projectPath, canvasName);
+  const frame = canvas.frames[0];
+  if (!frame) return [];
+
+  const results: FeedbackEntry[] = [];
+
+  for (const fb of feedbackEntries) {
+    const entry: FeedbackEntry = {
+      id: `fb-sess-${sessionId.slice(0, 8)}-${fb.operationId.slice(0, 8)}`,
+      canvasName,
+      frameIndex: 0,
+      rating: fb.rating === 'approve' ? 'like' : 'dislike',
+      reason: fb.comment
+        ? `[Agent:${fb.command}] ${fb.comment}`
+        : `[Agent:${fb.command}] ${fb.rating}`,
+      tags: fb.tags ?? [],
+      timestamp: fb.timestamp,
+      metadata: {
+        width: canvas.width,
+        height: canvas.height,
+        layerCount: canvas.layers.length,
+        frameCount: canvas.frames.length,
+        palette: canvas.palette || undefined,
+      },
+    };
+    results.push(entry);
+  }
+
+  if (results.length === 0) return [];
+
+  // Capture a single snapshot at session end
+  const layers: LayerWithBuffer[] = canvas.layers
+    .filter((l) => l.visible)
+    .map((l) => ({ info: l, buffer: readLayerFrame(projectPath, canvasName, l.id, frame.id) }));
+  const flattened = flattenLayers(layers, canvas.width, canvas.height);
+
+  const index = readDatasetIndex(projectPath);
+  for (const entry of results) {
+    savePNG(flattened, getSnapshotPath(projectPath, entry.id));
+    index.entries.push(entry);
+  }
+  writeDatasetIndex(projectPath, index);
+
+  return results;
+}
