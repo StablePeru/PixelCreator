@@ -29,6 +29,7 @@
     },
     "topicSeparator": ":",
     "topics": {
+      "asset": { "description": "Asset pipeline — spec, validate, build game-ready assets" },
       "brush": { "description": "Brush preset management" },
       "canvas": { "description": "Canvas creation and manipulation" },
       "guide": { "description": "Guide line management" },

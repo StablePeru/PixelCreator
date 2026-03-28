@@ -1,4 +1,5 @@
 export * from './accessibility.js';
+export * from './asset.js';
 export * from './common.js';
 export * from './brush.js';
 export * from './canvas.js';

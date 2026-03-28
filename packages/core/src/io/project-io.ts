@@ -7,6 +7,7 @@ import type { TilesetData } from '../types/tileset.js';
 import type { TemplateData } from '../types/template.js';
 import type { RecipeData } from '../types/recipe.js';
 import type { SelectionMask, ClipboardData } from '../types/selection.js';
+import type { AssetSpec } from '../types/asset.js';
 import { PixelBuffer } from './png-codec.js';
 import { savePNG, loadPNG, createEmptyBuffer } from './png-codec.js';
 import { selectionToPixelBuffer, pixelBufferToSelection } from '../core/selection-engine.js';
@@ -180,10 +181,7 @@ export function deleteLayerDirectory(
   }
 }
 
-export function deleteCanvasDirectory(
-  projectPath: string,
-  canvasName: string,
-): void {
+export function deleteCanvasDirectory(projectPath: string, canvasName: string): void {
   const dir = path.join(projectPath, 'canvases', canvasName);
   if (fs.existsSync(dir)) {
     fs.rmSync(dir, { recursive: true, force: true });
@@ -208,11 +206,7 @@ export function renameLayerFrame(
   }
 }
 
-export function reindexFrames(
-  projectPath: string,
-  canvasName: string,
-  canvas: CanvasData,
-): void {
+export function reindexFrames(projectPath: string, canvasName: string, canvas: CanvasData): void {
   const tempPrefix = '__temp_reindex_';
 
   // Pass 1: rename all to temp names to avoid collisions
@@ -254,7 +248,11 @@ export function renameCanvasDirectory(projectPath: string, oldName: string, newN
   writeCanvasJSON(projectPath, newName, canvas);
 }
 
-export function copyCanvasDirectory(projectPath: string, sourceName: string, destName: string): void {
+export function copyCanvasDirectory(
+  projectPath: string,
+  sourceName: string,
+  destName: string,
+): void {
   const srcDir = path.join(projectPath, 'canvases', sourceName);
   const dstDir = path.join(projectPath, 'canvases', destName);
   fs.cpSync(srcDir, dstDir, { recursive: true });
@@ -277,7 +275,11 @@ export function readTilesetJSON(projectPath: string, tilesetName: string): Tiles
   return JSON.parse(fs.readFileSync(filePath, 'utf-8'));
 }
 
-export function writeTilesetJSON(projectPath: string, tilesetName: string, data: TilesetData): void {
+export function writeTilesetJSON(
+  projectPath: string,
+  tilesetName: string,
+  data: TilesetData,
+): void {
   const dir = path.join(projectPath, 'tilesets', tilesetName);
   if (!fs.existsSync(dir)) {
     fs.mkdirSync(dir, { recursive: true });
@@ -290,7 +292,11 @@ export function getTilePath(projectPath: string, tilesetName: string, tileId: st
   return path.join(projectPath, 'tilesets', tilesetName, 'tiles', `${tileId}.png`);
 }
 
-export function readTileImage(projectPath: string, tilesetName: string, tileId: string): PixelBuffer {
+export function readTileImage(
+  projectPath: string,
+  tilesetName: string,
+  tileId: string,
+): PixelBuffer {
   const filePath = getTilePath(projectPath, tilesetName, tileId);
   if (!fs.existsSync(filePath)) {
     throw new Error(`Tile image not found: ${tileId} in tileset ${tilesetName}`);
@@ -298,7 +304,12 @@ export function readTileImage(projectPath: string, tilesetName: string, tileId: 
   return loadPNG(filePath);
 }
 
-export function writeTileImage(projectPath: string, tilesetName: string, tileId: string, buffer: PixelBuffer): void {
+export function writeTileImage(
+  projectPath: string,
+  tilesetName: string,
+  tileId: string,
+  buffer: PixelBuffer,
+): void {
   const filePath = getTilePath(projectPath, tilesetName, tileId);
   savePNG(buffer, filePath);
 }
@@ -387,21 +398,14 @@ export function getSelectionPath(projectPath: string, canvasName: string): strin
   return path.join(projectPath, 'selections', `${canvasName}.selection.png`);
 }
 
-export function readSelection(
-  projectPath: string,
-  canvasName: string,
-): SelectionMask | null {
+export function readSelection(projectPath: string, canvasName: string): SelectionMask | null {
   const filePath = getSelectionPath(projectPath, canvasName);
   if (!fs.existsSync(filePath)) return null;
   const buffer = loadPNG(filePath);
   return pixelBufferToSelection(buffer);
 }
 
-export function writeSelection(
-  projectPath: string,
-  canvasName: string,
-  mask: SelectionMask,
-): void {
+export function writeSelection(projectPath: string, canvasName: string, mask: SelectionMask): void {
   const filePath = getSelectionPath(projectPath, canvasName);
   const dir = path.dirname(filePath);
   if (!fs.existsSync(dir)) {
@@ -412,6 +416,44 @@ export function writeSelection(
 
 export function deleteSelection(projectPath: string, canvasName: string): void {
   const filePath = getSelectionPath(projectPath, canvasName);
+  if (fs.existsSync(filePath)) {
+    fs.unlinkSync(filePath);
+  }
+}
+
+// Asset Spec I/O
+
+export function getAssetSpecPath(projectPath: string, assetName: string): string {
+  return path.join(projectPath, 'assets', `${assetName}.asset.json`);
+}
+
+export function readAssetSpec(projectPath: string, assetName: string): AssetSpec {
+  const filePath = getAssetSpecPath(projectPath, assetName);
+  if (!fs.existsSync(filePath)) {
+    throw new Error(`Asset spec not found: ${assetName}`);
+  }
+  return JSON.parse(fs.readFileSync(filePath, 'utf-8'));
+}
+
+export function writeAssetSpec(projectPath: string, spec: AssetSpec): void {
+  const dir = path.join(projectPath, 'assets');
+  if (!fs.existsSync(dir)) {
+    fs.mkdirSync(dir, { recursive: true });
+  }
+  fs.writeFileSync(getAssetSpecPath(projectPath, spec.name), JSON.stringify(spec, null, 2));
+}
+
+export function listAssetSpecs(projectPath: string): string[] {
+  const dir = path.join(projectPath, 'assets');
+  if (!fs.existsSync(dir)) return [];
+  return fs
+    .readdirSync(dir)
+    .filter((f) => f.endsWith('.asset.json'))
+    .map((f) => f.replace('.asset.json', ''));
+}
+
+export function deleteAssetSpec(projectPath: string, assetName: string): void {
+  const filePath = getAssetSpecPath(projectPath, assetName);
   if (fs.existsSync(filePath)) {
     fs.unlinkSync(filePath);
   }

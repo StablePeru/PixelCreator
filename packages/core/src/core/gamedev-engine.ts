@@ -7,8 +7,12 @@ import { flattenLayers } from './layer-engine.js';
 import type { LayerWithBuffer } from './layer-engine.js';
 import type { CanvasData, AnimationTag } from '../types/canvas.js';
 import type {
-  SpriteFrameExport, AnimationExport, GodotSpriteFrames,
-  GodotTileSetResource, UnitySpriteSheet, GamedevExportOptions,
+  SpriteFrameExport,
+  AnimationExport,
+  GodotSpriteFrames,
+  GodotTileSetResource,
+  UnitySpriteSheet,
+  GamedevExportOptions,
 } from '../types/gamedev.js';
 import type { TilesetData } from '../types/tileset.js';
 
@@ -36,18 +40,23 @@ export function extractFrameMetadata(
   });
 }
 
-export function extractAnimations(canvas: CanvasData, frameMetadata: SpriteFrameExport[]): AnimationExport[] {
+export function extractAnimations(
+  canvas: CanvasData,
+  frameMetadata: SpriteFrameExport[],
+): AnimationExport[] {
   if (canvas.animationTags.length === 0) {
-    return [{
-      name: 'default',
-      frames: frameMetadata,
-      direction: 'forward',
-      loop: true,
-      fps: 10,
-    }];
+    return [
+      {
+        name: 'default',
+        frames: frameMetadata,
+        direction: 'forward',
+        loop: true,
+        fps: 10,
+      },
+    ];
   }
 
-  return canvas.animationTags.map(tag => ({
+  return canvas.animationTags.map((tag) => ({
     name: tag.name,
     frames: frameMetadata.slice(tag.from, tag.to + 1),
     direction: tag.direction,
@@ -66,6 +75,10 @@ export function exportGodotSpriteFrames(
   lines.push('[gd_resource type="SpriteFrames" format=3]');
   lines.push('');
 
+  // Ext resource declaration for the spritesheet texture
+  lines.push(`[ext_resource type="Texture2D" path="res://${sheetFilename}" id="1"]`);
+  lines.push('');
+
   // Sub-resources for AtlasTextures
   let subId = 1;
   const frameRefs: Map<string, string> = new Map();
@@ -75,7 +88,7 @@ export function exportGodotSpriteFrames(
       const key = `${frame.x}_${frame.y}_${frame.width}_${frame.height}`;
       if (!frameRefs.has(key)) {
         lines.push(`[sub_resource type="AtlasTexture" id="atlas_${subId}"]`);
-        lines.push(`atlas = ExtResource("1_${sheetFilename}")`);
+        lines.push('atlas = ExtResource("1")');
         lines.push(`region = Rect2(${frame.x}, ${frame.y}, ${frame.width}, ${frame.height})`);
         lines.push('');
         frameRefs.set(key, `SubResource("atlas_${subId}")`);
@@ -86,22 +99,22 @@ export function exportGodotSpriteFrames(
 
   // Resource section
   lines.push('[resource]');
-  const animArray = animations.map(anim => {
-    const frames = anim.frames.map(f => {
+  const animArray = animations.map((anim) => {
+    const frames = anim.frames.map((f) => {
       const key = `${f.x}_${f.y}_${f.width}_${f.height}`;
-      return `{ "texture": ${frameRefs.get(key)}, "duration": ${f.duration / 1000} }`;
+      // Godot 4.x: duration is a relative multiplier (1.0 = base speed)
+      // Formula: multiplier = (frame_duration_seconds) * animation_fps
+      const durationMultiplier = (f.duration / 1000) * anim.fps;
+      return `{ "texture": ${frameRefs.get(key)}, "duration": ${durationMultiplier} }`;
     });
-    return `{ "name": "${anim.name}", "speed": ${anim.fps}.0, "loop": ${anim.loop}, "frames": [${frames.join(', ')}] }`;
+    return `{ "name": &"${anim.name}", "speed": ${anim.fps}.0, "loop": ${anim.loop}, "frames": [${frames.join(', ')}] }`;
   });
   lines.push(`animations = [${animArray.join(', ')}]`);
 
   return lines.join('\n');
 }
 
-export function exportGodotTileset(
-  tileset: TilesetData,
-  sheetFilename: string,
-): string {
+export function exportGodotTileset(tileset: TilesetData, sheetFilename: string): string {
   const lines: string[] = [];
   lines.push('[gd_resource type="TileSet" format=3]');
   lines.push('');
@@ -115,7 +128,9 @@ export function exportGodotTileset(
     const tilesPerRow = Math.max(1, Math.ceil(Math.sqrt(tileset.tiles.length)));
     const col = i % tilesPerRow;
     const row = Math.floor(i / tilesPerRow);
-    lines.push(`${i}/texture_region = Rect2(${col * tileset.tileWidth}, ${row * tileset.tileHeight}, ${tileset.tileWidth}, ${tileset.tileHeight})`);
+    lines.push(
+      `${i}/texture_region = Rect2(${col * tileset.tileWidth}, ${row * tileset.tileHeight}, ${tileset.tileWidth}, ${tileset.tileHeight})`,
+    );
   }
 
   return lines.join('\n');
@@ -125,6 +140,8 @@ export function exportGodotScene(
   canvasName: string,
   sheetFilename: string,
   spriteFramesFilename: string,
+  initialAnimation?: string,
+  offset?: { x: number; y: number },
 ): string {
   const lines: string[] = [];
   lines.push('[gd_scene format=3]');
@@ -134,7 +151,10 @@ export function exportGodotScene(
   lines.push('');
   lines.push(`[node name="${canvasName}" type="AnimatedSprite2D"]`);
   lines.push('sprite_frames = ExtResource("1")');
-  lines.push('animation = "default"');
+  if (offset && (offset.x !== 0 || offset.y !== 0)) {
+    lines.push(`offset = Vector2(${offset.x}, ${offset.y})`);
+  }
+  lines.push(`animation = &"${initialAnimation ?? 'default'}"`);
 
   return lines.join('\n');
 }
@@ -150,16 +170,16 @@ export function exportUnitySpriteSheet(
   return {
     name,
     texture: sheetFilename,
-    sprites: frameMetadata.map(f => ({
+    sprites: frameMetadata.map((f) => ({
       name: f.name,
       rect: { x: f.x, y: f.y, w: f.width, h: f.height },
       pivot: { x: 0.5, y: 0.5 },
     })),
-    animations: animations.map(a => ({
+    animations: animations.map((a) => ({
       name: a.name,
       frameRate: a.fps,
       loop: a.loop,
-      sprites: a.frames.map(f => f.name),
+      sprites: a.frames.map((f) => f.name),
     })),
   };
 }
@@ -181,7 +201,7 @@ export function exportGenericMetadata(
     layerCount: canvas.layers.length,
     frames: frameMetadata,
     animations,
-    layers: canvas.layers.map(l => ({ id: l.id, name: l.name, type: l.type })),
+    layers: canvas.layers.map((l) => ({ id: l.id, name: l.name, type: l.type })),
   };
 }
 
@@ -197,8 +217,8 @@ export function generateExportSpritesheet(
 
   for (const frame of canvas.frames) {
     const layersWithBuffers: LayerWithBuffer[] = canvas.layers
-      .filter(l => l.type !== 'reference')
-      .map(l => ({
+      .filter((l) => l.type !== 'reference')
+      .map((l) => ({
         info: l,
         buffer: readLayerFrame(projectPath, canvasName, l.id, frame.id),
       }));
@@ -243,7 +263,11 @@ export function exportToGameEngine(
   options: GamedevExportOptions,
 ): { files: Array<{ name: string; content: string | Buffer }> } {
   const canvas = readCanvasJSON(projectPath, options.canvas);
-  const { buffer, frameWidth, frameHeight } = generateExportSpritesheet(projectPath, options.canvas, options.scale);
+  const { buffer, frameWidth, frameHeight } = generateExportSpritesheet(
+    projectPath,
+    options.canvas,
+    options.scale,
+  );
   const sheetFilename = `${options.canvas}_sheet.png`;
   const frameMetadata = extractFrameMetadata(canvas, frameWidth, frameHeight);
   const animations = options.includeAnimations ? extractAnimations(canvas, frameMetadata) : [];
@@ -257,7 +281,11 @@ export function exportToGameEngine(
     const sfName = `${options.canvas}.tres`;
     files.push({ name: sfName, content: exportGodotSpriteFrames(sheetFilename, animations) });
     const sceneName = `${options.canvas}.tscn`;
-    files.push({ name: sceneName, content: exportGodotScene(options.canvas, sheetFilename, sfName) });
+    const firstAnimName = animations.length > 0 ? animations[0].name : undefined;
+    files.push({
+      name: sceneName,
+      content: exportGodotScene(options.canvas, sheetFilename, sfName, firstAnimName),
+    });
   } else if (options.engine === 'unity') {
     const metaName = `${options.canvas}_sprite.json`;
     const unity = exportUnitySpriteSheet(options.canvas, sheetFilename, frameMetadata, animations);
