@@ -4,6 +4,43 @@ export type BlendMode =
   | 'color-dodge' | 'color-burn' | 'hard-light' | 'soft-light'
   | 'difference' | 'exclusion' | 'addition' | 'subtract';
 
+export type EffectType = 'drop-shadow' | 'outer-glow' | 'outline' | 'color-overlay';
+
+export interface DropShadowParams {
+  offsetX: number;
+  offsetY: number;
+  color: string;
+  blur: number;
+  opacity: number;
+}
+
+export interface OuterGlowParams {
+  color: string;
+  radius: number;
+  intensity: number;
+}
+
+export interface OutlineParams {
+  color: string;
+  thickness: number;
+  position: 'outside' | 'inside' | 'center';
+}
+
+export interface ColorOverlayParams {
+  color: string;
+  opacity: number;
+  blendMode: BlendMode;
+}
+
+export type EffectParams = DropShadowParams | OuterGlowParams | OutlineParams | ColorOverlayParams;
+
+export interface LayerEffect {
+  id: string;
+  type: EffectType;
+  enabled: boolean;
+  params: EffectParams;
+}
+
 export interface LayerInfo {
   id: string;
   name: string;
@@ -16,6 +53,8 @@ export interface LayerInfo {
   parentId?: string | null;
   isGroup?: boolean;
   clipping?: boolean;
+  referenceSource?: string;
+  effects?: LayerEffect[];
 }
 
 export interface FrameInfo {
@@ -45,4 +84,6 @@ export interface CanvasData {
   layers: LayerInfo[];
   frames: FrameInfo[];
   animationTags: AnimationTag[];
+  symmetry?: import('./brush.js').SymmetryConfig;
+  guides?: import('./guide.js').GuideConfig;
 }

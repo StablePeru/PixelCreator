@@ -1,7 +1,7 @@
 export type ToolName = 'pencil' | 'line' | 'rect' | 'circle' | 'fill' | 'eraser' | 'marquee' | 'wand' | 'move' | 'polygon' | 'gradient' | 'bezier';
 
 export interface PreviewShape {
-  type: 'line' | 'rect' | 'circle' | 'pixels';
+  type: 'line' | 'rect' | 'circle' | 'pixels' | 'symmetry-pixels';
   color: string;
   fill?: boolean;
   // line: x1,y1,x2,y2 | rect: x,y,w,h | circle: cx,cy,r | pixels: points[]
@@ -9,6 +9,7 @@ export interface PreviewShape {
   x?: number; y?: number; w?: number; h?: number;
   cx?: number; cy?: number; r?: number;
   points?: Array<{ x: number; y: number }>;
+  symmetryPoints?: Array<Array<{ x: number; y: number }>>;
 }
 
 export interface DrawTool {
@@ -29,4 +30,6 @@ export interface ToolCallbacks {
   sendDraw: (endpoint: string, body: Record<string, unknown>) => Promise<void>;
   getFillMode: () => boolean;
   getThickness: () => number;
+  getBrushPreset: () => { id: string; size: number; opacity: number; spacing: number; pixelPerfect: boolean } | null;
+  getSymmetryConfig: () => { mode: string; axisX?: number; axisY?: number; radialSegments?: number } | null;
 }

@@ -1,4 +1,5 @@
 import { useTool } from '../context/ToolContext';
+import { useBrush } from '../context/BrushContext';
 import type { ToolName } from '../tools/types';
 
 const TOOLS: Array<{ name: ToolName; label: string; shortcut: string; icon: string }> = [
@@ -16,8 +17,13 @@ const TOOLS: Array<{ name: ToolName; label: string; shortcut: string; icon: stri
   { name: 'bezier', label: 'Bezier', shortcut: 'N', icon: '\u223F' },
 ];
 
+const SYMMETRY_LABELS: Record<string, string> = {
+  none: 'Off', horizontal: 'H', vertical: 'V', both: 'HV', radial: 'Rad',
+};
+
 export function ToolBar() {
   const { activeTool, setActiveTool, fillMode, setFillMode, thickness, setThickness } = useTool();
+  const { activeBrush, symmetry, cycleSymmetry } = useBrush();
 
   return (
     <div className="toolbar">
@@ -50,6 +56,20 @@ export function ToolBar() {
         />
         <span className="toolbar__value">{thickness}</span>
       </label>
+
+      <div className="toolbar__separator" />
+
+      <span className="toolbar__option" title="Active brush">
+        <span>Brush: {activeBrush.name} ({activeBrush.size}px)</span>
+      </span>
+
+      <button
+        className={`toolbar__btn toolbar__btn--symmetry ${symmetry.mode !== 'none' ? 'toolbar__btn--active' : ''}`}
+        onClick={cycleSymmetry}
+        title={`Symmetry: ${symmetry.mode} (S to toggle)`}
+      >
+        <span>Sym: {SYMMETRY_LABELS[symmetry.mode] ?? 'Off'}</span>
+      </button>
     </div>
   );
 }

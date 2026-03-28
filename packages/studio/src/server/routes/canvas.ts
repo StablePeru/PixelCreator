@@ -148,6 +148,41 @@ canvasRoutes.get('/canvas/:name/sample/:x/:y', (c) => {
   }
 });
 
+// --- Symmetry Config ---
+
+canvasRoutes.get('/canvas/:name/symmetry', (c) => {
+  const projectPath = c.get('projectPath');
+  const name = c.req.param('name');
+  try {
+    const canvas = readCanvasJSON(projectPath, name);
+    return c.json({ canvas: name, symmetry: canvas.symmetry ?? { mode: 'none' } });
+  } catch {
+    return c.json({ error: `Canvas "${name}" not found` }, 404);
+  }
+});
+
+canvasRoutes.put('/canvas/:name/symmetry', async (c) => {
+  const projectPath = c.get('projectPath');
+  const name = c.req.param('name');
+  const body = await c.req.json();
+
+  try {
+    const canvas = readCanvasJSON(projectPath, name);
+    canvas.symmetry = {
+      mode: body.mode ?? 'none',
+      axisX: body.axisX ?? Math.floor(canvas.width / 2),
+      axisY: body.axisY ?? Math.floor(canvas.height / 2),
+      radialSegments: body.radialSegments ?? 4,
+      radialCenterX: body.radialCenterX ?? Math.floor(canvas.width / 2),
+      radialCenterY: body.radialCenterY ?? Math.floor(canvas.height / 2),
+    };
+    writeCanvasJSON(projectPath, name, canvas);
+    return c.json({ success: true, canvas: name, symmetry: canvas.symmetry });
+  } catch {
+    return c.json({ error: `Canvas "${name}" not found` }, 404);
+  }
+});
+
 canvasRoutes.delete('/canvas/:name', (c) => {
   const projectPath = c.get('projectPath');
   const name = c.req.param('name');

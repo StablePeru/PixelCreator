@@ -29,9 +29,12 @@
     },
     "topicSeparator": ":",
     "topics": {
+      "brush": { "description": "Brush preset management" },
       "canvas": { "description": "Canvas creation and manipulation" },
+      "guide": { "description": "Guide line management" },
       "layer": { "description": "Layer management" },
       "draw": { "description": "Drawing primitives" },
+      "effect": { "description": "Layer effect management" },
       "palette": { "description": "Palette management" },
       "frame": { "description": "Animation frame management" },
       "export": { "description": "Export to various formats" },
@@ -46,7 +49,9 @@
       "plugin": { "description": "Plugin management" },
       "view": { "description": "Visual preview and display" },
       "studio": { "description": "PixelCreator Studio — web GUI" },
-      "dataset": { "description": "AI training dataset management" }
+      "dataset": { "description": "AI training dataset management" },
+      "generate": { "description": "Procedural generation" },
+      "gamedev": { "description": "Game engine export (Godot, Unity)" }
     }
   },
   "dependencies": {

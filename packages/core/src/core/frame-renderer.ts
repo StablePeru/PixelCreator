@@ -39,10 +39,12 @@ export function renderFrames(
       throw new Error(`Frame index ${frameIndex} not found in canvas "${canvasName}"`);
     }
 
-    const layersWithBuffers: LayerWithBuffer[] = canvas.layers.map((layerInfo) => ({
-      info: layerInfo,
-      buffer: readLayerFrame(projectPath, canvasName, layerInfo.id, frame.id),
-    }));
+    const layersWithBuffers: LayerWithBuffer[] = canvas.layers
+      .filter((layerInfo) => layerInfo.type !== 'reference')
+      .map((layerInfo) => ({
+        info: layerInfo,
+        buffer: readLayerFrame(projectPath, canvasName, layerInfo.id, frame.id),
+      }));
 
     let buffer = flattenLayers(layersWithBuffers, canvas.width, canvas.height);
 

@@ -7,3 +7,11 @@ coverage/
 *.pxcz
 tmp/
 .DS_Store
+
+# Personal test project data
+mi-juego.pxc/
+
+# Environment
+.env
+.env.*
+!.env.example

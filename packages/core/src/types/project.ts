@@ -28,6 +28,8 @@ export interface ProjectSettings {
   defaultTileSize: { width: number; height: number };
   defaultPalette: string | null;
   pixelPerfect: boolean;
+  brushPresets?: import('./brush.js').BrushPreset[];
+  preferences?: import('./guide.js').StudioPreferences;
 }
 
 export interface ProjectData {

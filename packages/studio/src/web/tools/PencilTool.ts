@@ -4,6 +4,13 @@ export function createPencilTool(cb: ToolCallbacks): DrawTool {
   let active = false;
   const pixels: Array<{ x: number; y: number }> = [];
 
+  function useStrokeEndpoint(): boolean {
+    const brush = cb.getBrushPreset?.();
+    const sym = cb.getSymmetryConfig?.();
+    return (brush != null && (brush.size > 1 || brush.id !== 'brush-001'))
+      || (sym != null && sym.mode !== 'none');
+  }
+
   return {
     name: 'pencil',
     label: 'Pencil',
@@ -29,9 +36,22 @@ export function createPencilTool(cb: ToolCallbacks): DrawTool {
       const canvas = cb.getCanvasName();
       if (!canvas || pixels.length === 0) return;
       const color = cb.getColor();
-      // Batch all pixels in a single API call
-      const operations = pixels.map(p => ({ type: 'pixel', canvas, x: p.x, y: p.y, color }));
-      await cb.sendDraw('batch', { operations });
+
+      if (useStrokeEndpoint()) {
+        const brush = cb.getBrushPreset?.();
+        const sym = cb.getSymmetryConfig?.();
+        await cb.sendDraw('stroke', {
+          canvas,
+          points: [...pixels],
+          color,
+          brushId: brush?.id ?? 'brush-001',
+          symmetry: sym && sym.mode !== 'none' ? sym : undefined,
+        });
+      } else {
+        // Batch all pixels in a single API call (backward compatible)
+        const operations = pixels.map(p => ({ type: 'pixel', canvas, x: p.x, y: p.y, color }));
+        await cb.sendDraw('batch', { operations });
+      }
       pixels.length = 0;
     },
 

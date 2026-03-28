@@ -1,6 +1,7 @@
 import { Hono } from 'hono';
 import {
   readCanvasJSON,
+  readProjectJSON,
   readLayerFrame,
   writeLayerFrame,
   hexToRGBA,
@@ -18,6 +19,11 @@ import {
   drawBezierCubic,
   generateOutline,
   drawStamp,
+  applySymmetricStroke,
+  drawSymmetricPixel,
+  drawSymmetricLine,
+  computeSymmetryPoints,
+  createDefaultPresets,
 } from '@pixelcreator/core';
 import type { PixelBuffer } from '@pixelcreator/core';
 import type { HistoryStack } from '../../history/history-stack.js';
@@ -34,6 +40,8 @@ import {
   drawBezierSchema,
   drawOutlineSchema,
   drawStampSchema,
+  drawStrokeSchema,
+  drawSymmetricSchema,
 } from '../../utils/validation.js';
 
 export const drawRoutes = new Hono<{ Variables: { projectPath: string; historyStack: HistoryStack } }>();
@@ -268,6 +276,66 @@ drawRoutes.post('/draw/stamp', async (c) => {
   });
 
   return c.json({ success: true, operation: 'stamp', canvas: canvasName });
+});
+
+// Brush stroke with optional symmetry
+drawRoutes.post('/draw/stroke', async (c) => {
+  const projectPath = c.get('projectPath');
+  const historyStack = c.get('historyStack');
+  const body = await c.req.json();
+  const parsed = drawStrokeSchema.safeParse(body);
+  if (!parsed.success) return c.json({ error: parsed.error.issues }, 400);
+
+  const { canvas: canvasName, points, color, brushId, symmetry, layer, frame } = parsed.data;
+  const { layerId, frameId } = resolveLayerAndFrame(projectPath, canvasName, layer, frame);
+
+  const project = readProjectJSON(projectPath);
+  const defaults = createDefaultPresets();
+  const custom = project.settings?.brushPresets ?? [];
+  const preset = [...defaults, ...custom].find(p => p.id === (brushId ?? 'brush-001'))
+    ?? defaults[0];
+
+  const sym = symmetry ?? { mode: 'none' as const };
+
+  withHistory(historyStack, projectPath, canvasName, layerId, frameId, 'stroke', (buf) => {
+    applySymmetricStroke(buf, points, hexToRGBA(color), preset, sym);
+  });
+
+  return c.json({ success: true, operation: 'stroke', canvas: canvasName, pointCount: points.length });
+});
+
+// Generic symmetric draw (pixel, line, fill)
+drawRoutes.post('/draw/symmetric', async (c) => {
+  const projectPath = c.get('projectPath');
+  const historyStack = c.get('historyStack');
+  const body = await c.req.json();
+  const parsed = drawSymmetricSchema.safeParse(body);
+  if (!parsed.success) return c.json({ error: parsed.error.issues }, 400);
+
+  const { canvas: canvasName, type, color, symmetry, layer, frame } = parsed.data;
+  const canvas = readCanvasJSON(projectPath, canvasName);
+  const { layerId, frameId } = resolveLayerAndFrame(projectPath, canvasName, layer, frame);
+  const rgba = hexToRGBA(color);
+
+  withHistory(historyStack, projectPath, canvasName, layerId, frameId, `symmetric-${type}`, (buf) => {
+    switch (type) {
+      case 'pixel':
+        drawSymmetricPixel(buf, parsed.data.x!, parsed.data.y!, rgba, symmetry, canvas.width, canvas.height);
+        break;
+      case 'line':
+        drawSymmetricLine(buf, parsed.data.x1!, parsed.data.y1!, parsed.data.x2!, parsed.data.y2!, rgba, symmetry, canvas.width, canvas.height);
+        break;
+      case 'fill': {
+        const pts = computeSymmetryPoints(parsed.data.x!, parsed.data.y!, symmetry, canvas.width, canvas.height);
+        for (const pt of pts) {
+          floodFill(buf, pt.x, pt.y, rgba, parsed.data.tolerance ?? 0);
+        }
+        break;
+      }
+    }
+  });
+
+  return c.json({ success: true, operation: `symmetric-${type}`, canvas: canvasName });
 });
 
 // Batch endpoint — multiple operations in one call

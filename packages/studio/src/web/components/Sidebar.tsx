@@ -4,6 +4,7 @@ interface SidebarProps {
   canvases: string[];
   selected: string | null;
   onSelect: (name: string) => void;
+  onNewCanvas?: () => void;
 }
 
 interface CanvasInfo {
@@ -11,7 +12,7 @@ interface CanvasInfo {
   height: number;
 }
 
-export function Sidebar({ canvases, selected, onSelect }: SidebarProps) {
+export function Sidebar({ canvases, selected, onSelect, onNewCanvas }: SidebarProps) {
   const [sizes, setSizes] = useState<Record<string, CanvasInfo>>({});
 
   useEffect(() => {
@@ -43,6 +44,11 @@ export function Sidebar({ canvases, selected, onSelect }: SidebarProps) {
           )}
         </div>
       ))}
+      {onNewCanvas && (
+        <button className="sidebar__add-btn" onClick={onNewCanvas} title="New Canvas">
+          + New Canvas
+        </button>
+      )}
     </div>
   );
 }

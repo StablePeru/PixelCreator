@@ -15,9 +15,11 @@ interface TopBarProps {
   onImport: () => void;
   onDataset: () => void;
   hasCanvas: boolean;
+  onNewCanvas?: () => void;
+  onPreferences?: () => void;
 }
 
-export function TopBar({ projectName, wsStatus, zoom, cursorPos, canvasSize, canUndo, canRedo, onUndo, onRedo, onExport, onImport, onDataset, hasCanvas }: TopBarProps) {
+export function TopBar({ projectName, wsStatus, zoom, cursorPos, canvasSize, canUndo, canRedo, onUndo, onRedo, onExport, onImport, onDataset, hasCanvas, onNewCanvas, onPreferences }: TopBarProps) {
   return (
     <div className="topbar">
       <span className="topbar__title">PixelCreator Studio</span>
@@ -43,6 +45,8 @@ export function TopBar({ projectName, wsStatus, zoom, cursorPos, canvasSize, can
       <button className="topbar__btn" onClick={onExport} disabled={!hasCanvas} title="Export">Export</button>
       <button className="topbar__btn" onClick={onImport} title="Import">Import</button>
       <button className="topbar__btn" onClick={onDataset} title="Dataset Browser">Dataset</button>
+      {onNewCanvas && <button className="topbar__btn" onClick={onNewCanvas} title="New Canvas">+ Canvas</button>}
+      {onPreferences && <button className="topbar__btn" onClick={onPreferences} title="Preferences (Ctrl+,)">&#x2699;</button>}
 
       <div className="topbar__spacer" />
       {canvasSize && (

@@ -1,6 +1,14 @@
 import { PixelBuffer } from '../io/png-codec.js';
 import type { RGBA, Point, Rect } from '../types/common.js';
 import { rgbaEqual, colorDistance } from '../types/common.js';
+import type { BrushPreset, SymmetryConfig } from '../types/brush.js';
+import {
+  createBrushMask,
+  applyBrushStamp,
+  interpolateStrokePoints,
+  pixelPerfectFilter,
+  computeSymmetryPoints,
+} from './brush-engine.js';
 
 export function drawPixel(buffer: PixelBuffer, x: number, y: number, color: RGBA): void {
   buffer.setPixel(x, y, color);
@@ -746,6 +754,57 @@ export function drawRadialGradient(
         a: Math.round(colorStart.a + (colorEnd.a - colorStart.a) * t),
       });
     }
+  }
+}
+
+// --- Brush & Symmetry Drawing ---
+
+export function drawWithBrush(
+  buffer: PixelBuffer,
+  points: Point[],
+  color: RGBA,
+  brushMask: boolean[][],
+  spacing: number = 1,
+  opacity: number = 255,
+): void {
+  const strokePoints = spacing > 1 ? interpolateStrokePoints(points, spacing) : points;
+  for (const pt of strokePoints) {
+    applyBrushStamp(buffer, pt.x, pt.y, color, brushMask, opacity);
+  }
+}
+
+export function drawSymmetricPixel(
+  buffer: PixelBuffer,
+  x: number,
+  y: number,
+  color: RGBA,
+  symmetry: SymmetryConfig,
+  canvasWidth: number,
+  canvasHeight: number,
+): void {
+  const points = computeSymmetryPoints(x, y, symmetry, canvasWidth, canvasHeight);
+  for (const pt of points) {
+    buffer.setPixel(pt.x, pt.y, color);
+  }
+}
+
+export function drawSymmetricLine(
+  buffer: PixelBuffer,
+  x1: number,
+  y1: number,
+  x2: number,
+  y2: number,
+  color: RGBA,
+  symmetry: SymmetryConfig,
+  canvasWidth: number,
+  canvasHeight: number,
+): void {
+  const startPoints = computeSymmetryPoints(x1, y1, symmetry, canvasWidth, canvasHeight);
+  const endPoints = computeSymmetryPoints(x2, y2, symmetry, canvasWidth, canvasHeight);
+  for (let i = 0; i < startPoints.length; i++) {
+    const sp = startPoints[i];
+    const ep = endPoints[i] ?? endPoints[endPoints.length - 1];
+    drawLine(buffer, sp.x, sp.y, ep.x, ep.y, color);
   }
 }
 

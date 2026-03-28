@@ -142,3 +142,50 @@ export const createCanvasSchema = z.object({
   height: z.number().int().min(1).max(4096),
   background: hexColor.optional(),
 });
+
+// --- Brush & Symmetry Schemas ---
+
+export const brushPresetCreateSchema = z.object({
+  name: z.string().min(1),
+  size: z.number().int().min(1).max(64),
+  shape: z.enum(['circle', 'square', 'diamond', 'custom']),
+  pattern: z.array(z.array(z.boolean())).optional(),
+  spacing: z.number().min(0.1).max(10).optional(),
+  opacity: z.number().int().min(0).max(255).optional(),
+  pixelPerfect: z.boolean().optional(),
+});
+
+export const symmetryConfigSchema = z.object({
+  mode: z.enum(['none', 'horizontal', 'vertical', 'both', 'radial']),
+  axisX: z.number().int().optional(),
+  axisY: z.number().int().optional(),
+  radialSegments: z.number().int().min(2).max(24).optional(),
+  radialCenterX: z.number().int().optional(),
+  radialCenterY: z.number().int().optional(),
+});
+
+export const drawStrokeSchema = z.object({
+  canvas: z.string().min(1),
+  points: z.array(pointSchema).min(1),
+  color: hexColor,
+  brushId: z.string().optional(),
+  symmetry: symmetryConfigSchema.optional(),
+  layer: z.string().optional(),
+  frame: z.string().optional(),
+});
+
+export const drawSymmetricSchema = z.object({
+  canvas: z.string().min(1),
+  type: z.enum(['pixel', 'line', 'fill']),
+  x: z.number().int().optional(),
+  y: z.number().int().optional(),
+  x1: z.number().int().optional(),
+  y1: z.number().int().optional(),
+  x2: z.number().int().optional(),
+  y2: z.number().int().optional(),
+  color: hexColor,
+  symmetry: symmetryConfigSchema,
+  tolerance: z.number().int().min(0).optional(),
+  layer: z.string().optional(),
+  frame: z.string().optional(),
+});

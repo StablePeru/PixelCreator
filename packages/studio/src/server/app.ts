@@ -72,13 +72,14 @@ export function createApp(projectPath: string, options: AppOptions = {}) {
         headers: c.req.raw.headers,
         body: JSON.stringify(args),
       });
-      Object.defineProperty(c, 'req', { value: c.newRequest(newReq) });
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (c as any).req = (c as any).newRequest(newReq);
     } else if (agentBridge.isSessionActive() && c.req.method === 'POST') {
       // Running mode — register as auto-approved
       let args: Record<string, unknown> = {};
       try {
         const cloned = c.req.raw.clone();
-        args = await cloned.json();
+        args = await cloned.json() as Record<string, unknown>;
       } catch { /* empty */ }
       await agentBridge.registerOperation(command, args);
     }
@@ -109,12 +110,13 @@ export function createApp(projectPath: string, options: AppOptions = {}) {
         headers: c.req.raw.headers,
         body: JSON.stringify(args),
       });
-      Object.defineProperty(c, 'req', { value: c.newRequest(newReq) });
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (c as any).req = (c as any).newRequest(newReq);
     } else if (agentBridge.isSessionActive() && c.req.method === 'POST') {
       let args: Record<string, unknown> = {};
       try {
         const cloned = c.req.raw.clone();
-        args = await cloned.json();
+        args = await cloned.json() as Record<string, unknown>;
       } catch { /* empty */ }
       await agentBridge.registerOperation(command, args);
     }

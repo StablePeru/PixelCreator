@@ -12,6 +12,7 @@ import {
   scaleBuffer,
   encodePNG,
   ensureCanvasStructure,
+  PixelBuffer,
 } from '@pixelcreator/core';
 import type { LayerInfo, BlendMode } from '@pixelcreator/core';
 
@@ -192,6 +193,72 @@ layerRoutes.get('/canvas/:name/layer/:id/frame/:frameIndex/thumbnail', (c) => {
       status: 200,
       headers: { 'Content-Type': 'image/png', 'Cache-Control': 'no-cache' },
     });
+  } catch (err) {
+    return c.json({ error: String(err) }, 500);
+  }
+});
+
+// --- Reference Layer ---
+
+layerRoutes.post('/canvas/:name/layer/reference', async (c) => {
+  const projectPath = c.get('projectPath');
+  const canvasName = c.req.param('name');
+  const body = await c.req.json();
+  const { name: layerName, width, height, opacity } = body as {
+    name?: string; width: number; height: number; opacity?: number;
+  };
+
+  try {
+    const canvas = readCanvasJSON(projectPath, canvasName);
+    const nextIndex = canvas.layers.length + 1;
+    const layerId = generateSequentialId('layer', nextIndex);
+
+    const newLayer: LayerInfo = {
+      id: layerId,
+      name: layerName || 'Reference',
+      type: 'reference',
+      visible: true,
+      opacity: opacity ?? 128,
+      blendMode: 'normal',
+      locked: true,
+      order: canvas.layers.length,
+      referenceSource: 'uploaded',
+    };
+
+    canvas.layers.push(newLayer);
+    ensureCanvasStructure(projectPath, canvasName, canvas);
+
+    // Create empty reference buffer
+    const buf = new PixelBuffer(width || canvas.width, height || canvas.height);
+    for (const frame of canvas.frames) {
+      writeLayerFrame(projectPath, canvasName, layerId, frame.id, buf);
+    }
+
+    writeCanvasJSON(projectPath, canvasName, canvas);
+    return c.json({ success: true, layer: newLayer }, 201);
+  } catch (err) {
+    return c.json({ error: String(err) }, 500);
+  }
+});
+
+layerRoutes.put('/canvas/:name/layer/:id/reference', async (c) => {
+  const projectPath = c.get('projectPath');
+  const canvasName = c.req.param('name');
+  const layerId = c.req.param('id');
+  const body = await c.req.json();
+  const { opacity, visible } = body as { opacity?: number; visible?: boolean };
+
+  try {
+    const canvas = readCanvasJSON(projectPath, canvasName);
+    const layer = canvas.layers.find(l => l.id === layerId);
+    if (!layer) return c.json({ error: 'Layer not found' }, 404);
+    if (layer.type !== 'reference') return c.json({ error: 'Not a reference layer' }, 400);
+
+    if (opacity !== undefined) layer.opacity = Math.max(0, Math.min(255, opacity));
+    if (visible !== undefined) layer.visible = visible;
+
+    writeCanvasJSON(projectPath, canvasName, canvas);
+    return c.json({ success: true, layer });
   } catch (err) {
     return c.json({ error: String(err) }, 500);
   }

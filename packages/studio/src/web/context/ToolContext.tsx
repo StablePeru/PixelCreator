@@ -13,6 +13,7 @@ import { createPolygonTool } from '../tools/PolygonTool';
 import { createGradientTool } from '../tools/GradientTool';
 import { createBezierTool } from '../tools/BezierTool';
 import { useColor } from './ColorContext';
+import { useBrush } from './BrushContext';
 
 interface ToolState {
   activeTool: ToolName;
@@ -34,6 +35,7 @@ interface ToolProviderProps {
 
 export function ToolProvider({ children, canvasName, activeLayerId }: ToolProviderProps) {
   const { foreground } = useColor();
+  const { activeBrush, symmetry } = useBrush();
   const [activeTool, setActiveToolState] = useState<ToolName>('pencil');
   const [fillMode, setFillMode] = useState(false);
   const [thickness, setThickness] = useState(1);
@@ -48,12 +50,18 @@ export function ToolProvider({ children, canvasName, activeLayerId }: ToolProvid
   fillRef.current = fillMode;
   const thicknessRef = useRef(thickness);
   thicknessRef.current = thickness;
+  const brushRef = useRef(activeBrush);
+  brushRef.current = activeBrush;
+  const symmetryRef = useRef(symmetry);
+  symmetryRef.current = symmetry;
 
   const callbacks: ToolCallbacks = useMemo(() => ({
     getColor: () => colorRef.current,
     getCanvasName: () => canvasRef.current,
     getFillMode: () => fillRef.current,
     getThickness: () => thicknessRef.current,
+    getBrushPreset: () => brushRef.current,
+    getSymmetryConfig: () => symmetryRef.current,
     sendDraw: async (endpoint, body) => {
       const layerId = layerRef.current;
       await fetch(`/api/draw/${endpoint}`, {

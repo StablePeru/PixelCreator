@@ -1,5 +1,6 @@
 import { PixelBuffer } from '../io/png-codec.js';
 import type { LayerInfo, BlendMode } from '../types/canvas.js';
+import { applyLayerEffects } from './effects-engine.js';
 
 export type Anchor =
   | 'top-left' | 'top-center' | 'top-right'
@@ -123,8 +124,20 @@ function compositeLayerOnto(
   }
 }
 
-export function flattenLayers(layers: LayerWithBuffer[], width: number, height: number): PixelBuffer {
-  return flattenLayerTree(layers, width, height, null);
+export interface FlattenOptions {
+  includeReference?: boolean;
+}
+
+export function flattenLayers(
+  layers: LayerWithBuffer[],
+  width: number,
+  height: number,
+  options?: FlattenOptions,
+): PixelBuffer {
+  const filtered = options?.includeReference
+    ? layers
+    : layers.filter(l => l.info.type !== 'reference');
+  return flattenLayerTree(filtered, width, height, null);
 }
 
 export function flattenLayerTree(
@@ -155,6 +168,14 @@ export function flattenLayerTree(
     // Apply clipping mask if enabled
     if (layer.info.clipping && prevBuffer) {
       layerBuffer = applyClippingMask(layerBuffer, prevBuffer);
+    }
+
+    // Apply non-destructive layer effects
+    if (layer.info.effects?.length) {
+      const enabledEffects = layer.info.effects.filter(e => e.enabled);
+      if (enabledEffects.length > 0) {
+        layerBuffer = applyLayerEffects(layerBuffer, enabledEffects, width, height);
+      }
     }
 
     // Composite onto result
