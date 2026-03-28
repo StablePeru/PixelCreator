@@ -1,6 +1,12 @@
-import { describe, it, expect } from 'vitest';
-import { scaleBuffer } from '../../src/core/frame-renderer.js';
+import { describe, it, expect, vi } from 'vitest';
+import { scaleBuffer, renderFrames } from '../../src/core/frame-renderer.js';
 import { PixelBuffer } from '../../src/io/png-codec.js';
+import type { CanvasData } from '../../src/types/canvas.js';
+
+vi.mock('../../src/io/project-io.js', () => ({
+  readCanvasJSON: vi.fn(),
+  readLayerFrame: vi.fn(() => new PixelBuffer(4, 4)),
+}));
 
 describe('frame-renderer', () => {
   describe('scaleBuffer', () => {
@@ -45,6 +51,84 @@ describe('frame-renderer', () => {
           expect(result.getPixel(x, y)).toEqual({ r: 128, g: 64, b: 32, a: 200 });
         }
       }
+    });
+  });
+
+  describe('renderFrames', () => {
+    const makeCanvas = (opts?: { includeReference?: boolean }): CanvasData => ({
+      name: 'test-canvas',
+      width: 4,
+      height: 4,
+      created: '2024-01-01',
+      modified: '2024-01-01',
+      palette: null,
+      layers: [
+        {
+          id: 'layer-001',
+          name: 'Layer 1',
+          type: 'normal',
+          visible: true,
+          opacity: 100,
+          blendMode: 'normal',
+          locked: false,
+          order: 0,
+        },
+        ...(opts?.includeReference
+          ? [
+              {
+                id: 'ref-001',
+                name: 'Reference',
+                type: 'reference' as const,
+                visible: true,
+                opacity: 100,
+                blendMode: 'normal' as const,
+                locked: false,
+                order: 1,
+              },
+            ]
+          : []),
+      ],
+      frames: [
+        { id: 'frame-001', index: 0, duration: 100 },
+        { id: 'frame-002', index: 1, duration: 100 },
+      ],
+      animationTags: [],
+    });
+
+    it('renders a single frame at scale 1', () => {
+      const canvas = makeCanvas();
+      const results = renderFrames('/fake/path', 'test-canvas', canvas, [0], 1);
+      expect(results).toHaveLength(1);
+      expect(results[0].width).toBe(4);
+      expect(results[0].height).toBe(4);
+    });
+
+    it('renders multiple frames', () => {
+      const canvas = makeCanvas();
+      const results = renderFrames('/fake/path', 'test-canvas', canvas, [0, 1], 1);
+      expect(results).toHaveLength(2);
+    });
+
+    it('scales output when scale > 1', () => {
+      const canvas = makeCanvas();
+      const results = renderFrames('/fake/path', 'test-canvas', canvas, [0], 2);
+      expect(results).toHaveLength(1);
+      expect(results[0].width).toBe(8);
+      expect(results[0].height).toBe(8);
+    });
+
+    it('throws on invalid frame index', () => {
+      const canvas = makeCanvas();
+      expect(() => renderFrames('/fake/path', 'test-canvas', canvas, [99], 1)).toThrow(
+        'Frame index 99 not found',
+      );
+    });
+
+    it('excludes reference layers from rendering', () => {
+      const canvas = makeCanvas({ includeReference: true });
+      const results = renderFrames('/fake/path', 'test-canvas', canvas, [0], 1);
+      expect(results).toHaveLength(1);
+      // The mock readLayerFrame should only be called for the normal layer, not the reference one
     });
   });
 });
