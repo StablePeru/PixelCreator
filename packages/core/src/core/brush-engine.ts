@@ -493,6 +493,14 @@ export const brushPresetSchema = z.object({
   pixelPerfect: z.boolean(),
   ditherMode: z.enum(['none', 'ordered-2x2', 'ordered-4x4', 'ordered-8x8']).optional(),
   paletteLock: z.boolean().optional(),
+  pressureSensitivity: z
+    .object({
+      enabled: z.boolean(),
+      curve: z.enum(['linear', 'soft', 'hard']),
+      minSize: z.number().min(0).max(1),
+      minOpacity: z.number().min(0).max(1),
+    })
+    .optional(),
 });
 
 export function validateBrushPreset(preset: unknown): { valid: boolean; errors?: string[] } {
