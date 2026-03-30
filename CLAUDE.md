@@ -21,14 +21,14 @@ pnpm workspace with 3 packages:
 - **Binary**: `pxc` — all commands under `packages/cli/src/commands/{topic}/{command}.ts`
 - **Studio**: Hono REST API + WebSocket + React SPA at `packages/studio/`
 
-### Command Topics (23 topics, 231 commands)
+### Command Topics (23 topics, 232 commands)
 | Topic | # | Description |
 |-------|---|-------------|
 | `animation` | 12 | Timeline, tags, timing, onion skin, export |
 | `brush` | 6 | Brush presets: list, create, delete, show, import, export |
 | `canvas` | 21 | Create, crop, flip, resize, stats, compare, symmetry |
 | `dataset` | 4 | AI training dataset: rate, list, export, stats |
-| `draw` | 22 | Pixel, line, rect, circle, fill, gradient, polygon, bezier, stroke, symmetric |
+| `draw` | 23 | Pixel, line, rect, circle, fill, gradient, polygon, bezier, stroke, symmetric, batch |
 | `effect` | 10 | Layer effects: drop-shadow, outer-glow, outline, color-overlay, add, remove, list, toggle, edit, reorder |
 | `gamedev` | 8 | Game engine export: Godot (.tres/.tscn), Unity (sprite JSON), generic metadata |
 | `generate` | 8 | Procedural: noise (simplex/fBm/turbulence), checkerboard, stripes, grid-dots, brick, noise-map, terrain, preview |
@@ -131,4 +131,4 @@ pnpm workspace with 3 packages:
 - **Package manager**: pnpm (workspace)
 
 ## Current Status: v2.0.0-beta.12
-231 commands across 23 topics, 25 core engines, 12 I/O modules, 98+ REST API endpoints, React GUI with 43 components + professional UI (SVG icon system, collapsible panels, custom form controls, Inter/JetBrains Mono fonts, CSS design tokens, micro-interactions) + 12 drawing tools + brush/symmetry/guides/reference/effects/accessibility/procedural/gamedev-export/toast system + live export preview + AI Agent Mode (session control, approve/reject, real-time feedback), 134 test files, 1331 tests (0 failures), 80.87% core coverage. Monorepo with 3 packages. Docker support. Pre-commit hooks (husky + lint-staged). Claude Code integration (11 commands + 9 rules).
+232 commands across 23 topics, 25 core engines, 12 I/O modules, 98+ REST API endpoints, React GUI with 43 components + professional UI (SVG icon system, collapsible panels, custom form controls, Inter/JetBrains Mono fonts, CSS design tokens, micro-interactions) + 12 drawing tools + brush/symmetry/guides/reference/effects/accessibility/procedural/gamedev-export/toast system + live export preview + AI Agent Mode (session control, approve/reject, real-time feedback), 134 test files, 1331 tests (0 failures), 80.87% core coverage. Monorepo with 3 packages. Docker support. Pre-commit hooks (husky + lint-staged). Claude Code integration (11 commands + 9 rules).
