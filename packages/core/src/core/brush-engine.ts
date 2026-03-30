@@ -9,6 +9,7 @@ import type {
 } from '../types/brush.js';
 import { snapToPalette } from './color-space-engine.js';
 import { shouldDitherPixel } from './dither-engine.js';
+import { interpolateStrokePressure, pressureToSize, pressureToOpacity } from './pressure-engine.js';
 import { z } from 'zod';
 
 // --- Brush Mask Generation ---
@@ -498,4 +499,116 @@ export function validateBrushPreset(preset: unknown): { valid: boolean; errors?:
   const result = brushPresetSchema.safeParse(preset);
   if (result.success) return { valid: true };
   return { valid: false, errors: result.error.issues.map((i) => i.message) };
+}
+
+// --- Pressure-Sensitive Stroke (M5a stubs) ---
+
+export function applyPressureStroke(
+  buffer: PixelBuffer,
+  points: Array<{ x: number; y: number }>,
+  pressure: number[],
+  color: RGBA,
+  preset: BrushPreset,
+  paletteLockColors?: RGBA[],
+): void {
+  if (points.length === 0) return;
+
+  const config = preset.pressureSensitivity;
+
+  // If pressure disabled, delegate to regular stroke
+  if (!config || !config.enabled) {
+    applyBrushStroke(buffer, points, color, preset, paletteLockColors);
+    return;
+  }
+
+  // Interpolate points with pressure values
+  const interpolated = interpolateStrokePressure(points, pressure, preset.spacing);
+  const interpPoints = interpolated.points;
+  const interpPressure = interpolated.pressure;
+
+  for (let i = 0; i < interpPoints.length; i++) {
+    const pt = interpPoints[i];
+    const p = interpPressure[i] ?? 1;
+
+    const dynSize = pressureToSize(p, preset.size, config);
+    const dynOpacity = pressureToOpacity(p, preset.opacity, config);
+
+    const dynPreset: BrushPreset = { ...preset, size: dynSize };
+    const mask = createBrushMask(dynPreset);
+
+    applyBrushStamp(buffer, pt.x, pt.y, color, mask, {
+      opacity: dynOpacity,
+      paletteLockColors,
+      ditherMode: preset.ditherMode ?? 'none',
+      ditherRatio: 1.0,
+    });
+  }
+}
+
+export function applySymmetricPressureStroke(
+  buffer: PixelBuffer,
+  points: Array<{ x: number; y: number }>,
+  pressure: number[],
+  color: RGBA,
+  preset: BrushPreset,
+  symmetry: SymmetryConfig,
+  paletteLockColors?: RGBA[],
+): void {
+  if (points.length === 0) return;
+
+  if (symmetry.mode === 'none') {
+    applyPressureStroke(buffer, points, pressure, color, preset, paletteLockColors);
+    return;
+  }
+
+  // Reuse same mirroring logic as applySymmetricStroke, delegate to applyPressureStroke
+  const firstPoint = points[0];
+  const mirroredOrigins = computeSymmetryPoints(
+    firstPoint.x,
+    firstPoint.y,
+    symmetry,
+    buffer.width,
+    buffer.height,
+  );
+
+  for (const origin of mirroredOrigins) {
+    let mirroredPoints: Point[];
+
+    if (symmetry.mode === 'radial') {
+      const cx = symmetry.radialCenterX ?? Math.floor(buffer.width / 2);
+      const cy = symmetry.radialCenterY ?? Math.floor(buffer.height / 2);
+      const origAngle = Math.atan2(origin.y - cy, origin.x - cx);
+      const firstAngle = Math.atan2(firstPoint.y - cy, firstPoint.x - cx);
+      const dTheta = origAngle - firstAngle;
+
+      mirroredPoints = points.map((p) => {
+        const px = p.x - cx;
+        const py = p.y - cy;
+        const cos = Math.cos(dTheta);
+        const sin = Math.sin(dTheta);
+        return {
+          x: Math.round(cx + px * cos - py * sin),
+          y: Math.round(cy + px * sin + py * cos),
+        };
+      });
+    } else {
+      let flipX = 1;
+      let flipY = 1;
+      if (symmetry.mode === 'horizontal' && origin.x !== firstPoint.x) {
+        flipX = -1;
+      } else if (symmetry.mode === 'vertical' && origin.y !== firstPoint.y) {
+        flipY = -1;
+      } else if (symmetry.mode === 'both') {
+        if (origin.x !== firstPoint.x) flipX = -1;
+        if (origin.y !== firstPoint.y) flipY = -1;
+      }
+
+      mirroredPoints = points.map((p) => ({
+        x: origin.x + (p.x - firstPoint.x) * flipX,
+        y: origin.y + (p.y - firstPoint.y) * flipY,
+      }));
+    }
+
+    applyPressureStroke(buffer, mirroredPoints, pressure, color, preset, paletteLockColors);
+  }
 }

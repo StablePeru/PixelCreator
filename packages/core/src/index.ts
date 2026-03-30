@@ -19,6 +19,7 @@ export * from './core/layer-engine.js';
 export * from './core/nineslice-engine.js';
 export * from './core/palette-engine.js';
 export * from './core/plugin-loader.js';
+export * from './core/pressure-engine.js';
 export * from './core/procedural-engine.js';
 export * from './core/recipe-engine.js';
 export * from './core/selection-engine.js';

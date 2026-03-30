@@ -4,6 +4,15 @@ export type SymmetryMode = 'none' | 'horizontal' | 'vertical' | 'both' | 'radial
 
 export type DitherMode = 'none' | 'ordered-2x2' | 'ordered-4x4' | 'ordered-8x8';
 
+export type PressureCurve = 'linear' | 'soft' | 'hard';
+
+export interface PressureSensitivityConfig {
+  enabled: boolean;
+  curve: PressureCurve;
+  minSize: number;
+  minOpacity: number;
+}
+
 export interface BrushPreset {
   id: string;
   name: string;
@@ -15,6 +24,7 @@ export interface BrushPreset {
   pixelPerfect: boolean;
   ditherMode?: DitherMode;
   paletteLock?: boolean;
+  pressureSensitivity?: PressureSensitivityConfig;
 }
 
 export interface SymmetryConfig {
@@ -31,4 +41,5 @@ export interface BrushStroke {
   brushId: string;
   color: string;
   symmetry: SymmetryConfig;
+  pressure?: number[];
 }
