@@ -8,7 +8,8 @@ coverage/
 tmp/
 .DS_Store
 
-# Personal test project data
+# Runtime project data
+projects/*.pxc/
 mi-juego.pxc/
 
 # Environment
