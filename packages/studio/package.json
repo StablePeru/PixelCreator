@@ -15,11 +15,11 @@
     "lint": "eslint src/"
   },
   "dependencies": {
-    "@hono/node-server": "^1.19.11",
+    "@hono/node-server": "^1.19.14",
     "@pixelcreator/core": "workspace:*",
-    "hono": "^4.12.8",
-    "react": "^19.2.4",
-    "react-dom": "^19.2.4",
+    "hono": "^4.12.12",
+    "react": "^19.2.5",
+    "react-dom": "^19.2.5",
     "ws": "^8.20.0",
     "zod": "^4.3.6"
   },
