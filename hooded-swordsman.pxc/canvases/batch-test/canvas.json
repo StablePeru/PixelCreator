@@ -1,0 +1,28 @@
+{
+  "name": "batch-test",
+  "width": 48,
+  "height": 48,
+  "created": "2026-03-30T20:51:55.213Z",
+  "modified": "2026-03-30T20:51:55.216Z",
+  "palette": null,
+  "layers": [
+    {
+      "id": "layer-001",
+      "name": "background",
+      "type": "normal",
+      "visible": true,
+      "opacity": 255,
+      "blendMode": "normal",
+      "locked": false,
+      "order": 0
+    }
+  ],
+  "frames": [
+    {
+      "id": "frame-001",
+      "index": 0,
+      "duration": 100
+    }
+  ],
+  "animationTags": []
+}

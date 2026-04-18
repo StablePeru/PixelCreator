@@ -1,0 +1,106 @@
+{
+  "colors": {
+    "HAIR": "#c87533",
+    "HAIRDK": "#8b4513",
+    "SKIN": "#f5d0a9",
+    "SKINDK": "#d4a574",
+    "TUNIC": "#4a8c50",
+    "TUNICDK": "#2d5016",
+    "TUNICLT": "#6db86b",
+    "CLOAK": "#6b4226",
+    "CLOAKDK": "#3e2a1f",
+    "BELT": "#c4a035",
+    "PANTS": "#5c4033",
+    "BOOTS": "#2a1f14",
+    "BOW": "#a0522d",
+    "STRING": "#d4d4c0",
+    "BLACK": "#1a1a1a",
+    "WHITE": "#ffffff"
+  },
+  "operations": [
+    {"type": "ellipse", "cx": 24, "cy": 9, "rx": 4, "ry": 2, "colorRef": "HAIR", "fill": true},
+    {"type": "rect", "x": 19, "y": 10, "w": 2, "h": 5, "colorRef": "HAIR", "fill": true},
+    {"type": "rect", "x": 28, "y": 10, "w": 2, "h": 4, "colorRef": "HAIR", "fill": true},
+    {"type": "pixel", "x": 21, "y": 10, "colorRef": "HAIRDK"},
+    {"type": "pixel", "x": 27, "y": 10, "colorRef": "HAIR"},
+    {"type": "pixel", "x": 19, "y": 12, "colorRef": "HAIRDK"},
+    {"type": "pixel", "x": 29, "y": 11, "colorRef": "HAIRDK"},
+    {"type": "pixel", "x": 23, "y": 7, "colorRef": "WHITE"},
+
+    {"type": "circle", "cx": 24, "cy": 13, "radius": 4, "colorRef": "SKIN", "fill": true},
+    {"type": "ellipse", "cx": 26, "cy": 13, "rx": 1, "ry": 3, "colorRef": "SKINDK", "fill": true},
+
+    {"type": "pixel", "x": 22, "y": 12, "colorRef": "HAIRDK"},
+    {"type": "pixel", "x": 23, "y": 12, "colorRef": "HAIRDK"},
+    {"type": "pixel", "x": 25, "y": 12, "colorRef": "HAIRDK"},
+    {"type": "pixel", "x": 26, "y": 12, "colorRef": "HAIRDK"},
+    {"type": "pixel", "x": 22, "y": 13, "colorRef": "WHITE"},
+    {"type": "pixel", "x": 23, "y": 13, "colorRef": "BLACK"},
+    {"type": "pixel", "x": 25, "y": 13, "colorRef": "WHITE"},
+    {"type": "pixel", "x": 26, "y": 13, "colorRef": "BLACK"},
+    {"type": "pixel", "x": 24, "y": 15, "colorRef": "SKINDK"},
+    {"type": "pixel", "x": 23, "y": 16, "colorRef": "SKINDK"},
+    {"type": "pixel", "x": 24, "y": 16, "colorRef": "SKINDK"},
+
+    {"type": "pixel", "x": 19, "y": 13, "colorRef": "SKIN"},
+    {"type": "pixel", "x": 18, "y": 12, "colorRef": "SKIN"},
+    {"type": "pixel", "x": 17, "y": 11, "colorRef": "SKINDK"},
+    {"type": "pixel", "x": 29, "y": 13, "colorRef": "SKINDK"},
+    {"type": "pixel", "x": 30, "y": 12, "colorRef": "SKINDK"},
+
+    {"type": "rect", "x": 23, "y": 18, "w": 3, "h": 2, "colorRef": "SKIN", "fill": true},
+    {"type": "pixel", "x": 25, "y": 18, "colorRef": "SKINDK"},
+
+    {"type": "rect", "x": 16, "y": 20, "w": 3, "h": 17, "colorRef": "CLOAK", "fill": true},
+    {"type": "rect", "x": 16, "y": 33, "w": 3, "h": 5, "colorRef": "CLOAKDK", "fill": true},
+    {"type": "line", "x1": 15, "y1": 21, "x2": 15, "y2": 37, "colorRef": "CLOAKDK"},
+    {"type": "pixel", "x": 16, "y": 19, "colorRef": "CLOAK"},
+    {"type": "pixel", "x": 17, "y": 19, "colorRef": "CLOAK"},
+
+    {"type": "rect", "x": 19, "y": 20, "w": 11, "h": 9, "colorRef": "TUNIC", "fill": true},
+
+    {"type": "ellipse", "cx": 19, "cy": 21, "rx": 2, "ry": 1, "colorRef": "TUNIC", "fill": true},
+    {"type": "ellipse", "cx": 29, "cy": 21, "rx": 2, "ry": 1, "colorRef": "TUNICDK", "fill": true},
+
+    {"type": "rect", "x": 20, "y": 21, "w": 3, "h": 6, "colorRef": "TUNICLT", "fill": true},
+    {"type": "rect", "x": 24, "y": 21, "w": 2, "h": 7, "colorRef": "TUNICDK", "fill": true},
+    {"type": "rect", "x": 27, "y": 21, "w": 3, "h": 7, "colorRef": "TUNICDK", "fill": true},
+    {"type": "line", "x1": 21, "y1": 20, "x2": 27, "y2": 20, "colorRef": "TUNICDK"},
+
+    {"type": "rect", "x": 17, "y": 22, "w": 2, "h": 5, "colorRef": "TUNIC", "fill": true},
+    {"type": "rect", "x": 17, "y": 27, "w": 2, "h": 2, "colorRef": "SKIN", "fill": true},
+    {"type": "rect", "x": 29, "y": 21, "w": 2, "h": 6, "colorRef": "TUNICDK", "fill": true},
+    {"type": "rect", "x": 29, "y": 27, "w": 2, "h": 2, "colorRef": "SKIN", "fill": true},
+
+    {"type": "rect", "x": 19, "y": 28, "w": 11, "h": 2, "colorRef": "BELT", "fill": true},
+    {"type": "circle", "cx": 24, "cy": 28, "radius": 1, "colorRef": "STRING", "fill": true},
+
+    {"type": "rect", "x": 20, "y": 30, "w": 4, "h": 9, "colorRef": "PANTS", "fill": true},
+    {"type": "rect", "x": 25, "y": 30, "w": 4, "h": 9, "colorRef": "PANTS", "fill": true},
+    {"type": "rect", "x": 24, "y": 30, "w": 1, "h": 9, "colorRef": "CLOAKDK", "fill": true},
+    {"type": "pixel", "x": 21, "y": 34, "colorRef": "CLOAK"},
+    {"type": "pixel", "x": 26, "y": 34, "colorRef": "CLOAK"},
+
+    {"type": "ellipse", "cx": 21, "cy": 40, "rx": 3, "ry": 2, "colorRef": "BOOTS", "fill": true},
+    {"type": "ellipse", "cx": 27, "cy": 40, "rx": 3, "ry": 2, "colorRef": "BOOTS", "fill": true},
+    {"type": "line", "x1": 19, "y1": 42, "x2": 23, "y2": 42, "colorRef": "BLACK"},
+    {"type": "line", "x1": 25, "y1": 42, "x2": 29, "y2": 42, "colorRef": "BLACK"},
+    {"type": "line", "x1": 19, "y1": 40, "x2": 23, "y2": 40, "colorRef": "BELT"},
+    {"type": "line", "x1": 25, "y1": 40, "x2": 29, "y2": 40, "colorRef": "BELT"},
+
+    {"type": "line", "x1": 14, "y1": 16, "x2": 14, "y2": 32, "colorRef": "BOW"},
+    {"type": "pixel", "x": 13, "y": 18, "colorRef": "BOW"},
+    {"type": "pixel", "x": 12, "y": 20, "colorRef": "BOW"},
+    {"type": "pixel", "x": 12, "y": 22, "colorRef": "BOW"},
+    {"type": "pixel", "x": 12, "y": 24, "colorRef": "BOW"},
+    {"type": "pixel", "x": 13, "y": 26, "colorRef": "BOW"},
+    {"type": "pixel", "x": 13, "y": 30, "colorRef": "BOW"},
+    {"type": "line", "x1": 14, "y1": 16, "x2": 14, "y2": 32, "colorRef": "STRING"},
+
+    {"type": "rect", "x": 30, "y": 13, "w": 2, "h": 10, "colorRef": "CLOAK", "fill": true},
+    {"type": "rect", "x": 30, "y": 13, "w": 2, "h": 2, "colorRef": "BELT", "fill": true},
+    {"type": "pixel", "x": 30, "y": 11, "colorRef": "STRING"},
+    {"type": "pixel", "x": 31, "y": 11, "colorRef": "STRING"},
+    {"type": "pixel", "x": 31, "y": 12, "colorRef": "STRING"}
+  ]
+}

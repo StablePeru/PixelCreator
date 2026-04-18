@@ -1,0 +1,30 @@
+{
+  "version": "1.0.0",
+  "name": "forest-archer-v2",
+  "description": "",
+  "created": "2026-03-31T20:16:46.496Z",
+  "modified": "2026-03-31T20:16:48.077Z",
+  "settings": {
+    "defaultTileSize": {
+      "width": 16,
+      "height": 16
+    },
+    "defaultPalette": null,
+    "pixelPerfect": true
+  },
+  "palettes": [
+    "archer-pal"
+  ],
+  "canvases": [
+    "archer"
+  ],
+  "tilesets": [],
+  "templates": [],
+  "recipes": [],
+  "tags": {},
+  "validation": {
+    "paletteEnforcement": "warn",
+    "sizeRules": []
+  },
+  "exportProfiles": {}
+}

@@ -1,0 +1,9 @@
+[gd_scene format=3]
+
+[ext_resource type="SpriteFrames" path="res://swordsman.tres" id="1"]
+[ext_resource type="Texture2D" path="res://swordsman_sheet.png" id="2"]
+
+[node name="swordsman" type="AnimatedSprite2D"]
+sprite_frames = ExtResource("1")
+offset = Vector2(0, 19)
+animation = &"idle"

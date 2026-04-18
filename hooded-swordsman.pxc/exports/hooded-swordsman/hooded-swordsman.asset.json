@@ -1,0 +1,56 @@
+{
+  "name": "hooded-swordsman",
+  "type": "character-spritesheet",
+  "canvas": "swordsman",
+  "frameSize": {
+    "width": 48,
+    "height": 48
+  },
+  "pivot": {
+    "x": 24,
+    "y": 43
+  },
+  "animations": [
+    {
+      "name": "idle",
+      "from": 0,
+      "to": 3,
+      "fps": 5,
+      "direction": "forward",
+      "loop": true
+    },
+    {
+      "name": "walk",
+      "from": 4,
+      "to": 7,
+      "fps": 8,
+      "direction": "forward",
+      "loop": true
+    },
+    {
+      "name": "attack",
+      "from": 8,
+      "to": 11,
+      "fps": 10,
+      "direction": "forward",
+      "loop": false
+    }
+  ],
+  "export": {
+    "engine": "godot",
+    "scale": 1,
+    "layout": "horizontal",
+    "padding": 0
+  },
+  "constraints": {
+    "maxColors": 16,
+    "requireAllFramesFilled": true,
+    "spatialConsistency": {
+      "enabled": true,
+      "baselineTolerance": 2,
+      "horizontalTolerance": 4,
+      "topExtentRatio": 2.5,
+      "lateralExtentRatio": 2.5
+    }
+  }
+}

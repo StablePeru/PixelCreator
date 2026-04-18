@@ -1,0 +1,108 @@
+{
+  "name": "swordsman-pal",
+  "description": "",
+  "colors": [
+    {
+      "index": 0,
+      "hex": "#1a1a2e",
+      "name": null,
+      "group": null
+    },
+    {
+      "index": 1,
+      "hex": "#16213e",
+      "name": null,
+      "group": null
+    },
+    {
+      "index": 2,
+      "hex": "#0f3460",
+      "name": null,
+      "group": null
+    },
+    {
+      "index": 3,
+      "hex": "#533483",
+      "name": null,
+      "group": null
+    },
+    {
+      "index": 4,
+      "hex": "#e94560",
+      "name": null,
+      "group": null
+    },
+    {
+      "index": 5,
+      "hex": "#b8001f",
+      "name": null,
+      "group": null
+    },
+    {
+      "index": 6,
+      "hex": "#f5e6ca",
+      "name": null,
+      "group": null
+    },
+    {
+      "index": 7,
+      "hex": "#d4a574",
+      "name": null,
+      "group": null
+    },
+    {
+      "index": 8,
+      "hex": "#8b6914",
+      "name": null,
+      "group": null
+    },
+    {
+      "index": 9,
+      "hex": "#2d5016",
+      "name": null,
+      "group": null
+    },
+    {
+      "index": 10,
+      "hex": "#1a1a1a",
+      "name": null,
+      "group": null
+    },
+    {
+      "index": 11,
+      "hex": "#333333",
+      "name": null,
+      "group": null
+    },
+    {
+      "index": 12,
+      "hex": "#666666",
+      "name": null,
+      "group": null
+    },
+    {
+      "index": 13,
+      "hex": "#999999",
+      "name": null,
+      "group": null
+    },
+    {
+      "index": 14,
+      "hex": "#cccccc",
+      "name": null,
+      "group": null
+    },
+    {
+      "index": 15,
+      "hex": "#ffffff",
+      "name": null,
+      "group": null
+    }
+  ],
+  "constraints": {
+    "maxColors": 256,
+    "locked": false,
+    "allowAlpha": true
+  },
+  "ramps": []
+}

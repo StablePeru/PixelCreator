@@ -1,0 +1,88 @@
+{
+  "name": "archer",
+  "width": 48,
+  "height": 48,
+  "created": "2026-03-31T20:16:28.314Z",
+  "modified": "2026-04-03T18:10:50.459Z",
+  "palette": "archer-pal",
+  "layers": [
+    {
+      "id": "layer-001",
+      "name": "background",
+      "type": "normal",
+      "visible": true,
+      "opacity": 255,
+      "blendMode": "normal",
+      "locked": false,
+      "order": 0
+    }
+  ],
+  "frames": [
+    {
+      "id": "frame-001",
+      "index": 0,
+      "duration": 200
+    },
+    {
+      "id": "frame-002",
+      "index": 1,
+      "duration": 200
+    },
+    {
+      "id": "frame-003",
+      "index": 2,
+      "duration": 200
+    },
+    {
+      "id": "frame-004",
+      "index": 3,
+      "duration": 200
+    },
+    {
+      "id": "frame-005",
+      "index": 4,
+      "duration": 150
+    },
+    {
+      "id": "frame-009",
+      "index": 5,
+      "duration": 150
+    },
+    {
+      "id": "frame-006",
+      "index": 6,
+      "duration": 150
+    },
+    {
+      "id": "frame-007",
+      "index": 7,
+      "duration": 150
+    },
+    {
+      "id": "frame-010",
+      "index": 8,
+      "duration": 150
+    },
+    {
+      "id": "frame-008",
+      "index": 9,
+      "duration": 150
+    }
+  ],
+  "animationTags": [
+    {
+      "name": "idle",
+      "from": 0,
+      "to": 3,
+      "direction": "forward",
+      "repeat": 1
+    },
+    {
+      "name": "walk",
+      "from": 4,
+      "to": 9,
+      "direction": "forward",
+      "repeat": 1
+    }
+  ]
+}

@@ -1,0 +1,38 @@
+{
+  "colors": {
+    "T": "#00000000",
+    "Bt": "#5c4033",
+    "Bk": "#2a1f14",
+    "Gl": "#c4a035",
+    "Bl": "#1a1a1a",
+    "DB": "#3e2a1f"
+  },
+  "operations": [
+    {"type": "rect", "x": 17, "y": 37, "w": 15, "h": 8, "colorRef": "T", "fill": true},
+
+    {"type": "pixel", "x": 17, "y": 37, "colorRef": "DB"},
+    {"type": "pixel", "x": 18, "y": 37, "colorRef": "DB"},
+    {"type": "rect", "x": 20, "y": 37, "w": 4, "h": 1, "colorRef": "Bt", "fill": true},
+    {"type": "pixel", "x": 24, "y": 37, "colorRef": "DB"},
+    {"type": "rect", "x": 25, "y": 37, "w": 4, "h": 1, "colorRef": "Bt", "fill": true},
+
+    {"type": "rect", "x": 20, "y": 38, "w": 4, "h": 1, "colorRef": "Bt", "fill": true},
+    {"type": "pixel", "x": 24, "y": 38, "colorRef": "DB"},
+    {"type": "rect", "x": 25, "y": 38, "w": 4, "h": 1, "colorRef": "Bt", "fill": true},
+
+    {"type": "pixel", "x": 20, "y": 39, "colorRef": "Bk"},
+    {"type": "rect", "x": 21, "y": 39, "w": 3, "h": 1, "colorRef": "Bt", "fill": true},
+    {"type": "pixel", "x": 24, "y": 39, "colorRef": "Bk"},
+    {"type": "rect", "x": 20, "y": 40, "w": 5, "h": 1, "colorRef": "Gl", "fill": true},
+    {"type": "rect", "x": 20, "y": 41, "w": 5, "h": 1, "colorRef": "Bk", "fill": true},
+    {"type": "rect", "x": 20, "y": 42, "w": 5, "h": 1, "colorRef": "Bl", "fill": true},
+
+    {"type": "rect", "x": 26, "y": 39, "w": 5, "h": 1, "colorRef": "Bt", "fill": true},
+    {"type": "pixel", "x": 26, "y": 40, "colorRef": "Bk"},
+    {"type": "rect", "x": 27, "y": 40, "w": 3, "h": 1, "colorRef": "Bt", "fill": true},
+    {"type": "pixel", "x": 30, "y": 40, "colorRef": "Bk"},
+    {"type": "rect", "x": 26, "y": 41, "w": 5, "h": 1, "colorRef": "Gl", "fill": true},
+    {"type": "rect", "x": 26, "y": 42, "w": 5, "h": 1, "colorRef": "Bk", "fill": true},
+    {"type": "rect", "x": 26, "y": 43, "w": 5, "h": 1, "colorRef": "Bl", "fill": true}
+  ]
+}

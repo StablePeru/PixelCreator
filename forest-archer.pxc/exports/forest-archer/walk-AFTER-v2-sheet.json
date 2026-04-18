@@ -1,0 +1,85 @@
+{
+  "image": "walk-AFTER-v2-sheet.png",
+  "size": {
+    "width": 398,
+    "height": 48
+  },
+  "frameSize": {
+    "width": 48,
+    "height": 48
+  },
+  "frames": [
+    {
+      "x": 0,
+      "y": 0,
+      "w": 48,
+      "h": 48,
+      "duration": 200
+    },
+    {
+      "x": 50,
+      "y": 0,
+      "w": 48,
+      "h": 48,
+      "duration": 200
+    },
+    {
+      "x": 100,
+      "y": 0,
+      "w": 48,
+      "h": 48,
+      "duration": 200
+    },
+    {
+      "x": 150,
+      "y": 0,
+      "w": 48,
+      "h": 48,
+      "duration": 200
+    },
+    {
+      "x": 200,
+      "y": 0,
+      "w": 48,
+      "h": 48,
+      "duration": 150
+    },
+    {
+      "x": 250,
+      "y": 0,
+      "w": 48,
+      "h": 48,
+      "duration": 150
+    },
+    {
+      "x": 300,
+      "y": 0,
+      "w": 48,
+      "h": 48,
+      "duration": 150
+    },
+    {
+      "x": 350,
+      "y": 0,
+      "w": 48,
+      "h": 48,
+      "duration": 150
+    }
+  ],
+  "animationTags": [
+    {
+      "name": "idle",
+      "from": 0,
+      "to": 3,
+      "direction": "forward",
+      "repeat": 1
+    },
+    {
+      "name": "walk",
+      "from": 4,
+      "to": 7,
+      "direction": "forward",
+      "repeat": 1
+    }
+  ]
+}
