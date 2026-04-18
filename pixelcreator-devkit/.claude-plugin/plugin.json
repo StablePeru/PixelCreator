@@ -1,0 +1,12 @@
+{
+  "name": "pixelcreator-devkit",
+  "version": "0.1.0",
+  "description": "Claude Code devkit for PixelCreator: skills, subagents and hooks for monorepo development and pxc CLI-driven pixel-art workflows.",
+  "author": {
+    "name": "StablePeru",
+    "email": "stableperu@gmail.com"
+  },
+  "homepage": "https://github.com/StablePeru/PixelCreator",
+  "keywords": ["pixelcreator", "pixel-art", "oclif", "monorepo", "claude-code"],
+  "license": "MIT"
+}

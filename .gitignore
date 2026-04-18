@@ -16,3 +16,6 @@ mi-juego.pxc/
 .env
 .env.*
 !.env.example
+
+# Claude Code local overrides (personal, not shared)
+.claude/settings.local.json
