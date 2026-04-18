@@ -35,7 +35,11 @@
       "Write(packages/**)",
       "Write(pixelcreator-devkit/**)",
       "Write(showcase/**)",
-      "Write(docs/**)"
+      "Write(docs/**)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git push)",
+      "Bash(git push origin:*)"
     ],
     "deny": [
       "Bash(rm -rf /*)",
