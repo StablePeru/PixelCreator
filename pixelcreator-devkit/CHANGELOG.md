@@ -5,6 +5,15 @@ All notable changes to `pixelcreator-devkit` will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.2.0] - 2026-04-20
+
+### Added
+- `/pxdk:close-task` skill — end-of-task pipeline (verify → update-codemaps → update-docs → prune ROADMAP → CHANGELOG → commit → push to `main`). Authorized for direct push to `main` per project workflow memory.
+- `hooks/stop-push-reminder.sh` — Stop hook that flags when local `main` is ahead of `origin/main`.
+
+### Changed
+- `hooks/hooks.json` — `Stop` now runs `stop-verify-reminder` + `stop-push-reminder` in order.
+
 ## [0.1.0] - 2026-04-18
 
 ### Added

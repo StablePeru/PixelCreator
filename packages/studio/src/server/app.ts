@@ -25,6 +25,7 @@ import { effectRoutes } from './routes/effect.js';
 import { accessibilityRoutes } from './routes/accessibility.js';
 import { generateRoutes } from './routes/generate.js';
 import { gamedevRoutes } from './routes/gamedev.js';
+import { validationRoutes } from './routes/validation.js';
 import { HistoryStack } from '../history/history-stack.js';
 import { AgentBridge } from './agent-bridge.js';
 import { FrameCache } from './frame-cache.js';
@@ -40,7 +41,9 @@ export function createApp(projectPath: string, options: AppOptions = {}) {
   const agentBridge = options.agentBridge ?? new AgentBridge();
   const frameCache = options.frameCache ?? new FrameCache();
 
-  const app = new Hono<{ Variables: { projectPath: string; historyStack: HistoryStack; agentBridge: AgentBridge } }>();
+  const app = new Hono<{
+    Variables: { projectPath: string; historyStack: HistoryStack; agentBridge: AgentBridge };
+  }>();
 
   app.use('*', cors());
 
@@ -60,7 +63,11 @@ export function createApp(projectPath: string, options: AppOptions = {}) {
     // If agent session is paused, register and wait for approval
     if (agentBridge.getSessionStatus() === 'paused' && c.req.method === 'POST') {
       let args: Record<string, unknown> = {};
-      try { args = await c.req.json(); } catch { /* empty */ }
+      try {
+        args = await c.req.json();
+      } catch {
+        /* empty */
+      }
 
       const approved = await agentBridge.registerOperation(command, args);
       if (!approved) {
@@ -79,8 +86,10 @@ export function createApp(projectPath: string, options: AppOptions = {}) {
       let args: Record<string, unknown> = {};
       try {
         const cloned = c.req.raw.clone();
-        args = await cloned.json() as Record<string, unknown>;
-      } catch { /* empty */ }
+        args = (await cloned.json()) as Record<string, unknown>;
+      } catch {
+        /* empty */
+      }
       await agentBridge.registerOperation(command, args);
     }
 
@@ -99,7 +108,11 @@ export function createApp(projectPath: string, options: AppOptions = {}) {
 
     if (agentBridge.getSessionStatus() === 'paused' && c.req.method === 'POST') {
       let args: Record<string, unknown> = {};
-      try { args = await c.req.json(); } catch { /* empty */ }
+      try {
+        args = await c.req.json();
+      } catch {
+        /* empty */
+      }
 
       const approved = await agentBridge.registerOperation(command, args);
       if (!approved) {
@@ -116,8 +129,10 @@ export function createApp(projectPath: string, options: AppOptions = {}) {
       let args: Record<string, unknown> = {};
       try {
         const cloned = c.req.raw.clone();
-        args = await cloned.json() as Record<string, unknown>;
-      } catch { /* empty */ }
+        args = (await cloned.json()) as Record<string, unknown>;
+      } catch {
+        /* empty */
+      }
       await agentBridge.registerOperation(command, args);
     }
 
@@ -152,6 +167,7 @@ export function createApp(projectPath: string, options: AppOptions = {}) {
   app.route('/api', accessibilityRoutes);
   app.route('/api', generateRoutes);
   app.route('/api', gamedevRoutes);
+  app.route('/api', validationRoutes);
 
   app.get('/api/health', (c) => c.json({ status: 'ok', timestamp: Date.now() }));
 
@@ -162,7 +178,7 @@ export function createApp(projectPath: string, options: AppOptions = {}) {
     path.resolve(baseDir, 'public'),
     path.resolve(baseDir, '..', 'dist', 'public'),
   ];
-  const publicDir = publicCandidates.find(d => fs.existsSync(d)) || publicCandidates[0];
+  const publicDir = publicCandidates.find((d) => fs.existsSync(d)) || publicCandidates[0];
   if (fs.existsSync(publicDir)) {
     app.use('/*', serveStatic({ root: path.relative(process.cwd(), publicDir) }));
 

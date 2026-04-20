@@ -8,6 +8,8 @@ import type { TemplateData } from '../types/template.js';
 import type { RecipeData } from '../types/recipe.js';
 import type { SelectionMask, ClipboardData } from '../types/selection.js';
 import type { AssetSpec } from '../types/asset.js';
+import type { ValidationFlagsFile } from '../types/validation.js';
+import { emptyFlagsFile } from '../core/validation-engine.js';
 import { PixelBuffer } from './png-codec.js';
 import { savePNG, loadPNG, createEmptyBuffer } from './png-codec.js';
 import { selectionToPixelBuffer, pixelBufferToSelection } from '../core/selection-engine.js';
@@ -495,4 +497,39 @@ export function clearClipboard(projectPath: string): void {
   if (fs.existsSync(dir)) {
     fs.rmSync(dir, { recursive: true, force: true });
   }
+}
+
+// Validation flags I/O
+// Flags live under canvases/{name}/.validation/flags.json as a single append-only document.
+
+export function getValidationFlagsPath(projectPath: string, canvasName: string): string {
+  return path.join(projectPath, 'canvases', canvasName, '.validation', 'flags.json');
+}
+
+export function readValidationFlags(projectPath: string, canvasName: string): ValidationFlagsFile {
+  const filePath = getValidationFlagsPath(projectPath, canvasName);
+  if (!fs.existsSync(filePath)) {
+    return emptyFlagsFile(canvasName);
+  }
+  const raw = fs.readFileSync(filePath, 'utf-8');
+  const parsed = JSON.parse(raw) as ValidationFlagsFile;
+  if (!parsed || parsed.version !== 1 || parsed.canvas !== canvasName) {
+    throw new Error(
+      `Invalid validation flags file at ${filePath} (expected version=1, canvas=${canvasName})`,
+    );
+  }
+  return parsed;
+}
+
+export function writeValidationFlags(
+  projectPath: string,
+  canvasName: string,
+  file: ValidationFlagsFile,
+): void {
+  const filePath = getValidationFlagsPath(projectPath, canvasName);
+  const dir = path.dirname(filePath);
+  if (!fs.existsSync(dir)) {
+    fs.mkdirSync(dir, { recursive: true });
+  }
+  fs.writeFileSync(filePath, JSON.stringify(file, null, 2));
 }

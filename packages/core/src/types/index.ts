@@ -12,3 +12,4 @@ export * from './tileset.js';
 export * from './template.js';
 export * from './selection.js';
 export * from './agent.js';
+export * from './validation.js';

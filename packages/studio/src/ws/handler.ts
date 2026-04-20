@@ -44,7 +44,11 @@ export class WsBroadcaster {
   }
 
   handleWatcherEvent(event: WatcherEvent): void {
-    this.broadcast(event.type, event.type === 'canvas:updated' ? { canvasName: event.canvasName } : {});
+    if (event.type === 'canvas:updated' || event.type === 'validation:updated') {
+      this.broadcast(event.type, { canvasName: event.canvasName });
+    } else {
+      this.broadcast(event.type, {});
+    }
   }
 
   close(): void {

@@ -38,6 +38,7 @@ import { GamedevExportPanel } from './components/GamedevExportPanel';
 import { StateMachinePanel } from './components/StateMachinePanel';
 import { AgentModePanel } from './components/AgentModePanel';
 import { CollapsiblePanel } from './components/CollapsiblePanel';
+import { ReviewView } from './components/ReviewView';
 import { useAgentSession } from './hooks/useAgentSession';
 import { ThemeProvider } from './theme/ThemeProvider';
 import type { ToolName } from './tools/types';
@@ -189,6 +190,7 @@ function AppInner() {
     'protanopia' | 'deuteranopia' | 'tritanopia' | 'achromatopsia' | null
   >(null);
   const [showAgentMode, setShowAgentMode] = useState(false);
+  const [viewMode, setViewMode] = useState<'editor' | 'review'>('editor');
 
   const { metadata, frameBitmap, frameIndex, setFrameIndex } = useCanvasLive(
     selectedCanvas,
@@ -212,6 +214,18 @@ function AppInner() {
     setSelectedCanvas(name);
     setCursorPos(null);
   }, []);
+
+  if (viewMode === 'review') {
+    return (
+      <ReviewView
+        canvases={project?.canvases ?? []}
+        selectedCanvas={selectedCanvas}
+        onSelectCanvas={handleSelect}
+        subscribe={subscribe}
+        onBackToEditor={() => setViewMode('editor')}
+      />
+    );
+  }
 
   // Keyboard shortcuts for dialogs (no context needed)
   useEffect(() => {
@@ -265,6 +279,42 @@ function AppInner() {
             onNewCanvas={() => setShowCanvasCreate(true)}
             onPreferences={() => setShowPreferences(true)}
           />
+          <div
+            style={{
+              display: 'flex',
+              gap: 8,
+              padding: '4px 12px',
+              borderBottom: '1px solid var(--border, #333)',
+            }}
+          >
+            <button
+              onClick={() => setViewMode('editor')}
+              style={{
+                padding: '4px 12px',
+                background: 'var(--accent, #4a90e2)',
+                color: 'white',
+                border: 'none',
+                borderRadius: 4,
+                cursor: 'default',
+              }}
+            >
+              Editor
+            </button>
+            <button
+              onClick={() => setViewMode('review')}
+              style={{
+                padding: '4px 12px',
+                background: 'transparent',
+                color: 'inherit',
+                border: '1px solid var(--border, #555)',
+                borderRadius: 4,
+                cursor: 'pointer',
+              }}
+              title="Review mode: validate results read-only and flag issues for the agent"
+            >
+              Review
+            </button>
+          </div>
           <ToolBar />
           <div className="main">
             <div className="left-panel">

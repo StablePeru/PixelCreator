@@ -41,15 +41,17 @@ El archivo `ROADMAP.md` en la raíz del repo es la **cola de trabajo viva** del 
 
 ## Claude Code workflow
 
-This repo ships with the `pixelcreator-devkit` plugin (at `pixelcreator-devkit/`, v0.1.0), auto-enabled via `.claude/settings.json`. It provides:
+This repo ships with the `pixelcreator-devkit` plugin (at `pixelcreator-devkit/`, v0.2.0), auto-enabled via `.claude/settings.json`. It provides:
 
-- **Dev skills** — `/pxdk:plan`, `/pxdk:tdd`, `/pxdk:verify`, `/pxdk:code-review`, `/pxdk:ts-review`, `/pxdk:security-review`, `/pxdk:architect`, `/pxdk:build-fix`, `/pxdk:e2e`, `/pxdk:update-codemaps`, `/pxdk:update-docs`, `/pxdk:engine-new`, `/pxdk:cli-command-new`, `/pxdk:studio-route-new`, `/pxdk:release`.
+- **Dev skills** — `/pxdk:plan`, `/pxdk:tdd`, `/pxdk:verify`, `/pxdk:code-review`, `/pxdk:ts-review`, `/pxdk:security-review`, `/pxdk:architect`, `/pxdk:build-fix`, `/pxdk:e2e`, `/pxdk:update-codemaps`, `/pxdk:update-docs`, `/pxdk:engine-new`, `/pxdk:cli-command-new`, `/pxdk:studio-route-new`, `/pxdk:release`, **`/pxdk:close-task`** (end-of-task pipeline: verify → update codemaps/docs → prune ROADMAP → CHANGELOG → commit → push to `main`).
 - **Artist skills** — `/pxdk:pixel-scene`, `/pxdk:sprite-sheet`, `/pxdk:animate`, `/pxdk:palette-design` (all drive the `pxc` CLI through the `pxc-artist` subagent; output under `showcase/`).
 - **Subagents** — `engine-expert`, `cli-expert`, `studio-expert`, `pxc-artist`.
-- **Hooks** — bash safety (PreToolUse), auto-lint (PostToolUse), session-start context, stop-time verify reminder.
+- **Hooks** — bash safety (PreToolUse), auto-lint (PostToolUse), session-start context, Stop-time verify + push reminders.
 - **MCP** — git + filesystem servers.
 
-Recommended pipeline for new features: `/pxdk:plan` → `/pxdk:tdd` → implement → `/pxdk:code-review` → `/pxdk:verify`.
+Recommended pipeline for new features: `/pxdk:plan` → `/pxdk:tdd` → implement → `/pxdk:code-review` → `/pxdk:close-task` (which runs `/pxdk:verify` + doc refresh + commit + push internally).
+
+Studio has two views: the default **Editor** and the read-only **Review** tab (validation GUI, see `docs/validation-gui.md`). Review consumes the same `pxc validation:*` CLI surface the agent uses — the GUI is CLI-first by design.
 
 ## Modular rules (loaded by skills / CLAUDE)
 

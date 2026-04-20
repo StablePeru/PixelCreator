@@ -3,6 +3,7 @@ import * as path from 'node:path';
 
 export type WatcherEvent =
   | { type: 'canvas:updated'; canvasName: string }
+  | { type: 'validation:updated'; canvasName: string }
   | { type: 'project:changed' };
 
 export class ProjectWatcher {
@@ -26,10 +27,15 @@ export class ProjectWatcher {
     if (fs.existsSync(canvasesDir)) {
       const watcher = fs.watch(canvasesDir, { recursive: true }, (_eventType, filename) => {
         if (!filename) return;
-        const canvasName = filename.split(/[/\\]/)[0];
+        const segments = filename.split(/[/\\]/);
+        const canvasName = segments[0];
         if (!canvasName) return;
 
-        const key = `canvas:${canvasName}`;
+        const isValidationChange = segments[1] === '.validation' && segments[2] === 'flags.json';
+        const eventType: WatcherEvent['type'] = isValidationChange
+          ? 'validation:updated'
+          : 'canvas:updated';
+        const key = `${eventType}:${canvasName}`;
         const existing = this.debounceTimers.get(key);
         if (existing) clearTimeout(existing);
 
@@ -37,7 +43,7 @@ export class ProjectWatcher {
           key,
           setTimeout(() => {
             this.debounceTimers.delete(key);
-            this.listener?.({ type: 'canvas:updated', canvasName });
+            this.listener?.({ type: eventType, canvasName });
           }, this.debounceMs),
         );
       });

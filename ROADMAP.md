@@ -44,3 +44,14 @@ M5 (brush sensible a presión) cerrado. M6 aún sin definir. Candidatos:
 Tras cortar beta.13, actualizar `project_status.md` y `project_asset_pipeline.md` con las métricas nuevas y el nuevo estado del asset pipeline.
 
 **Hecho cuando**: ambas memorias reflejan cifras post-beta.13 y el cierre del slice character-spritesheet.
+
+---
+
+## 5. Iterar sobre el Validation GUI (Review mode)
+
+El modo Review quedó entregado con el MVP: lista/crea/resuelve flags, preview read-only con selección de región, `pxc validation:*` completo, WebSocket `validation:updated`. Siguientes iteraciones naturales:
+
+- Reporte consolidado más rico: integrar `validate:palette`, `validate:accessibility`, y `asset:validate` dentro de `pxc validation:report` y `GET /api/validation/report`.
+- Vista por capa aislada: endpoint `GET /api/canvas/:name/layer/:layerId/frame/:index` para inspeccionar una capa sin flatten.
+- Filtros visibles en el panel (severity/category) y exportar el reporte a Markdown para PRs.
+- Memoria `feedback_close-task.md` tras confirmar que el skill se dispara correctamente en sesiones reales.

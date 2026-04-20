@@ -1,6 +1,6 @@
 {
   "name": "pixelcreator-devkit",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Claude Code devkit for PixelCreator: skills, subagents and hooks for monorepo development and pxc CLI-driven pixel-art workflows.",
   "author": {
     "name": "StablePeru",

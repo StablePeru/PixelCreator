@@ -10,7 +10,7 @@
   <img src="https://img.shields.io/badge/commands-231-orange.svg" alt="231 commands">
   <img src="https://img.shields.io/badge/tests-1331%20passing-brightgreen.svg" alt="1331 tests">
   <img src="https://img.shields.io/badge/coverage-80%25-brightgreen.svg" alt="80% coverage">
-  <img src="https://img.shields.io/badge/version-2.0.0--beta.12-purple.svg" alt="v2.0.0-beta.12">
+  <img src="https://img.shields.io/badge/version-2.0.0--beta.13-purple.svg" alt="v2.0.0-beta.13">
   <img src="https://img.shields.io/badge/studio-React%20GUI-blue.svg" alt="Studio GUI">
 </p>
 

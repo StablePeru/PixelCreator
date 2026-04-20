@@ -6,6 +6,23 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+### Added — Validation GUI ("Review" mode) + end-of-task automation
+
+- **Core** — new `ValidationFlag` / `ValidationReport` types in `packages/core/src/types/validation.ts`. CRUD functions (`addFlag`, `resolveFlag`, `removeFlag`, `listFlags`) added to `validation-engine.ts` as pure immutable operations. On-disk store at `canvases/{name}/.validation/flags.json` via `readValidationFlags` / `writeValidationFlags` in `project-io.ts`.
+- **CLI** — new `validation` topic with 5 commands: `pxc validation:flag`, `pxc validation:list`, `pxc validation:resolve`, `pxc validation:remove`, `pxc validation:report`. All inherit `BaseCommand` and support `--output json`.
+- **Studio API** — new `validation` route module (`GET|POST /api/validation`, `PATCH /api/validation/:canvas/:id/resolve`, `DELETE /api/validation/:canvas/:id`, `GET /api/validation/report`, `POST /api/validation/:canvas/init`).
+- **Studio WS** — `ProjectWatcher` now emits a dedicated `validation:updated` event when `canvases/{name}/.validation/flags.json` changes, distinct from `canvas:updated`.
+- **Studio SPA** — new **Review** tab alongside the Editor: read-only preview with click-drag region selection, side panel to create/resolve/remove flags, "Run auto-validate" button that renders the consolidated report. Uses new `useValidation` hook + `ReviewView` / `ValidationPanel` components.
+- **Devkit** — new `/pxdk:close-task` skill (`pixelcreator-devkit/skills/close-task/SKILL.md`, v0.2.0) that runs verify → refreshes codemaps/docs → prunes the closed ROADMAP step → appends to CHANGELOG `[Unreleased]` → commits with a Conventional Commit message → pushes to `origin main`. Triggered by "cierra la tarea", "finaliza", "ship it", and similar phrasing.
+- **Devkit hooks** — new `Stop` hook `stop-push-reminder.sh` that flags when local `main` is ahead of `origin/main` so work does not sit unpushed.
+- **Docs** — new `ARCHITECTURE.md` at the repo root as a monorepo entry point; new `docs/validation-gui.md` explaining the Review loop and its CLI equivalents.
+
+### Changed
+
+- `README.md` version badge now reflects `v2.0.0-beta.13`.
+- `CLAUDE.md` — Claude Code workflow section updated to mention `/pxdk:close-task` and the Review tab; devkit version bumped to `0.2.0`.
+- `pixelcreator-devkit/.claude-plugin/plugin.json` bumped to `0.2.0`; `pixelcreator-devkit/CHANGELOG.md` updated.
+
 ## [2.0.0-beta.13] - 2026-04-20
 
 ### Fixed — TypeScript build errors

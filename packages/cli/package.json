@@ -42,6 +42,7 @@
       "import": { "description": "Import from various formats" },
       "project": { "description": "Project management" },
       "validate": { "description": "Validation commands" },
+      "validation": { "description": "Validation review flags — create, list, resolve, and report canvas flags for the human ↔ agent loop" },
       "animation": { "description": "Animation timeline and export" },
       "tileset": { "description": "Tileset and tilemap management" },
       "template": { "description": "Template management" },
