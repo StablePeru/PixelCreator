@@ -30,6 +30,15 @@ Dependency chain: **core → cli / studio**. Full topology: `@pixelcreator-devki
 - **Storage** — `canvases/{name}/layers/{layerId}/{frameId}.png`.
 - **Test locations** — `packages/core/test/`, `packages/cli/test/`, `packages/studio/test/`.
 
+## Roadmap workflow (OBLIGATORIO)
+
+El archivo `ROADMAP.md` en la raíz del repo es la **cola de trabajo viva** del proyecto. Reglas:
+
+1. **Arranque de sesión** — cuando el usuario pida "sigue", "continúa", "prosigue con el trabajo" o equivalente sin especificar tarea, abre `ROADMAP.md` y toma el **paso 1** como tarea actual. No preguntes qué hacer.
+2. **Al completar un paso** — debes **eliminarlo** del `ROADMAP.md` en el mismo turno en el que lo cierras. No lo marques como "✓ completado" ni lo muevas a una sección de "Hecho". El roadmap es una cola viva, no un log (para historial ya están `git log` y `CHANGELOG.md`).
+3. **Añadir pasos** — si durante el trabajo descubres tareas nuevas pequeñas derivadas, añádelas al roadmap en el orden que corresponda.
+4. **Re-priorizar** — solo reordena pasos si el usuario lo pide o si un bloqueo técnico lo obliga (explícalo al usuario).
+
 ## Claude Code workflow
 
 This repo ships with the `pixelcreator-devkit` plugin (at `pixelcreator-devkit/`, v0.1.0), auto-enabled via `.claude/settings.json`. It provides:
