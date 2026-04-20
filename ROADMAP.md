@@ -6,22 +6,7 @@ Orden = prioridad. Se trabaja el paso 1 hasta cerrarlo, luego se elimina y el si
 
 ---
 
-## 1. Cortar release `v2.0.0-beta.13`
-
-El `[Unreleased]` del CHANGELOG acumula ~3 semanas: Studio redesign profesional, milestones Stardew M1–M5, asset pipeline (character-spritesheet), migración devkit a plugin versionado, mejoras CLI (`draw:batch`, `frame:clone`).
-
-**Hecho cuando**:
-- `pnpm -r build && pnpm -r test && pnpm -r lint` verdes.
-- `CHANGELOG.md` `[Unreleased]` → `[2.0.0-beta.13]` con fecha.
-- `CLAUDE.md` "Current Status" actualizado (engines, topics, tests, endpoints).
-- Bump de versión en los 3 `packages/*/package.json`.
-- Tag `v2.0.0-beta.13` creado y pusheado.
-
-Usar `/pxdk:release` si aplica.
-
----
-
-## 2. Cerrar pendientes del asset pipeline (slice character-spritesheet)
+## 1. Cerrar pendientes del asset pipeline (slice character-spritesheet)
 
 Completar el primer vertical slice antes de abrir el segundo. Fuentes: memoria `project_asset_pipeline.md` y `packages/cli/src/commands/asset/`.
 
@@ -34,7 +19,7 @@ Completar el primer vertical slice antes de abrir el segundo. Fuentes: memoria `
 
 ---
 
-## 3. Segundo vertical slice: tileset asset pipeline
+## 2. Segundo vertical slice: tileset asset pipeline
 
 Valida la abstracción `asset-engine.ts` con un segundo tipo además de `character-spritesheet`. Reutiliza `tileset-engine.ts` + `autotile-engine.ts` existentes.
 
@@ -42,7 +27,7 @@ Valida la abstracción `asset-engine.ts` con un segundo tipo además de `charact
 
 ---
 
-## 4. Milestone M6 — Stardew Valley quality
+## 3. Milestone M6 — Stardew Valley quality
 
 M5 (brush sensible a presión) cerrado. M6 aún sin definir. Candidatos:
 - Paleta dinámica por escena (day/night/season shift).
@@ -54,7 +39,7 @@ M5 (brush sensible a presión) cerrado. M6 aún sin definir. Candidatos:
 
 ---
 
-## 5. Refrescar memorias tras release
+## 4. Refrescar memorias tras release
 
 Tras cortar beta.13, actualizar `project_status.md` y `project_asset_pipeline.md` con las métricas nuevas y el nuevo estado del asset pipeline.
 

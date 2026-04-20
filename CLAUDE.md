@@ -2,9 +2,9 @@
 
 pnpm monorepo with 3 packages built around a shared pixel-art core:
 
-- `packages/core/` (`@pixelcreator/core`) — 25 engines, 12 I/O modules, shared types.
-- `packages/cli/` (`@pixelcreator/cli`) — 232 oclif commands across 23 topics, binary `pxc`.
-- `packages/studio/` (`@pixelcreator/studio`) — Hono REST API (98+ endpoints) + React SPA + WebSocket.
+- `packages/core/` (`@pixelcreator/core`) — 32 engines, 12 I/O modules, shared types.
+- `packages/cli/` (`@pixelcreator/cli`) — 245 oclif commands across 24 topics, binary `pxc`.
+- `packages/studio/` (`@pixelcreator/studio`) — Hono REST API (153 endpoints) + React SPA + WebSocket.
 
 Dependency chain: **core → cli / studio**. Full topology: `@pixelcreator-devkit/rules/architecture-reference.md`.
 
@@ -60,6 +60,6 @@ Recommended pipeline for new features: `/pxdk:plan` → `/pxdk:tdd` → implemen
 @pixelcreator-devkit/rules/common/development-workflow.md
 @pixelcreator-devkit/rules/typescript/patterns.md
 
-## Current Status: v2.0.0-beta.12
+## Current Status: v2.0.0-beta.13
 
-232 CLI commands (23 topics), 25 core engines, 12 I/O modules, 98+ REST endpoints, 43 React components, 134 test files, 1331 tests green, 80.87% core coverage. Node ≥ 20, pnpm workspace, Docker support, husky + lint-staged pre-commit hooks.
+245 CLI commands (24 topics), 32 core engines, 12 I/O modules, 153 REST endpoints, 45 React components, 151 test files, 1731 tests green, 82.14% core coverage. Node ≥ 20, pnpm workspace, Docker support, husky + lint-staged pre-commit hooks.

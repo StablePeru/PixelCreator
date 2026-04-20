@@ -6,6 +6,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+## [2.0.0-beta.13] - 2026-04-20
+
+### Fixed — TypeScript build errors
+
+- `packages/cli/src/commands/dataset/list.ts` — removed incorrect `Record<string, unknown>` type annotation on `filter` predicate (filter now infers `FeedbackEntry` from `entries`).
+- `packages/cli/src/commands/generate/terrain.ts` — cast `mapOptions` via `unknown` to `NoiseToPixelOptions` (direct `as` rejected by TS 5.9).
+- `packages/cli/src/commands/generate/noise.ts` — same `as unknown as NoiseToPixelOptions` cast applied to all `mapping` usages.
+- `packages/cli/vitest.config.ts` — bumped `hookTimeout` to 30_000ms to accommodate e2e tests whose `beforeEach` spawns ~10 CLI subprocesses on Windows.
+
 ### Improved — Studio Panel Styling & ToolBar Polish
 
 **BrushPanel CSS (new)**
