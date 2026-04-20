@@ -1,6 +1,15 @@
 import { Flags } from '@oclif/core';
 import { BaseCommand } from '../base-command.js';
-import { getProjectPath, readCanvasJSON, readLayerFrame, writeLayerFrame, formatOutput, makeResult, generateNoiseMap, mapNoiseToPixels } from '@pixelcreator/core';
+import {
+  getProjectPath,
+  readCanvasJSON,
+  readLayerFrame,
+  writeLayerFrame,
+  formatOutput,
+  makeResult,
+  generateNoiseMap,
+  mapNoiseToPixels,
+} from '@pixelcreator/core';
 import type { NoiseType, NoiseToPixelOptions } from '@pixelcreator/core';
 
 const TERRAIN_PRESETS = {
@@ -45,7 +54,9 @@ export default class GenerateTerrain extends BaseCommand {
       required: true,
     }),
     seed: Flags.integer({ description: 'Random seed', default: Date.now() }),
-    'palette-colors': Flags.string({ description: 'Override preset palette (comma-separated hex)' }),
+    'palette-colors': Flags.string({
+      description: 'Override preset palette (comma-separated hex)',
+    }),
     layer: Flags.string({ char: 'l', description: 'Layer ID (defaults to first layer)' }),
     frame: Flags.string({ char: 'f', description: 'Frame ID (defaults to first frame)' }),
   };
@@ -65,8 +76,11 @@ export default class GenerateTerrain extends BaseCommand {
     const height = canvas.height;
 
     const noiseOpts = {
-      seed: flags.seed, scale: preset.scale, octaves: preset.octaves,
-      lacunarity: preset.lacunarity, persistence: preset.persistence,
+      seed: flags.seed,
+      scale: preset.scale,
+      octaves: preset.octaves,
+      lacunarity: preset.lacunarity,
+      persistence: preset.persistence,
     };
     const noiseMap = generateNoiseMap(width, height, preset.noiseType as NoiseType, noiseOpts);
 
@@ -96,7 +110,8 @@ export default class GenerateTerrain extends BaseCommand {
       mapOptions.colorAbove = preset.colorAbove;
       mapOptions.colorBelow = preset.colorBelow;
     } else {
-      const colorStr = flags['palette-colors'] || ('paletteColors' in preset ? preset.paletteColors : undefined);
+      const colorStr =
+        flags['palette-colors'] || ('paletteColors' in preset ? preset.paletteColors : undefined);
       if (colorStr) {
         mapOptions.mode = 'palette';
         mapOptions.paletteColors = colorStr.split(',').map((c: string) => c.trim());
@@ -105,7 +120,7 @@ export default class GenerateTerrain extends BaseCommand {
       }
     }
 
-    mapNoiseToPixels(buffer, noiseMap, mapOptions as NoiseToPixelOptions);
+    mapNoiseToPixels(buffer, noiseMap, mapOptions as unknown as NoiseToPixelOptions);
     writeLayerFrame(projectPath, flags.canvas, layerId, frameId, buffer);
 
     const resultData = {
@@ -119,10 +134,19 @@ export default class GenerateTerrain extends BaseCommand {
       height,
     };
 
-    const result = makeResult('generate:terrain', {
-      canvas: flags.canvas, preset: flags.preset, seed: flags.seed,
-      'palette-colors': flags['palette-colors'], layer: layerId, frame: frameId,
-    }, resultData, startTime);
+    const result = makeResult(
+      'generate:terrain',
+      {
+        canvas: flags.canvas,
+        preset: flags.preset,
+        seed: flags.seed,
+        'palette-colors': flags['palette-colors'],
+        layer: layerId,
+        frame: frameId,
+      },
+      resultData,
+      startTime,
+    );
 
     const format = this.getOutputFormat(flags);
     formatOutput(format, result, (r) => {

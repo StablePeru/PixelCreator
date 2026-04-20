@@ -1,6 +1,16 @@
 import { Flags } from '@oclif/core';
 import { BaseCommand } from '../base-command.js';
-import { getProjectPath, readCanvasJSON, readLayerFrame, writeLayerFrame, formatOutput, makeResult, generateSimplexNoise, generateFbm, generateTurbulence } from '@pixelcreator/core';
+import {
+  getProjectPath,
+  readCanvasJSON,
+  readLayerFrame,
+  writeLayerFrame,
+  formatOutput,
+  makeResult,
+  generateSimplexNoise,
+  generateFbm,
+  generateTurbulence,
+} from '@pixelcreator/core';
 import type { NoiseToPixelOptions } from '@pixelcreator/core';
 
 export default class GenerateNoise extends BaseCommand {
@@ -61,13 +71,17 @@ export default class GenerateNoise extends BaseCommand {
 
     switch (flags.type) {
       case 'fbm':
-        generateFbm(buffer, noiseOpts, mapping as NoiseToPixelOptions);
+        generateFbm(buffer, noiseOpts, mapping as unknown as NoiseToPixelOptions);
         break;
       case 'turbulence':
-        generateTurbulence(buffer, noiseOpts, mapping as NoiseToPixelOptions);
+        generateTurbulence(buffer, noiseOpts, mapping as unknown as NoiseToPixelOptions);
         break;
       default:
-        generateSimplexNoise(buffer, { seed: flags.seed, scale }, mapping as NoiseToPixelOptions);
+        generateSimplexNoise(
+          buffer,
+          { seed: flags.seed, scale },
+          mapping as unknown as NoiseToPixelOptions,
+        );
         break;
     }
     writeLayerFrame(projectPath, flags.canvas, layerId, frameId, buffer);
@@ -84,11 +98,23 @@ export default class GenerateNoise extends BaseCommand {
       height: canvas.height,
     };
 
-    const result = makeResult('generate:noise', {
-      canvas: flags.canvas, type: flags.type, seed: flags.seed, scale,
-      octaves: flags.octaves, lacunarity, persistence, mode: flags.mode,
-      layer: layerId, frame: frameId,
-    }, resultData, startTime);
+    const result = makeResult(
+      'generate:noise',
+      {
+        canvas: flags.canvas,
+        type: flags.type,
+        seed: flags.seed,
+        scale,
+        octaves: flags.octaves,
+        lacunarity,
+        persistence,
+        mode: flags.mode,
+        layer: layerId,
+        frame: frameId,
+      },
+      resultData,
+      startTime,
+    );
 
     const format = this.getOutputFormat(flags);
     formatOutput(format, result, (r) => {

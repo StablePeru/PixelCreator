@@ -18,15 +18,22 @@ export default class DatasetList extends BaseCommand {
     const { readDatasetIndex } = await import('@pixelcreator/studio');
     const index = readDatasetIndex(projectPath);
     let entries = index.entries;
-    if (flags.rating) entries = entries.filter((e: Record<string, unknown>) => e.rating === flags.rating);
+    if (flags.rating) entries = entries.filter((e) => e.rating === flags.rating);
 
     const format = this.getOutputFormat(flags);
-    const result = makeResult('dataset:list', { rating: flags.rating }, { count: entries.length, entries }, startTime);
+    const result = makeResult(
+      'dataset:list',
+      { rating: flags.rating },
+      { count: entries.length, entries },
+      startTime,
+    );
     formatOutput(format, result, (data) => {
       this.log(`Dataset: ${data.count} entries`);
       for (const e of data.entries) {
         const emoji = e.rating === 'like' ? '\u{1F44D}' : '\u{1F44E}';
-        this.log(`  ${emoji} ${e.canvasName} - ${e.reason || '(no reason)'} [${e.tags.join(', ')}]`);
+        this.log(
+          `  ${emoji} ${e.canvasName} - ${e.reason || '(no reason)'} [${e.tags.join(', ')}]`,
+        );
       }
     });
   }
