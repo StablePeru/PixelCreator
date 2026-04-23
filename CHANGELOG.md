@@ -6,6 +6,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+### Added — Asset pipeline slice `character-spritesheet` closed
+
+- **CLI** — new `pxc asset:list` command. Lists every spec under `.pxc/assets/`, surfacing `type`, `canvas`, `frameSize`, animation count, export engine/scale, and `maxColors`. Supports `--output json` and `--details` (expands animation names). Malformed specs are reported inline as `INVALID` without aborting the listing. Total CLI commands: 245 → 246.
+- **CLI** — `pxc asset:build` gains `--watch` + `--debounce` flags. Watch mode runs an initial in-process build, then watches the spec file and the source canvas directory (recursive) and rebuilds on change with a debounced trigger. Errors in watch mode log but keep the watcher alive. Graceful `SIGINT` / `SIGTERM` shutdown with a `Watch stopped (N rebuilds)` summary.
+- **Core** — `validateAssetSpec()` `maxColors` error message now includes an actionable hint pointing at `pxc palette:generate --canvas <name> --name <palette> --max-colors <N>` (or raising the constraint), in addition to the existing count-excess report.
+- **Tests** — 9 new E2E tests in `packages/cli/test/e2e/` covering `asset:list`, `maxColors` enforcement (build + validate consistency), and the `asset:build --watch` happy path. Suite total: 1731 → 1778 green.
+- **Showcase** — new `showcase/asset-pipeline-demo/pipeline.sh` exercising `asset:init → asset:list → asset:validate → asset:build` end-to-end.
+
 ### Added — Validation GUI ("Review" mode) + end-of-task automation
 
 - **Core** — new `ValidationFlag` / `ValidationReport` types in `packages/core/src/types/validation.ts`. CRUD functions (`addFlag`, `resolveFlag`, `removeFlag`, `listFlags`) added to `validation-engine.ts` as pure immutable operations. On-disk store at `canvases/{name}/.validation/flags.json` via `readValidationFlags` / `writeValidationFlags` in `project-io.ts`.

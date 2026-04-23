@@ -6,20 +6,7 @@ Orden = prioridad. Se trabaja el paso 1 hasta cerrarlo, luego se elimina y el si
 
 ---
 
-## 1. Cerrar pendientes del asset pipeline (slice character-spritesheet)
-
-Completar el primer vertical slice antes de abrir el segundo. Fuentes: memoria `project_asset_pipeline.md` y `packages/cli/src/commands/asset/`.
-
-**Subpasos**:
-- `asset:list` — listar specs en `.pxc/assets/`.
-- Enforcement de `maxColors` en `asset:build` (validación + error claro si se excede).
-- Modo watch: `asset:build --watch` que reconstruye al cambiar la spec.
-
-**Hecho cuando**: 3 comandos funcionando, tests en `packages/cli/test/`, ejemplo en `showcase/`.
-
----
-
-## 2. Segundo vertical slice: tileset asset pipeline
+## 1. Segundo vertical slice: tileset asset pipeline
 
 Valida la abstracción `asset-engine.ts` con un segundo tipo además de `character-spritesheet`. Reutiliza `tileset-engine.ts` + `autotile-engine.ts` existentes.
 
@@ -27,7 +14,7 @@ Valida la abstracción `asset-engine.ts` con un segundo tipo además de `charact
 
 ---
 
-## 3. Milestone M6 — Stardew Valley quality
+## 2. Milestone M6 — Stardew Valley quality
 
 M5 (brush sensible a presión) cerrado. M6 aún sin definir. Candidatos:
 - Paleta dinámica por escena (day/night/season shift).
@@ -39,7 +26,7 @@ M5 (brush sensible a presión) cerrado. M6 aún sin definir. Candidatos:
 
 ---
 
-## 4. Refrescar memorias tras release
+## 3. Refrescar memorias tras release
 
 Tras cortar beta.13, actualizar `project_status.md` y `project_asset_pipeline.md` con las métricas nuevas y el nuevo estado del asset pipeline.
 
@@ -47,7 +34,7 @@ Tras cortar beta.13, actualizar `project_status.md` y `project_asset_pipeline.md
 
 ---
 
-## 5. Iterar sobre el Validation GUI (Review mode)
+## 4. Iterar sobre el Validation GUI (Review mode)
 
 El modo Review quedó entregado con el MVP: lista/crea/resuelve flags, preview read-only con selección de región, `pxc validation:*` completo, WebSocket `validation:updated`. Siguientes iteraciones naturales:
 

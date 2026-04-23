@@ -561,7 +561,11 @@ export function validateAssetSpec(spec: AssetSpec, projectPath: string): AssetVa
       issues.push({
         severity: 'error',
         field: 'constraints.maxColors',
-        message: `Asset uses ${colorCount} unique colors but maxColors is ${limit} (excess: ${colorCount - limit})`,
+        message:
+          `Asset uses ${colorCount} unique colors but maxColors is ${limit} ` +
+          `(excess: ${colorCount - limit}). ` +
+          `Reduce colors via 'pxc palette:generate --canvas ${spec.canvas} --name <palette> --max-colors ${limit}' ` +
+          `or raise constraints.maxColors in the spec.`,
       });
     }
   }
