@@ -8,6 +8,7 @@ import {
   readProjectJSON,
   writeProjectJSON,
   writeCanvasJSON,
+  writePaletteJSON,
   ensureCanvasStructure,
 } from '@pixelcreator/core';
 import type { CanvasData } from '@pixelcreator/core';
@@ -145,6 +146,50 @@ describe('validation API', () => {
     expect(report.canvas).toBe('hero');
     expect(report.manual).toHaveLength(1);
     expect(Array.isArray(report.automatic.size)).toBe(true);
+    expect(report.automatic.palette).toBeUndefined();
+    expect(report.automatic.accessibility).toBeUndefined();
+    expect(report.automatic.asset).toBeUndefined();
+  });
+
+  it('GET /validation/report?include=all populates palette, accessibility and asset sections', async () => {
+    writePaletteJSON(projectPath, {
+      name: 'p8',
+      description: '',
+      colors: [
+        { index: 0, hex: '#000000', name: 'black', group: null },
+        { index: 1, hex: '#ffffff', name: 'white', group: null },
+      ],
+      constraints: { maxColors: 8, locked: false, allowAlpha: true },
+      ramps: [],
+    });
+
+    const app = createApp(projectPath);
+    const res = await app.request('/api/validation/report?canvas=hero&include=all&palette=p8');
+    expect(res.status).toBe(200);
+    const report = await res.json();
+    expect(Array.isArray(report.automatic.palette)).toBe(true);
+    expect(report.automatic.accessibility).toBeDefined();
+    expect(report.automatic.accessibility.paletteName).toBe('p8');
+    expect(Array.isArray(report.automatic.asset)).toBe(true);
+  });
+
+  it('GET /validation/report?include=palette,accessibility includes just those sections', async () => {
+    writePaletteJSON(projectPath, {
+      name: 'p8',
+      description: '',
+      colors: [{ index: 0, hex: '#000000', name: 'black', group: null }],
+      constraints: { maxColors: 8, locked: false, allowAlpha: true },
+      ramps: [],
+    });
+
+    const app = createApp(projectPath);
+    const res = await app.request(
+      '/api/validation/report?canvas=hero&include=palette,accessibility&palette=p8',
+    );
+    const report = await res.json();
+    expect(Array.isArray(report.automatic.palette)).toBe(true);
+    expect(report.automatic.accessibility).toBeDefined();
+    expect(report.automatic.asset).toBeUndefined();
   });
 
   it('GET /validation?openOnly=true filters resolved flags', async () => {

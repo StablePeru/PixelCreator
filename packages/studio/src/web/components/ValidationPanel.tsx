@@ -2,6 +2,8 @@ import { useCallback, useState } from 'react';
 import type {
   FlagCategory,
   FlagSeverity,
+  ReportInclude,
+  RunReportOptions,
   ValidationFlag,
   ValidationReport,
 } from '../hooks/useValidation';
@@ -35,7 +37,7 @@ interface Props {
   }) => Promise<unknown>;
   onResolve: (id: string, resolution: string) => Promise<void>;
   onRemove: (id: string) => Promise<void>;
-  onRunReport: () => Promise<ValidationReport | null>;
+  onRunReport: (options?: RunReportOptions) => Promise<ValidationReport | null>;
   onClearRegion: () => void;
 }
 
@@ -62,6 +64,10 @@ export function ValidationPanel({
   const [submitting, setSubmitting] = useState(false);
   const [resolvingId, setResolvingId] = useState<string | null>(null);
   const [resolutionText, setResolutionText] = useState('');
+  const [includePalette, setIncludePalette] = useState(false);
+  const [includeAccessibility, setIncludeAccessibility] = useState(false);
+  const [includeAsset, setIncludeAsset] = useState(false);
+  const [paletteOverride, setPaletteOverride] = useState('');
 
   const submit = useCallback(async () => {
     if (!canvasName) return;
@@ -140,12 +146,55 @@ export function ValidationPanel({
     <div style={panelStyle}>
       <h3 style={headerStyle}>Validation — {canvasName}</h3>
 
+      <div style={reportControlsStyle}>
+        <label style={checkRowStyle}>
+          <input
+            type="checkbox"
+            checked={includePalette}
+            onChange={(e) => setIncludePalette(e.target.checked)}
+          />
+          Palette violations
+        </label>
+        <label style={checkRowStyle}>
+          <input
+            type="checkbox"
+            checked={includeAccessibility}
+            onChange={(e) => setIncludeAccessibility(e.target.checked)}
+          />
+          Accessibility
+        </label>
+        <label style={checkRowStyle}>
+          <input
+            type="checkbox"
+            checked={includeAsset}
+            onChange={(e) => setIncludeAsset(e.target.checked)}
+          />
+          Asset specs
+        </label>
+        {(includePalette || includeAccessibility) && (
+          <input
+            type="text"
+            value={paletteOverride}
+            onChange={(e) => setPaletteOverride(e.target.value)}
+            placeholder="Palette name override (optional)"
+            style={{ width: '100%', marginTop: 4 }}
+          />
+        )}
+      </div>
+
       <button
         style={primaryBtnStyle}
         onClick={async () => {
           setError(null);
           try {
-            await onRunReport();
+            const includes: ReportInclude[] = [];
+            if (includePalette) includes.push('palette');
+            if (includeAccessibility) includes.push('accessibility');
+            if (includeAsset) includes.push('asset');
+            await onRunReport({
+              includes,
+              palette: paletteOverride.trim() || undefined,
+            });
           } catch (e) {
             setError(e instanceof Error ? e.message : String(e));
           }
@@ -164,6 +213,60 @@ export function ValidationPanel({
               • {s.message}
             </div>
           ))}
+
+          {report.automatic.palette && (
+            <>
+              <div style={reportSectionStyle}>
+                Palette:{' '}
+                {report.automatic.palette.reduce((n, p) => n + p.totalPixelsOutOfPalette, 0)} px off
+                across {report.automatic.palette.length} frame(s)
+              </div>
+              {report.automatic.palette.map((p) => (
+                <div key={p.frame} style={dimStyle}>
+                  • frame {p.frame}: {p.totalPixelsOutOfPalette} px
+                </div>
+              ))}
+            </>
+          )}
+
+          {report.automatic.accessibility && (
+            <>
+              <div style={reportSectionStyle}>
+                Accessibility ({report.automatic.accessibility.paletteName}): score{' '}
+                {report.automatic.accessibility.score}/100
+              </div>
+              <div style={dimStyle}>
+                •{' '}
+                {
+                  report.automatic.accessibility.issues.filter(
+                    (i) => i.severity === 'indistinguishable',
+                  ).length
+                }{' '}
+                critical,{' '}
+                {
+                  report.automatic.accessibility.issues.filter((i) => i.severity === 'marginal')
+                    .length
+                }{' '}
+                marginal
+              </div>
+            </>
+          )}
+
+          {report.automatic.asset && (
+            <>
+              <div style={reportSectionStyle}>
+                Asset specs: {report.automatic.asset.length} checked,{' '}
+                {report.automatic.asset.filter((a) => !a.valid).length} failing
+              </div>
+              {report.automatic.asset
+                .filter((a) => !a.valid)
+                .map((a) => (
+                  <div key={a.asset} style={dimStyle}>
+                    • {a.asset}: {a.issues.length} issue(s)
+                  </div>
+                ))}
+            </>
+          )}
         </div>
       )}
 
@@ -349,6 +452,15 @@ const reportBoxStyle: React.CSSProperties = {
   marginBottom: 8,
   fontSize: 12,
 };
+const reportControlsStyle: React.CSSProperties = {
+  display: 'flex',
+  flexDirection: 'column',
+  gap: 2,
+  marginBottom: 6,
+  fontSize: 12,
+};
+const checkRowStyle: React.CSSProperties = { display: 'flex', alignItems: 'center', gap: 4 };
+const reportSectionStyle: React.CSSProperties = { marginTop: 6, fontWeight: 600 };
 function flagCardStyle(severity: FlagSeverity): React.CSSProperties {
   const color = severity === 'error' ? '#d04040' : severity === 'warning' ? '#d08040' : '#4080d0';
   return {

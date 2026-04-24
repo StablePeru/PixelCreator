@@ -1,22 +1,16 @@
 import { Hono } from 'hono';
 import {
   addFlag,
+  buildValidationReport,
   emptyFlagsFile,
   listFlags,
   readCanvasJSON,
-  readProjectJSON,
   readValidationFlags,
   removeFlag,
   resolveFlag,
-  validateSizeRules,
   writeValidationFlags,
 } from '@pixelcreator/core';
-import type {
-  FlagCategory,
-  FlagSeverity,
-  ValidationReport,
-  ValidationSizeIssue,
-} from '@pixelcreator/core';
+import type { FlagCategory, FlagSeverity } from '@pixelcreator/core';
 
 export const validationRoutes = new Hono<{ Variables: { projectPath: string } }>();
 
@@ -147,40 +141,41 @@ validationRoutes.get('/validation/report', (c) => {
   const canvas = c.req.query('canvas');
   if (!canvas) return c.json({ error: 'canvas query parameter required' }, 400);
   const openOnly = c.req.query('openOnly') !== 'false';
+  const includes = parseIncludes(c.req.query('include'));
+  const paletteOverride = c.req.query('palette') ?? undefined;
+  const assetName = c.req.query('asset') ?? undefined;
 
-  let canvasData;
   try {
-    canvasData = readCanvasJSON(projectPath, canvas);
+    readCanvasJSON(projectPath, canvas);
   } catch {
     return c.json({ error: `Canvas not found: ${canvas}` }, 404);
   }
 
-  const project = readProjectJSON(projectPath);
-  const file = readValidationFlags(projectPath, canvas);
-  const manual = listFlags(file, { openOnly });
-
-  const violations = validateSizeRules(
-    canvas,
-    canvasData.width,
-    canvasData.height,
-    project.validation.sizeRules,
-  );
-  const size: ValidationSizeIssue[] = violations.map((v) => ({
-    canvas: v.canvas,
-    width: v.width,
-    height: v.height,
-    rule: v.rule.type,
-    message: v.message,
-  }));
-
-  const report: ValidationReport = {
-    canvas,
-    generatedAt: Date.now(),
-    manual,
-    automatic: { size },
-  };
-  return c.json(report);
+  try {
+    const report = buildValidationReport(projectPath, canvas, {
+      openOnly,
+      includePalette: includes.has('palette'),
+      includeAccessibility: includes.has('accessibility'),
+      includeAsset: includes.has('asset'),
+      paletteOverride,
+      assetName,
+    });
+    return c.json(report);
+  } catch (err) {
+    return c.json({ error: String(err instanceof Error ? err.message : err) }, 500);
+  }
 });
+
+function parseIncludes(raw: string | undefined): Set<string> {
+  if (!raw) return new Set();
+  if (raw === 'all') return new Set(['palette', 'accessibility', 'asset']);
+  return new Set(
+    raw
+      .split(',')
+      .map((s) => s.trim().toLowerCase())
+      .filter((s) => s === 'palette' || s === 'accessibility' || s === 'asset'),
+  );
+}
 
 // Initialize an empty flags file (idempotent helper used when first entering Review mode).
 validationRoutes.post('/validation/:canvas/init', (c) => {

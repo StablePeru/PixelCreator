@@ -34,6 +34,7 @@ export * from './core/autotile-engine.js';
 export * from './core/transform-engine.js';
 export * from './core/tween-engine.js';
 export * from './core/validation-engine.js';
+export * from './core/validation-report-builder.js';
 
 // I/O modules
 export * from './io/png-codec.js';

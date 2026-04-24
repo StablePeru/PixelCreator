@@ -32,13 +32,55 @@ export interface ValidationFlag {
   resolution?: string;
 }
 
+export interface ValidationSizeIssue {
+  canvas: string;
+  width: number;
+  height: number;
+  rule: string;
+  message: string;
+}
+
+export interface ValidationPaletteIssue {
+  canvas: string;
+  frame: number;
+  offenders: { x: number; y: number; color: string }[];
+  totalPixelsOutOfPalette: number;
+}
+
+export interface PaletteAccessibilityIssueSummary {
+  severity: 'indistinguishable' | 'difficult' | 'marginal';
+}
+
+export interface PaletteAccessibilitySection {
+  paletteName: string;
+  totalColors: number;
+  score: number;
+  issues: PaletteAccessibilityIssueSummary[];
+}
+
+export interface AssetValidationSection {
+  asset: string;
+  valid: boolean;
+  issues: { severity: 'error' | 'warning'; field: string; message: string }[];
+}
+
+export type ReportInclude = 'palette' | 'accessibility' | 'asset';
+
 export interface ValidationReport {
   canvas: string;
   generatedAt: number;
   manual: ValidationFlag[];
   automatic: {
-    size?: { canvas: string; width: number; height: number; rule: string; message: string }[];
+    size?: ValidationSizeIssue[];
+    palette?: ValidationPaletteIssue[];
+    accessibility?: PaletteAccessibilitySection;
+    asset?: AssetValidationSection[];
   };
+}
+
+export interface RunReportOptions {
+  includes?: ReportInclude[];
+  palette?: string;
 }
 
 type Subscribe = (event: string, cb: (data: unknown) => void) => () => void;
@@ -129,14 +171,22 @@ export function useValidation(canvasName: string | null, subscribe: Subscribe) {
     [canvasName, fetchFlags],
   );
 
-  const runReport = useCallback(async () => {
-    if (!canvasName) return null;
-    const res = await fetch(`/api/validation/report?canvas=${encodeURIComponent(canvasName)}`);
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    const body = (await res.json()) as ValidationReport;
-    setReport(body);
-    return body;
-  }, [canvasName]);
+  const runReport = useCallback(
+    async (options: RunReportOptions = {}) => {
+      if (!canvasName) return null;
+      const params = new URLSearchParams({ canvas: canvasName });
+      if (options.includes && options.includes.length > 0) {
+        params.set('include', options.includes.join(','));
+      }
+      if (options.palette) params.set('palette', options.palette);
+      const res = await fetch(`/api/validation/report?${params.toString()}`);
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const body = (await res.json()) as ValidationReport;
+      setReport(body);
+      return body;
+    },
+    [canvasName],
+  );
 
   return { flags, report, loading, createFlag, resolveFlagById, removeFlagById, runReport };
 }

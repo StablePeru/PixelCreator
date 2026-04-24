@@ -113,6 +113,22 @@ describe('validation:* commands', () => {
     expect(report.result.automatic.size.length).toBeGreaterThan(0);
   });
 
+  it('report omits optional sections by default', () => {
+    const report = pxcJSON('validation:report --canvas hero', tmpDir);
+    expect(report.result.automatic.palette).toBeUndefined();
+    expect(report.result.automatic.accessibility).toBeUndefined();
+    expect(report.result.automatic.asset).toBeUndefined();
+  });
+
+  it('report --all populates palette, accessibility, and asset sections', () => {
+    pxc('palette:create --name p8 --colors "#000000,#ffffff"', tmpDir);
+    const report = pxcJSON('validation:report --canvas hero --all --palette p8', tmpDir);
+    expect(Array.isArray(report.result.automatic.palette)).toBe(true);
+    expect(report.result.automatic.accessibility).toBeDefined();
+    expect(report.result.automatic.accessibility.paletteName).toBe('p8');
+    expect(Array.isArray(report.result.automatic.asset)).toBe(true);
+  });
+
   it('flag --dry-run does not persist', () => {
     pxcJSON('validation:flag --canvas hero --severity info --category other --note n --dry-run', tmpDir);
     const list = pxcJSON('validation:list --canvas hero', tmpDir);
