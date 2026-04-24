@@ -6,15 +6,7 @@ Orden = prioridad. Se trabaja el paso 1 hasta cerrarlo, luego se elimina y el si
 
 ---
 
-## 1. M6.1 — Biome blending: alpha-mask mode + Studio UI
-
-Tras cerrar el MVP dither-only de M6:
-- Añadir `blend.mode = 'alpha-mask'` al `terrain-blend-engine` con kernel suave y respetar `maxColors` (hint `palette:generate` si se excede).
-- Studio: panel read-only de preview del atlas generado bajo un tab/vista en el modo Editor (o Review si encaja mejor). Decidir ubicación al arrancar.
-
----
-
-## 2. Iterar sobre el Validation GUI (Review mode)
+## 1. Iterar sobre el Validation GUI (Review mode)
 
 El modo Review quedó entregado con el MVP: lista/crea/resuelve flags, preview read-only con selección de región, `pxc validation:*` completo, WebSocket `validation:updated`. Siguientes iteraciones naturales:
 

@@ -238,3 +238,130 @@ describe('buildTransitionTileset', () => {
     ).toThrow();
   });
 });
+
+describe('generateBlendMasks — alpha-mask mode', () => {
+  it('returns exactly 47 masks for blob-47', () => {
+    const masks = generateBlendMasks({
+      tileSize: { width: 16, height: 16 },
+      mode: 'alpha-mask',
+      strength: 0.8,
+    });
+    expect(masks).toHaveLength(BLOB_47_COUNT);
+  });
+
+  it('alpha-mask masks have non-binary alpha values (soft gradient)', () => {
+    const masks = generateBlendMasks({
+      tileSize: { width: 16, height: 16 },
+      mode: 'alpha-mask',
+      strength: 0.8,
+    });
+    // The "isolated" config (index 0) has A weight on every side → expect
+    // at least one intermediate alpha value across the whole tileset.
+    let sawIntermediate = false;
+    for (const m of masks) {
+      for (let y = 0; y < m.height; y++) {
+        for (let x = 0; x < m.width; x++) {
+          const a = m.getPixel(x, y).a;
+          if (a > 0 && a < 255) {
+            sawIntermediate = true;
+            break;
+          }
+        }
+        if (sawIntermediate) break;
+      }
+      if (sawIntermediate) break;
+    }
+    expect(sawIntermediate).toBe(true);
+  });
+
+  it('strength=0 still produces a fully-target mask in alpha-mask mode', () => {
+    const masks = generateBlendMasks({
+      tileSize: { width: 8, height: 8 },
+      mode: 'alpha-mask',
+      strength: 0,
+    });
+    for (const m of masks) {
+      for (let y = 0; y < m.height; y++) {
+        for (let x = 0; x < m.width; x++) {
+          expect(m.getPixel(x, y).a).toBe(255);
+        }
+      }
+    }
+  });
+
+  it('the fully-connected config (index 46) is fully target (alpha 255) in alpha-mask mode', () => {
+    const masks = generateBlendMasks({
+      tileSize: { width: 8, height: 8 },
+      mode: 'alpha-mask',
+      strength: 1,
+    });
+    const full = masks[46];
+    for (let y = 0; y < full.height; y++) {
+      for (let x = 0; x < full.width; x++) {
+        expect(full.getPixel(x, y).a).toBe(255);
+      }
+    }
+  });
+
+  it('is deterministic in alpha-mask mode', () => {
+    const a = generateBlendMasks({
+      tileSize: { width: 16, height: 16 },
+      mode: 'alpha-mask',
+      strength: 0.7,
+    });
+    const b = generateBlendMasks({
+      tileSize: { width: 16, height: 16 },
+      mode: 'alpha-mask',
+      strength: 0.7,
+    });
+    for (let i = 0; i < a.length; i++) {
+      expect(a[i].data.equals(b[i].data)).toBe(true);
+    }
+  });
+});
+
+describe('composeBlendedTile — alpha-mask interpolation', () => {
+  it('interpolates RGB channels when mask alpha is between 0 and 255', () => {
+    const source = solidTile(2, 2, RED);
+    const target = solidTile(2, 2, BLUE);
+    const mask = new PixelBuffer(2, 2);
+    // Mid-alpha everywhere
+    for (let y = 0; y < 2; y++) {
+      for (let x = 0; x < 2; x++) {
+        mask.setPixel(x, y, { r: 0, g: 0, b: 0, a: 128 });
+      }
+    }
+    const out = composeBlendedTile(source, target, mask);
+    const px = out.getPixel(0, 0);
+    // Half-way between RED and BLUE: both r and b non-zero, alpha full.
+    expect(px.r).toBeGreaterThan(0);
+    expect(px.r).toBeLessThan(255);
+    expect(px.b).toBeGreaterThan(0);
+    expect(px.b).toBeLessThan(255);
+    expect(px.a).toBe(255);
+  });
+});
+
+describe('buildTransitionTileset — alpha-mask mode', () => {
+  it('produces tiles that contain intermediate (mixed) colors', () => {
+    const source = solidTile(8, 8, RED);
+    const target = solidTile(8, 8, BLUE);
+    const [isolated] = buildTransitionTileset(source, target, {
+      mode: 'alpha-mask',
+      strength: 1,
+      includeInverse: false,
+    });
+    let hasMix = false;
+    for (let y = 0; y < isolated.height; y++) {
+      for (let x = 0; x < isolated.width; x++) {
+        const p = isolated.getPixel(x, y);
+        if (p.r > 0 && p.r < 255 && p.b > 0 && p.b < 255) {
+          hasMix = true;
+          break;
+        }
+      }
+      if (hasMix) break;
+    }
+    expect(hasMix).toBe(true);
+  });
+});

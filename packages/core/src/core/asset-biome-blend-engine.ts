@@ -100,24 +100,66 @@ export function validateBiomeBlendAssetSpec(
   // Pixel-level checks only if grids are valid so far
   const canPixelCheck = !issues.some((i) => i.severity === 'error');
   if (canPixelCheck && spec.constraints.maxColors) {
-    const [srcRendered] = renderFrames(projectPath, spec.source.canvas, sourceCanvas, [0], 1);
-    const [tgtRendered] = renderFrames(projectPath, spec.target.canvas, targetCanvas, [0], 1);
-
-    const combined = new Set<string>();
-    for (const hex of colorHistogram(srcRendered).keys()) combined.add(hex);
-    for (const hex of colorHistogram(tgtRendered).keys()) combined.add(hex);
-
     const limit = spec.constraints.maxColors;
-    if (combined.size > limit) {
-      issues.push({
-        severity: 'error',
-        field: 'constraints.maxColors',
-        message:
-          `Combined source+target biomas use ${combined.size} unique colors but maxColors is ${limit} ` +
-          `(excess: ${combined.size - limit}). ` +
-          `Reduce colors via 'pxc palette:generate --canvas ${spec.source.canvas} --name <palette> --max-colors ${limit}' ` +
-          `(and likewise for "${spec.target.canvas}") or raise constraints.maxColors in the spec.`,
+
+    if (spec.blend.mode === 'alpha-mask') {
+      // Alpha-mask mixes source/target, creating intermediate shades. Count
+      // unique colors on the generated forward atlas so the hint reflects
+      // the actual export — not just the input biomas.
+      const srcTile = extractRepresentativeTile(
+        projectPath,
+        sourceCanvas,
+        spec.tileSize.width,
+        spec.tileSize.height,
+        1,
+      );
+      const tgtTile = extractRepresentativeTile(
+        projectPath,
+        targetCanvas,
+        spec.tileSize.width,
+        spec.tileSize.height,
+        1,
+      );
+      const forward = buildTransitionTileset(srcTile, tgtTile, {
+        mode: spec.blend.mode,
+        strength: spec.blend.strength,
+        includeInverse: false,
       });
+      const atlasColors = new Set<string>();
+      for (const tile of forward) {
+        for (const hex of colorHistogram(tile).keys()) atlasColors.add(hex);
+      }
+      if (atlasColors.size > limit) {
+        issues.push({
+          severity: 'error',
+          field: 'constraints.maxColors',
+          message:
+            `Alpha-mask blend atlas uses ${atlasColors.size} unique colors but maxColors is ${limit} ` +
+            `(excess: ${atlasColors.size - limit}). ` +
+            `Reduce colors via 'pxc palette:generate --canvas ${spec.source.canvas} --name <palette> --max-colors ${limit}' ` +
+            `(and likewise for "${spec.target.canvas}"), lower blend.strength, switch to blend.mode="dither", ` +
+            `or raise constraints.maxColors in the spec.`,
+        });
+      }
+    } else {
+      const [srcRendered] = renderFrames(projectPath, spec.source.canvas, sourceCanvas, [0], 1);
+      const [tgtRendered] = renderFrames(projectPath, spec.target.canvas, targetCanvas, [0], 1);
+
+      const combined = new Set<string>();
+      for (const hex of colorHistogram(srcRendered).keys()) combined.add(hex);
+      for (const hex of colorHistogram(tgtRendered).keys()) combined.add(hex);
+
+      if (combined.size > limit) {
+        issues.push({
+          severity: 'error',
+          field: 'constraints.maxColors',
+          message:
+            `Combined source+target biomas use ${combined.size} unique colors but maxColors is ${limit} ` +
+            `(excess: ${combined.size - limit}). ` +
+            `Reduce colors via 'pxc palette:generate --canvas ${spec.source.canvas} --name <palette> --max-colors ${limit}' ` +
+            `(and likewise for "${spec.target.canvas}") or raise constraints.maxColors in the spec.`,
+        });
+      }
     }
   }
 

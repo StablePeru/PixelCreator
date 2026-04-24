@@ -132,10 +132,23 @@ describe('parseAssetSpec (biome-blend variant)', () => {
     expect(errors.some((e) => e.includes('target.canvas'))).toBe(true);
   });
 
-  it('rejects unsupported blend modes (MVP is dither-only)', () => {
+  it('accepts the alpha-mask blend mode', () => {
     const raw = {
       ...makeValidBiomeBlendSpec(),
       blend: { mode: 'alpha-mask', strength: 0.5, includeInverse: false },
+    };
+    const { spec, errors } = parseAssetSpec(raw);
+    expect(errors).toHaveLength(0);
+    expect(spec).not.toBeNull();
+    if (spec && spec.type === 'biome-blend') {
+      expect(spec.blend.mode).toBe('alpha-mask');
+    }
+  });
+
+  it('rejects unknown blend modes', () => {
+    const raw = {
+      ...makeValidBiomeBlendSpec(),
+      blend: { mode: 'not-a-real-mode', strength: 0.5, includeInverse: false },
     };
     const { spec } = parseAssetSpec(raw);
     expect(spec).toBeNull();
@@ -250,6 +263,30 @@ describe('validateBiomeBlendAssetSpec', () => {
     expect(issue).toBeDefined();
     expect(issue!.message).toContain('palette:generate');
   });
+
+  it('alpha-mask mode enforces maxColors on the generated atlas, not just biomas', () => {
+    // Source + target = 2 unique colors. In dither mode, maxColors=2 passes.
+    // In alpha-mask mode the interpolation creates intermediate shades, so
+    // maxColors=2 must fail with the same actionable palette hint.
+    const spec = makeValidBiomeBlendSpec({
+      blend: { mode: 'alpha-mask', strength: 1, includeInverse: false },
+      constraints: { maxColors: 2 },
+    });
+    const result = validateBiomeBlendAssetSpec(spec, projectPath);
+    expect(result.valid).toBe(false);
+    const issue = result.issues.find((i) => i.field === 'constraints.maxColors');
+    expect(issue).toBeDefined();
+    expect(issue!.message).toContain('palette:generate');
+  });
+
+  it('alpha-mask mode passes when maxColors is large enough for the atlas', () => {
+    const spec = makeValidBiomeBlendSpec({
+      blend: { mode: 'alpha-mask', strength: 1, includeInverse: false },
+      constraints: { maxColors: 256 },
+    });
+    const result = validateBiomeBlendAssetSpec(spec, projectPath);
+    expect(result.valid).toBe(true);
+  });
 });
 
 // --- Build pipeline ---
@@ -326,6 +363,18 @@ describe('buildBiomeBlendAsset', () => {
     const result = buildBiomeBlendAsset(spec, projectPath, path.join(tmpDir, 'out'));
     expect(result.validation.valid).toBe(false);
     expect(result.files).toHaveLength(0);
+  });
+
+  it('alpha-mask build records the blend mode in metadata', () => {
+    const spec = makeValidBiomeBlendSpec({
+      blend: { mode: 'alpha-mask', strength: 1, includeInverse: false },
+    });
+    const result = buildBiomeBlendAsset(spec, projectPath, path.join(tmpDir, 'out'));
+    expect(result.validation.valid).toBe(true);
+    const metadata = JSON.parse(
+      result.files.find((f) => f.name === 'grass-to-sand.blend.json')!.content as string,
+    );
+    expect(metadata.blend.mode).toBe('alpha-mask');
   });
 });
 

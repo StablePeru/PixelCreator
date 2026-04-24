@@ -13,7 +13,7 @@ const NW = 128;
 
 export const BLOB_47_COUNT = BLOB_47_CONFIGS.length;
 
-export type TerrainBlendMode = 'dither';
+export type TerrainBlendMode = 'dither' | 'alpha-mask';
 
 export interface BlendOptions {
   tileSize: { width: number; height: number };
@@ -72,6 +72,14 @@ function targetProbability(bitmask: number, x: number, y: number, w: number, h: 
   return 1 - aWeight;
 }
 
+// Smoothstep: softens the linear gradient into a sigmoid-like curve.
+// Keeps the extremes fixed (0→0, 1→1) while pulling intermediate values
+// toward a gentler S-curve, yielding softer alpha-mask transitions.
+function smoothstep(t: number): number {
+  const x = Math.max(0, Math.min(1, t));
+  return x * x * (3 - 2 * x);
+}
+
 /**
  * Generate the 47 blob-47 blend masks for a given tile size.
  * Each mask is a PixelBuffer where alpha == 255 means "show target (B)"
@@ -79,9 +87,13 @@ function targetProbability(bitmask: number, x: number, y: number, w: number, h: 
  *
  * In 'dither' mode the mask is strictly binary (0 or 255) — the gradient
  * is resolved by an ordered Bayer 4x4 pattern, giving clean pixel-art edges.
+ *
+ * In 'alpha-mask' mode the mask carries the continuous target probability
+ * in its alpha channel (0..255), shaped by a smoothstep kernel. This lets
+ * `composeBlendedTile` interpolate source/target colors for soft edges.
  */
 export function generateBlendMasks(options: BlendOptions): PixelBuffer[] {
-  const { tileSize, strength } = options;
+  const { tileSize, mode, strength } = options;
   const { width: w, height: h } = tileSize;
   const s = Math.max(0, Math.min(1, strength));
 
@@ -94,8 +106,13 @@ export function generateBlendMasks(options: BlendOptions): PixelBuffer[] {
         const pTarget = targetProbability(bitmask, x, y, w, h);
         // Scale A weight by strength: strength=0 -> always target.
         const adjusted = 1 - (1 - pTarget) * s;
-        const threshold = bayerThreshold(x, y);
-        const alpha = adjusted > threshold ? 255 : 0;
+        let alpha: number;
+        if (mode === 'alpha-mask') {
+          alpha = Math.round(smoothstep(adjusted) * 255);
+        } else {
+          const threshold = bayerThreshold(x, y);
+          alpha = adjusted > threshold ? 255 : 0;
+        }
         mask.setPixel(x, y, { r: 0, g: 0, b: 0, a: alpha });
       }
     }
@@ -105,8 +122,15 @@ export function generateBlendMasks(options: BlendOptions): PixelBuffer[] {
 }
 
 /**
- * Compose one blended tile: for each pixel, pick target where mask alpha is
- * full and source where mask alpha is zero. Pure — never mutates inputs.
+ * Compose one blended tile: the mask's alpha channel is the target weight
+ * (0 = pure source, 255 = pure target, intermediate = linear mix of RGB).
+ *
+ * Binary dither masks produce pixel-perfect source/target picks; alpha-mask
+ * masks produce softly interpolated pixels. The output alpha is the max of
+ * source and target alpha so transparent source pixels remain transparent
+ * where the target is opaque (and vice versa).
+ *
+ * Pure — never mutates inputs.
  */
 export function composeBlendedTile(
   source: PixelBuffer,
@@ -128,8 +152,23 @@ export function composeBlendedTile(
   const out = new PixelBuffer(source.width, source.height);
   for (let y = 0; y < out.height; y++) {
     for (let x = 0; x < out.width; x++) {
-      const a = mask.getPixel(x, y).a;
-      out.setPixel(x, y, a >= 128 ? target.getPixel(x, y) : source.getPixel(x, y));
+      const t = mask.getPixel(x, y).a / 255;
+      if (t === 0) {
+        out.setPixel(x, y, source.getPixel(x, y));
+        continue;
+      }
+      if (t === 1) {
+        out.setPixel(x, y, target.getPixel(x, y));
+        continue;
+      }
+      const src = source.getPixel(x, y);
+      const tgt = target.getPixel(x, y);
+      out.setPixel(x, y, {
+        r: Math.round(src.r * (1 - t) + tgt.r * t),
+        g: Math.round(src.g * (1 - t) + tgt.g * t),
+        b: Math.round(src.b * (1 - t) + tgt.b * t),
+        a: Math.max(src.a, tgt.a),
+      });
     }
   }
   return out;

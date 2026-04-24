@@ -6,6 +6,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+### Added — Biome-blend M6.1: alpha-mask mode + Studio preview
+
+- **Core engine** — `TerrainBlendMode` now accepts `'alpha-mask'` in addition to `'dither'` (`packages/core/src/core/terrain-blend-engine.ts`). Alpha-mask masks carry the continuous target probability in alpha (0..255), shaped by a smoothstep kernel for softer edges. `composeBlendedTile` now interpolates RGB linearly from the mask's alpha, so binary dither masks remain pixel-perfect while alpha-mask masks produce smooth transitions. Output alpha is `max(src.a, tgt.a)`.
+- **Core validation** — `validateBiomeBlendAssetSpec` honors `maxColors` in alpha-mask mode by counting unique colors on the *generated* 47-tile atlas (not just source+target biomas, which would undercount the interpolated shades). The error message suggests `palette:generate`, lowering `blend.strength`, switching to `dither`, or raising `constraints.maxColors`.
+- **Schema** — `BiomeBlendModeSchema` Zod enum widened to `['dither', 'alpha-mask']`. Dispatch through `parseAssetSpec` / `AssetSpecSchema.discriminatedUnion` unchanged.
+- **CLI** — `pxc asset:init --type biome-blend` now accepts `--blend-mode alpha-mask`. `asset:list` / `asset:validate` / `asset:build` pick up the mode automatically through the spec.
+- **Studio** — new `assetRoutes` module (`packages/studio/src/server/routes/asset.ts`): `GET /api/asset` summarizes every spec under `.pxc/assets/` (biome-blend entries carry source/target/tileSize/blendMode). `GET /api/asset/:name/biome-blend/preview.png` renders the 47-tile atlas live from the spec (in-memory, no file writes) with optional `?scale=1..8` and `?columns=N`. Studio REST endpoints: 153 → 155.
+- **Studio UI** — new read-only `BiomeBlendPanel` collapsible in the Editor left column (between *Reference* and the end of the panel stack). Lists every `biome-blend` spec, surfaces source/target/tile/mode/strength, and embeds the live atlas preview with 1x–4x zoom. Creation is still CLI-only by design — the panel is a validation/inspection surface.
+- **Tests** — 6 new alpha-mask tests in `terrain-blend-engine.test.ts`, 3 new cases in `asset-biome-blend-engine.test.ts` (alpha-mask parse accepted, `maxColors` enforced on atlas, metadata records mode). 6 new studio route tests in `asset.test.ts` (list shape, PNG magic bytes, non-biome-blend 400, missing-asset 404, alpha-mask preview). Extra E2E case `builds with --blend-mode alpha-mask` in `asset-biome-blend-pipeline.test.ts`. All suites green: core 1102, cli 560, studio 193.
+
 ### Added — Third asset pipeline slice: `biome-blend` (M6, dither-only)
 
 - **Core types** — `AssetSpec` discriminated union gains a third variant `BiomeBlendAssetSpec` (`packages/core/src/types/asset.ts`). Spec carries `tileSize`, `source.canvas`, `target.canvas`, a `blend` block (`mode: 'dither'`, `strength`, `includeInverse`), a `BiomeBlendExportConfig` (`engine: godot|generic`, `scale`, `columns?`, `spacing`), and `BiomeBlendAssetConstraints` (`maxColors?`, `tileSizeMultipleOf?`). Existing character and tileset specs on disk keep parsing unchanged. The `AssetSpec` dispatch in `asset-engine.ts` is now an exhaustive `switch` over `spec.type`.

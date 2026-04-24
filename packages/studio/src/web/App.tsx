@@ -39,6 +39,7 @@ import { StateMachinePanel } from './components/StateMachinePanel';
 import { AgentModePanel } from './components/AgentModePanel';
 import { CollapsiblePanel } from './components/CollapsiblePanel';
 import { ReviewView } from './components/ReviewView';
+import { BiomeBlendPanel } from './components/BiomeBlendPanel';
 import { useAgentSession } from './hooks/useAgentSession';
 import { ThemeProvider } from './theme/ThemeProvider';
 import type { ToolName } from './tools/types';
@@ -375,6 +376,9 @@ function AppInner() {
                     referenceLayer={referenceLayer}
                     onUpdate={() => {}}
                   />
+                </CollapsiblePanel>
+                <CollapsiblePanel title="Biome Blend" defaultOpen={false}>
+                  <BiomeBlendPanel />
                 </CollapsiblePanel>
               </div>
             </div>

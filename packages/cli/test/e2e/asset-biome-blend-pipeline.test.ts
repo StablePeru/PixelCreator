@@ -122,6 +122,21 @@ describe('E2E asset pipeline — biome-blend slice', () => {
     ).toThrow();
   });
 
+  it('builds with --blend-mode alpha-mask', () => {
+    pxc(
+      `asset:init --name ${ASSET} --type biome-blend --source-canvas ${SOURCE} --target-canvas ${TARGET} --tile-size 16x16 --blend-mode alpha-mask --engine generic`,
+      tmpDir,
+    );
+    const destDir = path.join(tmpDir, 'alpha-mask-out');
+    pxc(`asset:build --name ${ASSET} --dest "${destDir}"`, tmpDir);
+
+    const metadataPath = path.join(destDir, `${ASSET}.blend.json`);
+    expect(fs.existsSync(metadataPath)).toBe(true);
+    const metadata = JSON.parse(fs.readFileSync(metadataPath, 'utf-8'));
+    expect(metadata.blend.mode).toBe('alpha-mask');
+    expect(metadata.tileCount).toBe(47);
+  });
+
   it('doubles tile count with --include-inverse', () => {
     pxc(
       `asset:init --name ${ASSET} --type biome-blend --source-canvas ${SOURCE} --target-canvas ${TARGET} --tile-size 16x16 --include-inverse --engine generic`,

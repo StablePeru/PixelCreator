@@ -124,7 +124,7 @@ export const TilesetAssetSpecSchema = z.object({
 
 // --- Biome blend asset spec ---
 
-export const BiomeBlendModeSchema = z.enum(['dither']);
+export const BiomeBlendModeSchema = z.enum(['dither', 'alpha-mask']);
 
 export const BiomeBlendConfigSchema = z.object({
   mode: BiomeBlendModeSchema.default('dither'),

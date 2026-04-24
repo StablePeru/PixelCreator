@@ -26,6 +26,7 @@ import { accessibilityRoutes } from './routes/accessibility.js';
 import { generateRoutes } from './routes/generate.js';
 import { gamedevRoutes } from './routes/gamedev.js';
 import { validationRoutes } from './routes/validation.js';
+import { assetRoutes } from './routes/asset.js';
 import { HistoryStack } from '../history/history-stack.js';
 import { AgentBridge } from './agent-bridge.js';
 import { FrameCache } from './frame-cache.js';
@@ -168,6 +169,7 @@ export function createApp(projectPath: string, options: AppOptions = {}) {
   app.route('/api', generateRoutes);
   app.route('/api', gamedevRoutes);
   app.route('/api', validationRoutes);
+  app.route('/api', assetRoutes);
 
   app.get('/api/health', (c) => c.json({ status: 'ok', timestamp: Date.now() }));
 

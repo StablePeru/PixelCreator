@@ -56,7 +56,7 @@ export default class AssetInit extends BaseCommand {
     }),
     'blend-mode': Flags.string({
       description: 'Blend algorithm (biome-blend only)',
-      options: ['dither'],
+      options: ['dither', 'alpha-mask'],
       default: 'dither',
     }),
     strength: Flags.string({
