@@ -118,8 +118,8 @@ describe('parseAssetSpec', () => {
     expect(errors.some((e) => e.includes('scale'))).toBe(true);
   });
 
-  it('rejects invalid type', () => {
-    const raw = { ...makeValidSpec(), type: 'tileset' };
+  it('rejects unknown asset type', () => {
+    const raw = { ...makeValidSpec(), type: 'banner' };
     const { spec, errors } = parseAssetSpec(raw);
     expect(spec).toBeNull();
     expect(errors.length).toBeGreaterThan(0);

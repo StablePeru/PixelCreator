@@ -15,6 +15,7 @@ interface AssetListEntry {
   type?: string;
   canvas?: string;
   frameSize?: { width: number; height: number };
+  tileSize?: { width: number; height: number };
   animationCount?: number;
   animationNames?: string[];
   engine?: string;
@@ -48,6 +49,18 @@ export default class AssetList extends BaseCommand {
         const { spec, errors } = parseAssetSpec(raw);
         if (!spec) {
           return { name, valid: false, error: errors.join('; ') };
+        }
+        if (spec.type === 'tileset') {
+          return {
+            name: spec.name,
+            valid: true,
+            type: spec.type,
+            canvas: spec.canvas,
+            tileSize: spec.tileSize,
+            engine: spec.export.engine,
+            scale: spec.export.scale,
+            maxColors: spec.constraints?.maxColors ?? null,
+          };
         }
         return {
           name: spec.name,
@@ -95,13 +108,20 @@ export default class AssetList extends BaseCommand {
           continue;
         }
 
-        const size = entry.frameSize ? `${entry.frameSize.width}x${entry.frameSize.height}` : '?';
+        const frame = entry.frameSize ? `${entry.frameSize.width}x${entry.frameSize.height}` : '?';
+        const tile = entry.tileSize ? `${entry.tileSize.width}x${entry.tileSize.height}` : '?';
         const maxColors = entry.maxColors ?? '-';
-        this.log(
-          `  ${entry.name}  [${entry.type}]  canvas=${entry.canvas}  frame=${size}  anims=${entry.animationCount}  engine=${entry.engine}(${entry.scale}x)  maxColors=${maxColors}`,
-        );
-        if (flags.details && entry.animationNames) {
-          this.log(`    animations: ${entry.animationNames.join(', ')}`);
+        if (entry.type === 'tileset') {
+          this.log(
+            `  ${entry.name}  [${entry.type}]  canvas=${entry.canvas}  tile=${tile}  engine=${entry.engine}(${entry.scale}x)  maxColors=${maxColors}`,
+          );
+        } else {
+          this.log(
+            `  ${entry.name}  [${entry.type}]  canvas=${entry.canvas}  frame=${frame}  anims=${entry.animationCount}  engine=${entry.engine}(${entry.scale}x)  maxColors=${maxColors}`,
+          );
+          if (flags.details && entry.animationNames) {
+            this.log(`    animations: ${entry.animationNames.join(', ')}`);
+          }
         }
       }
     });

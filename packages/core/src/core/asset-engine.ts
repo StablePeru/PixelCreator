@@ -1,6 +1,7 @@
 import { AssetSpecSchema } from '../types/asset.js';
 import type {
   AssetSpec,
+  CharacterSpritesheetAssetSpec,
   AssetValidationIssue,
   AssetValidationResult,
   AssetBuildResult,
@@ -9,6 +10,7 @@ import type {
   AnimationSpatialMetrics,
   SpatialConsistencyConfig,
 } from '../types/asset.js';
+import { validateTilesetAssetSpec, buildTilesetAsset } from './asset-tileset-engine.js';
 import type { CanvasData } from '../types/canvas.js';
 import type { GamedevExportOptions, AnimationExport } from '../types/gamedev.js';
 import { readCanvasJSON } from '../io/project-io.js';
@@ -70,7 +72,7 @@ export function computeFrameBoundingBox(buffer: PixelBuffer): FrameBoundingBox |
  * 2. Frame drift (if maxFrameDrift is set) — center-of-bbox displacement between consecutive frames
  */
 export function validateSpatialConsistency(
-  spec: AssetSpec,
+  spec: CharacterSpritesheetAssetSpec,
   projectPath: string,
   canvas: CanvasData,
 ): AssetValidationIssue[] {
@@ -211,7 +213,7 @@ export function computeAnimationSpatialMetrics(
  * 4. Lateral extent ratio — width from pivot should not vary wildly (warning, allows attacks)
  */
 export function validateCrossAnimationConsistency(
-  spec: AssetSpec,
+  spec: CharacterSpritesheetAssetSpec,
   projectPath: string,
   canvas: CanvasData,
 ): AssetValidationIssue[] {
@@ -328,7 +330,7 @@ export function validateCrossAnimationConsistency(
  * Returns undefined if neither is set.
  */
 export function resolveAnimationPivot(
-  spec: AssetSpec,
+  spec: CharacterSpritesheetAssetSpec,
   animationName: string,
 ): PivotPoint | undefined {
   const anim = spec.animations.find((a) => a.name === animationName);
@@ -342,7 +344,7 @@ export function resolveAnimationPivot(
  * 2. Content coverage: warns if pivot falls outside the content bbox of any frame
  */
 export function validatePivot(
-  spec: AssetSpec,
+  spec: CharacterSpritesheetAssetSpec,
   projectPath: string,
   canvas: CanvasData,
 ): AssetValidationIssue[] {
@@ -454,7 +456,10 @@ export function countAssetColors(
 
 // --- Project-Level Validation ---
 
-export function validateAssetSpec(spec: AssetSpec, projectPath: string): AssetValidationResult {
+export function validateCharacterSpritesheetAssetSpec(
+  spec: CharacterSpritesheetAssetSpec,
+  projectPath: string,
+): AssetValidationResult {
   const issues: AssetValidationIssue[] = [];
 
   // 1. Check canvas exists
@@ -597,7 +602,7 @@ export function validateAssetSpec(spec: AssetSpec, projectPath: string): AssetVa
  * Generic: adds pivot map keyed by animation name
  */
 function injectPivotIntoExportFiles(
-  spec: AssetSpec,
+  spec: CharacterSpritesheetAssetSpec,
   files: Array<{ name: string; content: string | Buffer }>,
 ): void {
   const { width, height } = spec.frameSize;
@@ -711,7 +716,7 @@ export function expectedFrameCountForDirection(baseFrameCount: number, direction
  * direction, frame ranges, and pivot. No intermediate generation + override.
  */
 function buildGodotFilesFromSpec(
-  spec: AssetSpec,
+  spec: CharacterSpritesheetAssetSpec,
   projectPath: string,
 ): Array<{ name: string; content: string | Buffer }> {
   const scale = spec.export.scale;
@@ -771,13 +776,13 @@ function buildGodotFilesFromSpec(
 
 // --- Build Pipeline ---
 
-export function buildAsset(
-  spec: AssetSpec,
+export function buildCharacterSpritesheetAsset(
+  spec: CharacterSpritesheetAssetSpec,
   projectPath: string,
   outputDir: string,
 ): AssetBuildResult {
   // Step 1: Validate
-  const validation = validateAssetSpec(spec, projectPath);
+  const validation = validateCharacterSpritesheetAssetSpec(spec, projectPath);
   if (!validation.valid) {
     return { asset: spec.name, files: [], validation };
   }
@@ -813,9 +818,36 @@ export function buildAsset(
   return { asset: spec.name, files, validation };
 }
 
+// --- Type-Dispatching Entry Points ---
+
+/**
+ * Dispatch validation based on the asset type.
+ * Keeps a single entry point so CLI/Studio consumers don't need to know about variants.
+ */
+export function validateAssetSpec(spec: AssetSpec, projectPath: string): AssetValidationResult {
+  if (spec.type === 'tileset') {
+    return validateTilesetAssetSpec(spec, projectPath);
+  }
+  return validateCharacterSpritesheetAssetSpec(spec, projectPath);
+}
+
+/**
+ * Dispatch build based on the asset type.
+ */
+export function buildAsset(
+  spec: AssetSpec,
+  projectPath: string,
+  outputDir: string,
+): AssetBuildResult {
+  if (spec.type === 'tileset') {
+    return buildTilesetAsset(spec, projectPath, outputDir);
+  }
+  return buildCharacterSpritesheetAsset(spec, projectPath, outputDir);
+}
+
 // --- Scaffold ---
 
-export function scaffoldAssetSpec(name: string, canvas: CanvasData): AssetSpec {
+export function scaffoldAssetSpec(name: string, canvas: CanvasData): CharacterSpritesheetAssetSpec {
   // Build animation list from existing tags, or a single "idle" default
   const animations =
     canvas.animationTags.length > 0
