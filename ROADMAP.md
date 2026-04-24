@@ -6,27 +6,15 @@ Orden = prioridad. Se trabaja el paso 1 hasta cerrarlo, luego se elimina y el si
 
 ---
 
-## 1. Milestone M6 — Stardew Valley quality
+## 1. M6.1 — Biome blending: alpha-mask mode + Studio UI
 
-M5 (brush sensible a presión) cerrado. M6 aún sin definir. Candidatos:
-- Paleta dinámica por escena (day/night/season shift).
-- Normal maps pixel-art para iluminación 2D.
-- Tile blending suave entre biomas.
-- Sistema de iluminación 2D baked.
-
-**Antes de implementar**: abrir `/pxdk:plan` con el candidato elegido y confirmar con usuario.
+Tras cerrar el MVP dither-only de M6:
+- Añadir `blend.mode = 'alpha-mask'` al `terrain-blend-engine` con kernel suave y respetar `maxColors` (hint `palette:generate` si se excede).
+- Studio: panel read-only de preview del atlas generado bajo un tab/vista en el modo Editor (o Review si encaja mejor). Decidir ubicación al arrancar.
 
 ---
 
-## 2. Refrescar memorias tras release
-
-Tras cortar beta.13, actualizar `project_status.md` y `project_asset_pipeline.md` con las métricas nuevas y el nuevo estado del asset pipeline.
-
-**Hecho cuando**: ambas memorias reflejan cifras post-beta.13 y el cierre del slice character-spritesheet.
-
----
-
-## 3. Iterar sobre el Validation GUI (Review mode)
+## 2. Iterar sobre el Validation GUI (Review mode)
 
 El modo Review quedó entregado con el MVP: lista/crea/resuelve flags, preview read-only con selección de región, `pxc validation:*` completo, WebSocket `validation:updated`. Siguientes iteraciones naturales:
 

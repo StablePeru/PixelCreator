@@ -11,6 +11,7 @@ import type {
   SpatialConsistencyConfig,
 } from '../types/asset.js';
 import { validateTilesetAssetSpec, buildTilesetAsset } from './asset-tileset-engine.js';
+import { validateBiomeBlendAssetSpec, buildBiomeBlendAsset } from './asset-biome-blend-engine.js';
 import type { CanvasData } from '../types/canvas.js';
 import type { GamedevExportOptions, AnimationExport } from '../types/gamedev.js';
 import { readCanvasJSON } from '../io/project-io.js';
@@ -825,10 +826,14 @@ export function buildCharacterSpritesheetAsset(
  * Keeps a single entry point so CLI/Studio consumers don't need to know about variants.
  */
 export function validateAssetSpec(spec: AssetSpec, projectPath: string): AssetValidationResult {
-  if (spec.type === 'tileset') {
-    return validateTilesetAssetSpec(spec, projectPath);
+  switch (spec.type) {
+    case 'tileset':
+      return validateTilesetAssetSpec(spec, projectPath);
+    case 'biome-blend':
+      return validateBiomeBlendAssetSpec(spec, projectPath);
+    case 'character-spritesheet':
+      return validateCharacterSpritesheetAssetSpec(spec, projectPath);
   }
-  return validateCharacterSpritesheetAssetSpec(spec, projectPath);
 }
 
 /**
@@ -839,10 +844,14 @@ export function buildAsset(
   projectPath: string,
   outputDir: string,
 ): AssetBuildResult {
-  if (spec.type === 'tileset') {
-    return buildTilesetAsset(spec, projectPath, outputDir);
+  switch (spec.type) {
+    case 'tileset':
+      return buildTilesetAsset(spec, projectPath, outputDir);
+    case 'biome-blend':
+      return buildBiomeBlendAsset(spec, projectPath, outputDir);
+    case 'character-spritesheet':
+      return buildCharacterSpritesheetAsset(spec, projectPath, outputDir);
   }
-  return buildCharacterSpritesheetAsset(spec, projectPath, outputDir);
 }
 
 // --- Scaffold ---

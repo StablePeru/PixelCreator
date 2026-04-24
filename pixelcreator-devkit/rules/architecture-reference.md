@@ -65,6 +65,7 @@ Dependency chain: core → cli / studio (both depend on core, not on each other)
 - `selection-engine.ts` — rect/ellipse/color selection, clipboard ops.
 - `spritesheet-engine.ts` — layout (horizontal/vertical/grid), decompose.
 - `template-engine.ts` — template create/apply.
+- `terrain-blend-engine.ts` — blob-47 transition masks + `composeBlendedTile` + `buildTransitionTileset` (dither mode).
 - `tileset-engine.ts` — tile hashing, slicing, dedup, tilemap rendering.
 - `transform-engine.ts` — flip, rotate, scale, brightness, contrast, hue-shift, dither.
 - `tween-engine.ts` — frame interpolation, easing.

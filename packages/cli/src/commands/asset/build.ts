@@ -112,7 +112,7 @@ export default class AssetBuild extends BaseCommand {
 
     const resultData = {
       asset: spec.name,
-      canvas: spec.canvas,
+      canvas: describeCanvases(spec),
       engine: spec.export.engine,
       scale: spec.export.scale,
       dest: destDir,
@@ -160,13 +160,13 @@ export default class AssetBuild extends BaseCommand {
   ): Promise<void> {
     const stamp = () => new Date().toISOString().slice(11, 19);
 
-    // Try to read the spec up-front to know which canvas to watch. If it
+    // Try to read the spec up-front to know which canvases to watch. If it
     // fails, still start the asset-dir watcher so a later fix retriggers.
-    let canvasName: string | null = null;
+    let canvasNames: string[] = [];
     try {
       const raw = readAssetSpec(projectPath, flags.name);
       const parsed = parseAssetSpec(raw);
-      if (parsed.spec) canvasName = parsed.spec.canvas;
+      if (parsed.spec) canvasNames = collectWatchCanvases(parsed.spec);
     } catch {
       // Ignore — first buildOnce will surface the error.
     }
@@ -226,7 +226,7 @@ export default class AssetBuild extends BaseCommand {
       );
     }
 
-    if (canvasName) {
+    for (const canvasName of canvasNames) {
       const canvasDir = path.join(projectPath, 'canvases', canvasName);
       if (fs.existsSync(canvasDir)) {
         watchers.push(
@@ -237,8 +237,14 @@ export default class AssetBuild extends BaseCommand {
       }
     }
 
+    const canvasDesc =
+      canvasNames.length === 0
+        ? ''
+        : canvasNames.length === 1
+          ? ` and canvas "${canvasNames[0]}"`
+          : ` and canvases [${canvasNames.map((c) => `"${c}"`).join(', ')}]`;
     this.log(
-      `Watching asset spec${canvasName ? ` and canvas "${canvasName}"` : ''} (debounce: ${flags.debounce}ms). Press Ctrl+C to stop.`,
+      `Watching asset spec${canvasDesc} (debounce: ${flags.debounce}ms). Press Ctrl+C to stop.`,
     );
 
     await new Promise<void>((resolve) => {
@@ -258,4 +264,18 @@ export default class AssetBuild extends BaseCommand {
       process.once('SIGTERM', shutdown);
     });
   }
+}
+
+function describeCanvases(spec: AssetSpec): string {
+  if (spec.type === 'biome-blend') {
+    return `${spec.source.canvas} + ${spec.target.canvas}`;
+  }
+  return spec.canvas;
+}
+
+function collectWatchCanvases(spec: AssetSpec): string[] {
+  if (spec.type === 'biome-blend') {
+    return [spec.source.canvas, spec.target.canvas];
+  }
+  return [spec.canvas];
 }

@@ -3,6 +3,8 @@ export * from './core/accessibility-engine.js';
 export * from './core/animation-engine.js';
 export * from './core/asset-engine.js';
 export * from './core/asset-tileset-engine.js';
+export * from './core/asset-biome-blend-engine.js';
+export * from './core/terrain-blend-engine.js';
 export * from './core/batch-frame-engine.js';
 export * from './core/brush-engine.js';
 export * from './core/buffer-pool.js';

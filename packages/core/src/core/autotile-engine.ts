@@ -32,7 +32,7 @@ function stripInvalidCorners(bitmask: number): number {
  * Each entry is the bitmask with corners already properly set.
  * Index in this array = blob-47 tile index (0..46).
  */
-const BLOB_47_CONFIGS: number[] = [
+export const BLOB_47_CONFIGS: number[] = [
   /* 0  Isolated           */ 0,
   /* 1  N only             */ N,
   /* 2  E only             */ E,

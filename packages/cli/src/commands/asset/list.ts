@@ -14,10 +14,15 @@ interface AssetListEntry {
   valid: boolean;
   type?: string;
   canvas?: string;
+  sourceCanvas?: string;
+  targetCanvas?: string;
   frameSize?: { width: number; height: number };
   tileSize?: { width: number; height: number };
   animationCount?: number;
   animationNames?: string[];
+  blendMode?: string;
+  blendStrength?: number;
+  includeInverse?: boolean;
   engine?: string;
   scale?: number;
   maxColors?: number | null;
@@ -57,6 +62,22 @@ export default class AssetList extends BaseCommand {
             type: spec.type,
             canvas: spec.canvas,
             tileSize: spec.tileSize,
+            engine: spec.export.engine,
+            scale: spec.export.scale,
+            maxColors: spec.constraints?.maxColors ?? null,
+          };
+        }
+        if (spec.type === 'biome-blend') {
+          return {
+            name: spec.name,
+            valid: true,
+            type: spec.type,
+            sourceCanvas: spec.source.canvas,
+            targetCanvas: spec.target.canvas,
+            tileSize: spec.tileSize,
+            blendMode: spec.blend.mode,
+            blendStrength: spec.blend.strength,
+            includeInverse: spec.blend.includeInverse,
             engine: spec.export.engine,
             scale: spec.export.scale,
             maxColors: spec.constraints?.maxColors ?? null,
@@ -114,6 +135,11 @@ export default class AssetList extends BaseCommand {
         if (entry.type === 'tileset') {
           this.log(
             `  ${entry.name}  [${entry.type}]  canvas=${entry.canvas}  tile=${tile}  engine=${entry.engine}(${entry.scale}x)  maxColors=${maxColors}`,
+          );
+        } else if (entry.type === 'biome-blend') {
+          const inverse = entry.includeInverse ? '  +inverse' : '';
+          this.log(
+            `  ${entry.name}  [${entry.type}]  source=${entry.sourceCanvas}  target=${entry.targetCanvas}  tile=${tile}  blend=${entry.blendMode}(${entry.blendStrength})${inverse}  engine=${entry.engine}(${entry.scale}x)  maxColors=${maxColors}`,
           );
         } else {
           this.log(

@@ -122,11 +122,49 @@ export const TilesetAssetSpecSchema = z.object({
   }),
 });
 
+// --- Biome blend asset spec ---
+
+export const BiomeBlendModeSchema = z.enum(['dither']);
+
+export const BiomeBlendConfigSchema = z.object({
+  mode: BiomeBlendModeSchema.default('dither'),
+  strength: z.number().min(0).max(1).default(0.5),
+  includeInverse: z.boolean().default(false),
+});
+
+export const BiomeBlendExportConfigSchema = z.object({
+  engine: z.enum(['godot', 'generic']).default('generic'),
+  scale: z.number().int().min(1).max(8).default(1),
+  columns: z.number().int().min(1).optional(),
+  spacing: z.number().int().min(0).max(16).default(0),
+});
+
+export const BiomeBlendAssetConstraintsSchema = z.object({
+  maxColors: z.number().int().min(2).max(256).optional(),
+  tileSizeMultipleOf: z.number().int().min(1).optional(),
+});
+
+export const BiomeBlendAssetSpecSchema = z.object({
+  $schema: z.string().optional(),
+  name: AssetNameSchema,
+  type: z.literal('biome-blend'),
+  tileSize: z.object({
+    width: z.number().int().min(1),
+    height: z.number().int().min(1),
+  }),
+  source: z.object({ canvas: z.string().min(1) }),
+  target: z.object({ canvas: z.string().min(1) }),
+  blend: BiomeBlendConfigSchema,
+  export: BiomeBlendExportConfigSchema,
+  constraints: BiomeBlendAssetConstraintsSchema.optional().default({}),
+});
+
 // --- Discriminated union ---
 
 export const AssetSpecSchema = z.discriminatedUnion('type', [
   CharacterSpritesheetAssetSpecSchema,
   TilesetAssetSpecSchema,
+  BiomeBlendAssetSpecSchema,
 ]);
 
 // --- TypeScript types (inferred from schemas) ---
@@ -141,6 +179,11 @@ export type TilesetAssetExportConfig = z.infer<typeof TilesetAssetExportConfigSc
 export type TilesetTileMetadata = z.infer<typeof TilesetTileMetadataSchema>;
 export type TilesetAssetConstraints = z.infer<typeof TilesetAssetConstraintsSchema>;
 export type TilesetAssetSpec = z.infer<typeof TilesetAssetSpecSchema>;
+export type BiomeBlendMode = z.infer<typeof BiomeBlendModeSchema>;
+export type BiomeBlendConfig = z.infer<typeof BiomeBlendConfigSchema>;
+export type BiomeBlendExportConfig = z.infer<typeof BiomeBlendExportConfigSchema>;
+export type BiomeBlendAssetConstraints = z.infer<typeof BiomeBlendAssetConstraintsSchema>;
+export type BiomeBlendAssetSpec = z.infer<typeof BiomeBlendAssetSpecSchema>;
 export type AssetSpec = z.infer<typeof AssetSpecSchema>;
 export type AssetType = AssetSpec['type'];
 

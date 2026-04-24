@@ -64,4 +64,6 @@ Studio has two views: the default **Editor** and the read-only **Review** tab (v
 
 ## Current Status: v2.0.0-beta.13
 
-246 CLI commands (24 topics), 32 core engines, 12 I/O modules, 153 REST endpoints, 45 React components, 158 test files, 1778 tests green, 82.14% core coverage. Node ≥ 20, pnpm workspace, Docker support, husky + lint-staged pre-commit hooks.
+246 CLI commands (24 topics), 34 core engines, 12 I/O modules, 153 REST endpoints, 45 React components, 161 test files, 1837 tests green, 82.14% core coverage. Node ≥ 20, pnpm workspace, Docker support, husky + lint-staged pre-commit hooks.
+
+Asset pipeline has three vertical slices: `character-spritesheet`, `tileset`, and `biome-blend` (M6, dither-mode blob-47 transitions between biomas).
