@@ -57,8 +57,8 @@
     }
   },
   "dependencies": {
-    "@oclif/core": "^4.9.0",
-    "@oclif/plugin-help": "^6.2.38",
+    "@oclif/core": "^4.10.6",
+    "@oclif/plugin-help": "^6.2.45",
     "@pixelcreator/core": "workspace:*",
     "@pixelcreator/studio": "workspace:*"
   },
